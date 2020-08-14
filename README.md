@@ -45,4 +45,27 @@ yarn test
 
 ### Deploy
 
-- NA
+- Setup app
+
+```
+heroku create <app_name>
+```
+
+- Deploy
+
+```
+heroku container:push web --app <app_name>
+heroku container:release web --app <app_name>
+```
+
+- Check Logs
+
+```
+heroku logs --tail --app <app_name>
+```
+
+- View
+
+```
+heroku open --app <app_name>
+```
