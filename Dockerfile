@@ -7,9 +7,6 @@ WORKDIR /app
 
 RUN ls -la
 
-EXPOSE 5000
-
 RUN yarn install
-RUN yarn start
 
-ENTRYPOINT yarn start
+CMD yarn start

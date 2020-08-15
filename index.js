@@ -1,7 +1,9 @@
 import 'dotenv/config';
 import App from './src/App';
 
-App.listen(5000, () =>
+const PORT = process.env.PORT || 5000;
+
+App.listen(PORT, () =>
   // eslint-disable-next-line no-console
-  console.log('Visit http://localhost:5000 for the healthcheck'),
+  console.log(`Visit http://localhost:${PORT} for the healthcheck`),
 );
