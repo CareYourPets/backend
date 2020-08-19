@@ -43,15 +43,37 @@ yarn start
 yarn test
 ```
 
+### Heroku Setup
+
+- Install Heroku
+```
+https://devcenter.heroku.com/articles/heroku-cli#download-and-install
+```
+
+- Login using cli (Make sure that you have access to the deployed heroku app)
+```
+heroku login
+```
+
+- Add PostgreSQL to Heroku
+```
+heroku addons:create heroku-postgresql:hobby-dev --app <app_name>
+```
+
+- Add container build for Heroku App
+```
+heroku stack:set container --app <app_name>
+```
+
 ### Deploy
 
-- Setup app
-
+- Open app locally during development
 ```
-heroku create <app_name>
+heroku local
 ```
 
-- Deploy
+
+- Manual Deployment
 
 ```
 heroku container:push web --app <app_name>
