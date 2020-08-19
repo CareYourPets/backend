@@ -55,6 +55,15 @@ https://devcenter.heroku.com/articles/heroku-cli#download-and-install
 heroku login
 ```
 
+- Add PostgreSQL to Heroku
+```
+heroku addons:create heroku-postgresql:hobby-dev --app <app_name>
+```
+
+- Add container build for Heroku App
+```
+heroku stack:set container --app <app_name>
+```
 
 ### Deploy
 
