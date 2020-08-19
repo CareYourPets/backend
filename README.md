@@ -43,15 +43,28 @@ yarn start
 yarn test
 ```
 
+### Heroku Setup
+
+- Install Heroku
+```
+https://devcenter.heroku.com/articles/heroku-cli#download-and-install
+```
+
+- Login using cli (Make sure that you have access to the deployed heroku app)
+```
+heroku login
+```
+
+
 ### Deploy
 
-- Setup app
-
+- Open app locally during development
 ```
-heroku create <app_name>
+heroku local
 ```
 
-- Deploy
+
+- Manual Deployment
 
 ```
 heroku container:push web --app <app_name>

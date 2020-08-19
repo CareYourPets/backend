@@ -1,0 +1,10 @@
+setup:
+  addons:
+  - plan: heroku-postgresql
+build:
+  docker:
+    web: Dockerfile
+release:
+  image: worker
+  command:
+    - ./run_migration.sh
