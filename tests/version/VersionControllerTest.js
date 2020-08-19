@@ -11,7 +11,7 @@ describe('Test Version Controller', () => {
       .get('/')
       .end((_, res) => {
         Assert.equal(200, res.status);
-        Assert.equal(true, res.body.version.includes('v1'));
+        Assert.equal(true, res.body.version.includes('v0.0.1'));
       });
   });
 });
