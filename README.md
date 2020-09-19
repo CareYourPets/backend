@@ -27,6 +27,14 @@ sudo apt install yarn
 
 ### Run
 
+- Setup DB named dev
+
+```
+PGPASSWORD=password psql -U postgres -h localhost -d dev -a -f setup/DropDB.sql
+PGPASSWORD=password psql -U postgres -h localhost -d dev -a -f setup/CreateDB.sql
+PGPASSWORD=password psql -U postgres -h localhost -d dev -a -f setup/SeedDB.sql
+```
+
 - Run app
 
 ```
@@ -46,21 +54,25 @@ yarn test
 ### Heroku Setup
 
 - Install Heroku
+
 ```
 https://devcenter.heroku.com/articles/heroku-cli#download-and-install
 ```
 
 - Login using cli (Make sure that you have access to the deployed heroku app)
+
 ```
 heroku login
 ```
 
 - Add PostgreSQL to Heroku
+
 ```
 heroku addons:create heroku-postgresql:hobby-dev --app <app_name>
 ```
 
 - Add container build for Heroku App
+
 ```
 heroku stack:set container --app <app_name>
 ```
@@ -68,10 +80,10 @@ heroku stack:set container --app <app_name>
 ### Deploy
 
 - Open app locally during development
+
 ```
 heroku local
 ```
-
 
 - Manual Deployment
 
@@ -91,3 +103,7 @@ heroku logs --tail --app <app_name>
 ```
 heroku open --app <app_name>
 ```
+
+Resources
+
+- https://node-postgres.com/features/connecting

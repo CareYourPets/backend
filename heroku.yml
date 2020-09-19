@@ -4,4 +4,4 @@ build:
 release:
   image: web
   command:
-    - ./run_migration.sh
+    - ./migrate.sh
