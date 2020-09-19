@@ -3,6 +3,7 @@ import moment from 'moment';
 import _times from 'lodash/times';
 import _map from 'lodash/map';
 import pool from '../../src/Utils/DBUtils';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 const SeedUsers = async (i, role) => {
   const hashed = '$2b$10$/IJdSgnkHJ4kOgEPxiLEuebNDJ4Jtig.KVG7OtvVd8l1qKANnneu2'; // hashed of 'password'
@@ -49,7 +50,7 @@ const SeedRoles = async (uids, role) => {
 const SeedAdministrators = async (i) => {
   const users = await SeedUsers(i, 'admin');
   const uids = _map(users, (user) => user[0]);
-  const roles = await SeedRoles(uids, 'ADMINISTRATOR');
+  const roles = await SeedRoles(uids, RoleUtils.ADMINISTRATOR);
   return {
     users,
     roles,
@@ -59,7 +60,7 @@ const SeedAdministrators = async (i) => {
 const SeedPetOwners = async (i) => {
   const users = await SeedUsers(i, 'petowner');
   const uids = _map(users, (user) => user[0]);
-  const roles = await SeedRoles(uids, 'PET_OWNER');
+  const roles = await SeedRoles(uids, RoleUtils.PET_OWNER);
   return {
     users,
     roles,
@@ -69,7 +70,7 @@ const SeedPetOwners = async (i) => {
 const SeedCareTakers = async (i) => {
   const users = await SeedUsers(i, 'caretaker');
   const uids = _map(users, (user) => user[0]);
-  const roles = await SeedRoles(uids, 'CARE_TAKER');
+  const roles = await SeedRoles(uids, RoleUtils.CARE_TAKER);
   return {
     users,
     roles,

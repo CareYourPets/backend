@@ -14,10 +14,21 @@ export const IsPasswordVerified = async (password, hash) => {
 };
 
 export const GenerateAccessToken = (payload) => {
-  // expires after half and hour (1800 seconds = 30 minutes)
-  return jwt.sign(payload, JWT_SECRET, {expiresIn: '1800s'});
+  return jwt.sign(payload, JWT_SECRET);
 };
 
 export const DecodeAccessToken = (token) => {
   return jwt.verify(token, JWT_SECRET);
 };
+
+export function AuthRequired(req, res, next) {
+  try {
+    const accessToken = req.headers.accesstoken;
+    const decodedToken = DecodeAccessToken(accessToken);
+    req.user = decodedToken; // {uid, email, roles}
+    next();
+  } catch {
+    res.status(401);
+    return res.json({error: 'Not Authorized'});
+  }
+}

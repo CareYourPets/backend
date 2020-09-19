@@ -3,15 +3,16 @@ import pool from '../../src/Utils/DBUtils';
 import UserFixtures from '../Fixtures/UserFixtures';
 import UserService from '../../src/User/UserService';
 import {IsPasswordVerified} from '../../src/Utils/AuthUtils';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('Test UserCreate Service', () => {
-  beforeEach(async () => {
+  beforeEach('UserCreateService beforeEach', async () => {
     await pool.query('DELETE FROM roles');
     await pool.query('DELETE FROM users');
     await UserFixtures.SeedCareTakers(2);
   });
 
-  afterEach(async () => {
+  afterEach('UserCreateService afterEach', async () => {
     await pool.query('DELETE FROM roles');
     await pool.query('DELETE FROM users');
   });
@@ -29,6 +30,10 @@ describe('Test UserCreate Service', () => {
     ).rows;
     Assert.equal(1, users.length);
     Assert.equal(true, await IsPasswordVerified('password', users[0].password));
+    const roles = (
+      await pool.query(`SELECT * FROM roles WHERE uid='${users[0].uid}'`)
+    ).rows;
+    Assert.equal(1, roles.length);
   });
 
   it('Should throw error on same email', async () => {
@@ -37,7 +42,7 @@ describe('Test UserCreate Service', () => {
         UserService.UserCreate({
           email: 'caretaker1@example.com',
           password: 'password',
-          role: 'CARE_TAKER',
+          role: RoleUtils.CARE_TAKER,
           firstName: 'Brandon',
           lastName: 'Ng',
         }),
