@@ -1,0 +1,5 @@
+export default {
+  PET_OWNER: 'PET_OWNER',
+  ADMINISTRATOR: 'ADMINISTRATOR',
+  CARE_TAKER: 'CARE_TAKER',
+};

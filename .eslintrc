@@ -1,5 +1,6 @@
 {
- "extends": ["airbnb-base", "prettier"],
+  "parser": "babel-eslint",
+  "extends": ["airbnb-base", "prettier"],
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module"
@@ -20,6 +21,7 @@
       }
     ],
     "no-plusplus": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "no-shadow": "off"
   }
 }
