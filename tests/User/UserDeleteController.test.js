@@ -28,7 +28,6 @@ describe('Test UserDelete Controller', () => {
       password: 'password',
       role: RoleUtils.CARE_TAKER,
     });
-    // console.log(accessToken)
 
     await Chai.request(App)
       .post('/user/delete')
