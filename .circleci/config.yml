@@ -5,6 +5,8 @@ jobs:
   test:
     docker:
       - image: circleci/node:12
+        env:
+          - DATABASE_URL=postgres://ubuntu@localhost:5432/dev
       - image: postgres:9.5
         env:
           - POSTGRES_USER=ubuntu
@@ -15,8 +17,6 @@ jobs:
       - run: psql -d $DATABASE_URL -d circle_test -a -f setup/CreateDB.sql
       - run: yarn install
       - run: yarn test
-        environment:
-        DATABASE_URL: "postgres://ubuntu@localhost:5432/dev"
 
 # Orchestrate our job run sequence
 workflows:
