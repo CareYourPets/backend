@@ -1,5 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import _map from 'lodash/map';
+import pool from "./DBUtils";
+import SQLQueries from "./SQLUtils";
 
 const salt = 10;
 
@@ -21,11 +24,19 @@ export const DecodeAccessToken = (token) => {
   return jwt.verify(token, JWT_SECRET);
 };
 
-export function AuthRequired(req, res, next) {
+export async function AuthRequired(req, res, next) {
   try {
     const accessToken = req.headers.accesstoken;
     const decodedToken = DecodeAccessToken(accessToken);
-    req.user = decodedToken; // {uid, email, roles}
+    const {uid} = decodedToken;
+
+    const res = await pool.query(SQLQueries.SELECT_USER_ROLE_FOR_AUTH, [uid]);
+    const {rows} = res;
+    const roles = _map(rows, (row) => row.role);
+
+    const user = {...decodedToken, roles};
+
+    req.user = user; // {uid, email, roles, role}
     next();
   } catch {
     res.status(401);

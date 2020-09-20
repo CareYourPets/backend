@@ -1,4 +1,5 @@
 import Assert from 'assert';
+import _omit from 'lodash/omit';
 import Chai from 'chai';
 import ChaiHttp from 'chai-http';
 import pool from '../../src/Utils/DBUtils';
@@ -29,7 +30,14 @@ describe('Test UserCreate Controller', () => {
       firstName: 'Brandon',
       lastName: 'Ng',
     });
-    const accessToken = DecodeAccessToken(res.body.accessToken);
-    Assert.equal('test@example.com', accessToken.email);
+    const decodedToken = DecodeAccessToken(res.body.accessToken);
+    Assert.deepEqual(
+      {
+        email: 'test@example.com',
+        role: RoleUtils.PET_OWNER,
+        roles: [RoleUtils.PET_OWNER],
+      },
+      _omit(decodedToken, ['uid', 'iat']),
+    );
   });
 });
