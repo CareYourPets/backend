@@ -25,14 +25,14 @@ describe('Test UserCreate Service', () => {
       firstName: 'Brandon',
       lastName: 'Ng',
     });
-    const users = (
-      await pool.query("SELECT * FROM users WHERE email='test@example.com'")
-    ).rows;
+    const {rows: users} = await pool.query(
+      "SELECT * FROM users WHERE email='test@example.com'",
+    );
     Assert.equal(1, users.length);
     Assert.equal(true, await IsPasswordVerified('password', users[0].password));
-    const roles = (
-      await pool.query(`SELECT * FROM roles WHERE uid='${users[0].uid}'`)
-    ).rows;
+    const {rows: roles} = await pool.query(
+      `SELECT * FROM roles WHERE uid='${users[0].uid}'`,
+    );
     Assert.equal(1, roles.length);
   });
 

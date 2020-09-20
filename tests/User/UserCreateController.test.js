@@ -1,5 +1,5 @@
 import Assert from 'assert';
-import _omit from 'lodash/omit';
+import _ from 'lodash';
 import Chai from 'chai';
 import ChaiHttp from 'chai-http';
 import pool from '../../src/Utils/DBUtils';
@@ -37,7 +37,7 @@ describe('Test UserCreate Controller', () => {
         role: RoleUtils.PET_OWNER,
         roles: [RoleUtils.PET_OWNER],
       },
-      _omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['uid', 'iat']),
     );
   });
 });

@@ -1,9 +1,12 @@
 import {v4 as uuidv4} from 'uuid';
 import moment from 'moment';
-import _map from 'lodash/map';
-import _omit from 'lodash/omit';
+import _ from 'lodash';
 import pool from '../Utils/DBUtils';
-import {HashPassword, GenerateAccessToken} from '../Utils/AuthUtils';
+import {
+  HashPassword,
+  GenerateAccessToken,
+  IsPasswordVerified,
+} from '../Utils/AuthUtils';
 import SQLQueries from '../Utils/SQLUtils';
 
 const UserCreate = async ({email, password, role, firstName, lastName}) => {
@@ -43,16 +46,39 @@ const UserCreate = async ({email, password, role, firstName, lastName}) => {
 };
 
 const UserInfo = async (user) => {
-  const {uid} = user;
-  const userRoles = (
-    await pool.query(SQLQueries.SELECT_USER_ROLE_FOR_AUTH, [uid])
-  ).rows;
-  const roles = _map(userRoles, (userRole) => userRole.role);
-  const userInfo = _omit({...userRoles[0], roles}, ['role']);
-  return userInfo;
+  const {email} = user;
+  const {rows} = await pool.query(SQLQueries.SELECT_USER_ROLE_FOR_AUTH, [
+    email,
+  ]);
+  const roles = _.map(rows, (row) => row.role);
+  return {...user, roles};
 };
+
+const UserLogin = async ({email, password, role}) => {
+  const {rows} = await pool.query(SQLQueries.SELECT_USER_ROLE_FOR_AUTH, [
+    email,
+  ]);
+  const roles = _.map(rows, (row) => row.role);
+  if (
+    !_.includes(roles, role) ||
+    !IsPasswordVerified(password, rows[0].password)
+  ) {
+    throw new Error('Not Authorized');
+  }
+  const {uid} = rows[0];
+  return {accessToken: GenerateAccessToken({uid, email, role, roles})};
+};
+
+// const UserDelete = async(user) => {
+
+// }
+
+// const UserChangePassword = async(user) => {
+
+// }
 
 export default {
   UserCreate,
   UserInfo,
+  UserLogin,
 };

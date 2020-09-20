@@ -16,7 +16,7 @@ CREATE TYPE user_roles AS ENUM (
   'ADMINISTRATOR'
 );
 
-CREATE TABLE roles (
+CREATE TABLE IF NOT EXISTS roles (
   uid UUID REFERENCES users(uid) ON DELETE CASCADE,
   role user_roles NOT NULL,
   is_deleted BOOLEAN NOT NULL,

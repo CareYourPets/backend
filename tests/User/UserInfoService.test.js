@@ -29,7 +29,23 @@ describe('Test UserInfo Service', () => {
     });
     const decodedToken = DecodeAccessToken(accessToken);
     await pool.query(
-      `INSERT INTO roles (uid, role, is_deleted, created_at, updated_at) VALUES ('${decodedToken.uid}', '${RoleUtils.ADMINISTRATOR}', false, '${timestamp}', '${timestamp}');`,
+      `
+      INSERT INTO roles 
+        (
+          uid, 
+          role, 
+          is_deleted, 
+          created_at, 
+          updated_at
+        ) 
+      VALUES 
+        (
+          '${decodedToken.uid}', 
+          '${RoleUtils.ADMINISTRATOR}', 
+          false, 
+          '${timestamp}', 
+          '${timestamp}'
+        );`,
     );
     const userInfo = await UserService.UserInfo(decodedToken);
     Assert.equal(2, userInfo.roles.length);

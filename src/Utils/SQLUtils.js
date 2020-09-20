@@ -17,8 +17,9 @@ const SQLQueries = {
       SELECT 
         users.uid AS uid, 
         email, 
-        first_name AS firstName, 
-        last_name AS lastName, 
+        first_name AS firstname, 
+        password,
+        last_name AS lastname, 
         roles.role AS role 
       FROM 
         users 
@@ -26,7 +27,7 @@ const SQLQueries = {
         ON 
           users.uid=roles.uid 
         WHERE 
-          users.uid = $1 AND 
+          users.email=$1 AND 
           users.is_deleted=false AND 
           roles.is_deleted=false;
     `,
