@@ -17,7 +17,7 @@ describe('Test UserCreate Service', () => {
     await pool.query('DELETE FROM users');
   });
 
-  it('Should create user', async () => {
+  it('Service should create user', async () => {
     await UserService.UserCreate({
       email: 'test@example.com',
       password: 'password',
@@ -36,7 +36,7 @@ describe('Test UserCreate Service', () => {
     Assert.equal(1, roles.length);
   });
 
-  it('Should throw error on same email', async () => {
+  it('Service should throw error on same email', async () => {
     await Assert.rejects(
       () =>
         UserService.UserCreate({

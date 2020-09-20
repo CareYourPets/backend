@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {validationResult} from 'express-validator';
 import _ from 'lodash';
 import pool from './DBUtils';
 import SQLQueries from './SQLUtils';
@@ -25,6 +26,10 @@ export const DecodeAccessToken = (token) => {
 };
 
 export async function AuthRequired(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()});
+  }
   try {
     const accessToken = req.headers.accesstoken;
     const decodedToken = DecodeAccessToken(accessToken);

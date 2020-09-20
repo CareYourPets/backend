@@ -1,7 +1,6 @@
 import Assert from 'assert';
 import moment from 'moment';
 import pool from '../../src/Utils/DBUtils';
-import UserFixtures from '../Fixtures/UserFixtures';
 import UserService from '../../src/User/UserService';
 import RoleUtils from '../../src/Utils/RoleUtils';
 import {DecodeAccessToken} from '../../src/Utils/AuthUtils';
@@ -10,7 +9,6 @@ describe('Test UserInfo Service', () => {
   beforeEach('UserInfoService beforeEach', async () => {
     await pool.query('DELETE FROM roles');
     await pool.query('DELETE FROM users');
-    await UserFixtures.SeedCareTakers(2);
   });
 
   afterEach('UserInfoService afterEach', async () => {

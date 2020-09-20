@@ -33,6 +33,6 @@ describe('Test UserInfo Controller', () => {
       .get('/user/info')
       .set('accessToken', accessToken);
     const user = res.body;
-    Assert.equal(1, user.roles.length);
+    Assert.deepEqual([RoleUtils.CARE_TAKER], user.roles);
   });
 });

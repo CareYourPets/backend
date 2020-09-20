@@ -31,6 +31,9 @@ const SQLQueries = {
           users.is_deleted=false AND 
           roles.is_deleted=false;
     `,
+  DELETE_USER: `
+    UPDATE users SET is_deleted=true, updated_at=$2 WHERE email=$1 AND is_deleted=false;
+  `,
 };
 
 export default SQLQueries;

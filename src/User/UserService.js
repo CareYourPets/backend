@@ -69,16 +69,15 @@ const UserLogin = async ({email, password, role}) => {
   return {accessToken: GenerateAccessToken({uid, email, role, roles})};
 };
 
-// const UserDelete = async(user) => {
-
-// }
-
-// const UserChangePassword = async(user) => {
-
-// }
+const UserDelete = async (user) => {
+  const timestamp = moment(Date.now()).format();
+  await pool.query(SQLQueries.DELETE_USER, [user.email, timestamp]);
+  return {status: 'ok'};
+};
 
 export default {
   UserCreate,
   UserInfo,
   UserLogin,
+  UserDelete,
 };
