@@ -13,7 +13,7 @@ jobs:
       - checkout
       # - run: sudo apt-get install postgresql-client-9.6
       # - run: export DATABASE_URL=postgres://ubuntu@localhost:5432/dev
-      - run: psql -d $DATABASE_URL -d circle_test -a -f setup/CreateDB.sql
+      # - run: psql -d $DATABASE_URL -d circle_test -a -f setup/CreateDB.sql
       - run: yarn install
       - run: yarn test
 
