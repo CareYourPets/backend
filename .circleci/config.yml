@@ -1,21 +1,25 @@
 version: 2.1
-orbs:
-  node: circleci/node@4.0.0
-  
+
+# Define the jobs we want to run for this project
 jobs:
-  test:
-    executor:
-      name: node/default
-      tag: '12'
+  build:
+    docker:
+      - image: circleci/node:12
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
-      - run:
-          command: yarn test
-          name: Run integration and unit tests
+      - run: yarn install
+  test:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - run: yarn test
 
+# Orchestrate our job run sequence
 workflows:
-  integration_unit_test:
+  build_and_test:
     jobs:
-      - test
+      - build
+      - test:
+          requires:
+            - build
