@@ -5,17 +5,18 @@ jobs:
   test:
     docker:
       - image: circleci/node:12
-      - image: circleci/python:3.6.2-stretch-browsers
+      - image: circleci/postgres:9.6.5-alpine-ram
         environment:
           DATABASE_URL: postgresql://root@localhost/circle_test
     steps:
       - checkout
+      - run: sudo apt-get install postgresql-client-9.6
       - run: psql -d $DATABASE_URL -d circle_test -a -f setup/CreateDB.sql
       - run: yarn install
       - run: yarn test
 
 # Orchestrate our job run sequence
 workflows:
-  build_and_test:
+  ci_test:
     jobs:
       - test
