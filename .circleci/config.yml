@@ -1,11 +1,6 @@
 version: 2.1
 
 jobs:
-
-
-
-
-
   run_tests:
     docker:
       - image: circleci/node:12
@@ -24,4 +19,4 @@ jobs:
 workflows:
   ci_test:
     jobs:
-      - test
+      - run_tests
