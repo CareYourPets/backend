@@ -23,16 +23,14 @@ sudo apt install yarn
   - https://www.postgresql.org/download/linux/ubuntu/
   - https://www.pgadmin.org/download/pgadmin-4-apt/
   - https://docs.boundlessgeo.com/suite/1.1.1/dataadmin/pgGettingStarted/firstconnect.html
-- Copy .default.env to .env and fill in the environment varibles
+
 
 ### Run
 
-- Setup DB named dev
+- Setup DB dev, user postgres and password password, and build schema with 
 
 ```
-PGPASSWORD=password psql -U postgres -h localhost -d dev -a -f setup/DropDB.sql
-PGPASSWORD=password psql -U postgres -h localhost -d dev -a -f setup/CreateDB.sql
-PGPASSWORD=password psql -U postgres -h localhost -d dev -a -f setup/SeedDB.sql
+./migrate.sh
 ```
 
 - Run app
