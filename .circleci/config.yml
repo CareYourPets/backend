@@ -16,7 +16,7 @@ jobs:
       - run: sudo apt-get install postgresql-client-9.6
       # - run: sudo service postgresql start
       # - run: export DATABASE_URL=postgres://ubuntu@localhost:5432/dev
-      - run: psql -d $DATABASE_URL -d dev -a -f setup/CreateDB.sql
+      - run: sudo -u postgres psql -d $DATABASE_URL -d dev -a -f setup/CreateDB.sql
       - run: yarn install
       - run: yarn test
 
