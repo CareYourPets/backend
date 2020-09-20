@@ -1,0 +1,21 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: node:12
+      - image: postgres:9.6-jessie
+        environment:
+          POSTGRES_USER: ubuntu
+          POSTGRES_DB: dev
+    steps:
+      - run:
+          name: Setup DB
+          command: psql -U postgres -h localhost -d dev -a -f setup/CreateDB.sql
+      - run:
+          name: Install dependecies
+          command: yarn install
+      - run: 
+          name: Run tests
+          command: yarn test
+        environment:
+          DATABASE_URL: "postgres://ubuntu@localhost:5432/dev"
