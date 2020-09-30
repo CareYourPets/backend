@@ -35,7 +35,7 @@ app.get('/info', AuthRequired, async (req, res) => {
   return res.json(response);
 });
 
-app.get(
+app.post(
   '/login',
   [
     body('email').isEmail(),
