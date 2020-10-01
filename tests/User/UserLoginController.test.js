@@ -23,7 +23,7 @@ describe('Test UserLogin Controller', () => {
   });
 
   it('API should return user access token', async () => {
-    const res = await Chai.request(App).get('/user/login').send({
+    const res = await Chai.request(App).post('/user/login').send({
       email: 'caretaker1@example.com',
       password: 'password',
       role: RoleUtils.CARE_TAKER,

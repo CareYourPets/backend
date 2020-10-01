@@ -25,8 +25,12 @@ app.post(
     if (!errors.isEmpty()) {
       return res.status(422).json({errors: errors.array()});
     }
-    const response = await service.UserCreate(req.body);
-    return res.json(response);
+    try {
+      const response = await service.UserCreate(req.body);
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
   },
 );
 
@@ -35,7 +39,7 @@ app.get('/info', AuthRequired, async (req, res) => {
   return res.json(response);
 });
 
-app.get(
+app.post(
   '/login',
   [
     body('email').isEmail(),
@@ -52,8 +56,12 @@ app.get(
     if (!errors.isEmpty()) {
       return res.status(422).json({errors: errors.array()});
     }
-    const response = await service.UserLogin(req.body);
-    return res.json(response);
+    try {
+      const response = await service.UserLogin(req.body);
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
   },
 );
 
