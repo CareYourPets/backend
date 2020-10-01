@@ -25,8 +25,12 @@ app.post(
     if (!errors.isEmpty()) {
       return res.status(422).json({errors: errors.array()});
     }
-    const response = await service.UserCreate(req.body);
-    return res.json(response);
+    try {
+      const response = await service.UserCreate(req.body);
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
   },
 );
 
