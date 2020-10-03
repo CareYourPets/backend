@@ -24,9 +24,10 @@ sudo apt install yarn
   - https://www.pgadmin.org/download/pgadmin-4-apt/
   - https://docs.boundlessgeo.com/suite/1.1.1/dataadmin/pgGettingStarted/firstconnect.html
 
+
 ### Run
 
-- Setup DB dev, user postgres and password password, and build schema with
+- Setup DB dev, user postgres and password password, and build schema with 
 
 ```
 ./migrate.sh
@@ -104,4 +105,3 @@ heroku open --app <app_name>
 Resources
 
 - https://node-postgres.com/features/connecting
-- https://stackoverflow.com/questions/3492485/mysql-with-soft-deletion-unique-key-and-foreign-key-constraints

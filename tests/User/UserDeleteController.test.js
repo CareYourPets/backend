@@ -39,7 +39,7 @@ describe('Test UserDelete Controller', () => {
         FROM users 
       WHERE 
       email='caretaker1@example.com' AND 
-      deleted=0;`,
+      is_deleted=false;`,
     );
     Assert.equal(0, deletedUsers.length);
 
@@ -49,7 +49,7 @@ describe('Test UserDelete Controller', () => {
         FROM users 
       WHERE 
         email='caretaker0@example.com' AND 
-        deleted=0;`,
+        is_deleted=false;`,
     );
     Assert.equal(1, existingUsers.length);
   });

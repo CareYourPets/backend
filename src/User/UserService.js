@@ -22,6 +22,7 @@ const UserCreate = async ({email, password, role, firstName, lastName}) => {
       uid,
       email,
       hashed,
+      false,
       firstName,
       lastName,
       timestamp,
@@ -30,6 +31,7 @@ const UserCreate = async ({email, password, role, firstName, lastName}) => {
     await client.query(SQLQueries.CREATE_ROLE, [
       uid,
       role,
+      false,
       timestamp,
       timestamp,
     ]);

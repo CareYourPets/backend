@@ -32,7 +32,7 @@ describe('Test UserInfo Service', () => {
         (
           uid, 
           role, 
-          deleted, 
+          is_deleted, 
           created_at, 
           updated_at
         ) 
@@ -40,7 +40,7 @@ describe('Test UserInfo Service', () => {
         (
           '${decodedToken.uid}', 
           '${RoleUtils.ADMINISTRATOR}', 
-          0, 
+          false, 
           '${timestamp}', 
           '${timestamp}'
         );`,
