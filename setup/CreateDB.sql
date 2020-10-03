@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   deleted INTEGER NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  UNIQUE(uid, deleted)
+  UNIQUE(email, deleted)
 );
 
 DROP TYPE IF EXISTS user_roles_enum;
