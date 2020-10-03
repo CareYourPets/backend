@@ -31,7 +31,7 @@ describe('Test UserLogin Service', () => {
         FROM users 
       WHERE 
       email='caretaker1@example.com' AND 
-      is_deleted=false;`,
+      deleted=0;`,
     );
     Assert.equal(0, deletedUsers.length);
 
@@ -41,7 +41,7 @@ describe('Test UserLogin Service', () => {
         FROM users 
       WHERE 
         email='caretaker0@example.com' AND 
-        is_deleted=false;`,
+        deleted=0;`,
     );
     Assert.equal(1, existingUsers.length);
   });
