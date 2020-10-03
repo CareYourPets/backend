@@ -1,12 +1,13 @@
 CREATE TABLE IF NOT EXISTS users (
   uid UUID PRIMARY KEY,
-	email   VARCHAR  NOT NULL UNIQUE,
+	email   VARCHAR  NOT NULL,
 	password   VARCHAR NOT NULL,
 	first_name VARCHAR NOT NULL,
 	last_name  VARCHAR NOT NULL,
   deleted INTEGER NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  UNIQUE(uid, deleted)
 );
 
 DROP TYPE IF EXISTS user_roles_enum;
@@ -22,7 +23,7 @@ CREATE TABLE IF NOT EXISTS roles (
   deleted INTEGER NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  UNIQUE(uid, role)
+  UNIQUE(uid, role, deleted)
 );
 
 DROP TYPE IF EXISTS gender_enum;
