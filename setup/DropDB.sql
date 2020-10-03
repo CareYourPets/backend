@@ -1,3 +1,4 @@
+DROP TABLE care_taker_profile CASCADE;
 DROP TABLE users CASCADE;
-DROP TYPE user_roles CASCADE;
+DROP TYPE user_roles_enum CASCADE;
 DROP TABLE roles CASCADE;

@@ -11,7 +11,7 @@ const SeedUsers = async (i, role) => {
     `${uuidv4()}`,
     `${role}${idx}@example.com`,
     `${hashed}`,
-    false,
+    0,
     `first${idx}`,
     `last${idx}`,
     `${timestamp}`,
@@ -28,7 +28,7 @@ const SeedUsers = async (i, role) => {
         uid, 
         email, 
         password, 
-        is_deleted, 
+        deleted, 
         first_name, 
         last_name, 
         created_at, 
@@ -45,7 +45,7 @@ const SeedRoles = async (uids, role) => {
   const roles = _.map(uids, (uid) => [
     `${uid}`,
     `${role}`,
-    false,
+    0,
     `${timestamp}`,
     `${timestamp}`,
   ]);
@@ -60,7 +60,7 @@ const SeedRoles = async (uids, role) => {
     (
       uid, 
       role, 
-      is_deleted, 
+      deleted, 
       created_at, 
       updated_at
     ) 
