@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import Version from './Version';
 import User from './User';
+import Pet from './Pet';
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use(bodyParser.json());
 
 app.use('/user', User.app);
 app.use('/', Version.app);
+app.use('/pet', Pet.app);
 
 export default app;

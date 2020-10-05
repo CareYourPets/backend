@@ -1,0 +1,35 @@
+import express from 'express';
+import {validationResult} from 'express-validator';
+import service from './PetService';
+import {AuthRequired} from '../Utils/AuthUtils';
+
+const app = express();
+
+app.post('/createPet', AuthRequired, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()});
+  }
+  const response = await service.PetCreate(
+    req.user,
+    req.body.category,
+    req.body.special_needs,
+    req.body.diet,
+    req.body.name,
+  );
+  return res.json(response);
+});
+
+app.get('/getPet', AuthRequired, async (req, res) => {
+  const response = await service.SelectAllPets(req.user);
+  return res.json(response);
+});
+
+app.get('/getAllPetCategories', async (req, res) => {
+  const response = await service.SelectAllCategories();
+  return res.json(response);
+});
+
+export default {
+  app,
+};

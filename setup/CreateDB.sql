@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-DROP TYPE IF EXISTS user_roles;
+-- DROP TYPE IF EXISTS user_roles;
 CREATE TYPE user_roles AS ENUM (
   'PET_OWNER', 
   'CARE_TAKER', 
@@ -25,11 +25,35 @@ CREATE TABLE IF NOT EXISTS roles (
   UNIQUE(uid, role)
 );
 
-CREATE TABLE IF NOT EXISTS pet_owner_profile (
-  uid UUID REFERENCES users(uid) ON DELETE CASCADE,
-  area VARCHAR(300) NOT NULL,
-  is_deleted BOOLEAN NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+/*  SECTION ON PETS 
+    pet_owner_profile:  uid
+    pet_category:       pet_category_id
+    pet:                pid
+*/
+
+CREATE TABLE IF NOT EXISTS pet_owner (
+  uid UUID    REFERENCES users(uid) ON DELETE CASCADE,
+  is_deleted  BOOLEAN NOT NULL,
+  created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at  TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY(uid)
+);
+
+CREATE TABLE IF NOT EXISTS pet_category (
+  category        VARCHAR(100)    PRIMARY KEY,
+  base_price      NUMERIC(12,2)   NOT NULL,
+  created_at      TIMESTAMP WITH  TIME ZONE NOT NULL,
+  updated_at      TIMESTAMP WITH  TIME ZONE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS pet (
+  name                  VARCHAR   NOT NULL,
+  category              VARCHAR   REFERENCES pet_category(category),
+  pet_owner_id          UUID      REFERENCES pet_owner(uid) ON DELETE CASCADE,
+  special_needs         VARCHAR,
+  diet                  VARCHAR   NOT NULL,
+  is_deleted            BOOLEAN   NOT NULL,
+  created_at            TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at            TIMESTAMP WITH TIME ZONE NOT NULL,
+  PRIMARY KEY(name, pet_owner_id)
 );
