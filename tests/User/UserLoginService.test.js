@@ -8,28 +8,52 @@ import {DecodeAccessToken} from '../../src/Utils/AuthUtils';
 
 describe('Test UserLogin Service', () => {
   beforeEach('UserLoginService beforeEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
-    await UserFixtures.SeedCareTakers(2);
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
+    await UserFixtures.SeedCareTakers(1);
+    await UserFixtures.SeedPetOwners(2);
   });
 
   afterEach('UserLoginService afterEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
   });
 
-  it('Service should return user access token', async () => {
+  it('Service should return care taker access token', async () => {
+    const email = 'test0@example.com';
+    const password = 'password';
+    const role = RoleUtils.CARE_TAKER;
     const {accessToken} = await UserService.UserLogin({
-      email: 'caretaker1@example.com',
-      password: 'password',
-      role: 'CARE_TAKER',
+      email,
+      password,
+      role,
     });
     const decodedToken = DecodeAccessToken(accessToken);
-    Assert.deepEqual(
+    Assert.deepStrictEqual(
       {
-        email: 'caretaker1@example.com',
-        role: RoleUtils.CARE_TAKER,
-        roles: [RoleUtils.CARE_TAKER],
+        email,
+        role,
+      },
+      _.omit(decodedToken, ['uid', 'iat']),
+    );
+  });
+
+  it('Service should return pet owner access token', async () => {
+    const email = 'test0@example.com';
+    const password = 'password';
+    const role = RoleUtils.PET_OWNER;
+    const {accessToken} = await UserService.UserLogin({
+      email,
+      password,
+      role,
+    });
+    const decodedToken = DecodeAccessToken(accessToken);
+    Assert.deepStrictEqual(
+      {
+        email,
+        role,
       },
       _.omit(decodedToken, ['uid', 'iat']),
     );

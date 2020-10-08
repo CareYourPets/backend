@@ -1,38 +1,42 @@
 const SQLQueries = {
-  CREATE_USER: `
-      INSERT INTO users (
-        uid, email, password, is_deleted, first_name, last_name, created_at, updated_at
+  CREATE_CARE_TAKER: `
+      INSERT INTO care_takers (
+        email, password
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8
+        $1, $2
       );
     `,
-  CREATE_ROLE: `
-      INSERT INTO roles (
-        uid, role, is_deleted, created_at, updated_at
-      ) VALUES (
-        $1, $2, $3, $4, $5
-      );
-    `,
-  SELECT_USER_ROLE_FOR_AUTH: `
-      SELECT 
-        users.uid AS uid, 
-        email, 
-        first_name AS firstname, 
-        password,
-        last_name AS lastname, 
-        roles.role AS role 
-      FROM 
-        users 
-      LEFT JOIN roles 
-        ON 
-          users.uid=roles.uid 
-        WHERE 
-          users.email=$1 AND 
-          users.is_deleted=false AND 
-          roles.is_deleted=false;
-    `,
-  DELETE_USER: `
-    UPDATE users SET is_deleted=true, updated_at=$2 WHERE email=$1 AND is_deleted=false;
+  CREATE_PET_OWNER: `
+    INSERT INTO pet_owners (
+      email, password
+    ) VALUES (
+      $1, $2
+    );
+  `,
+  CREATE_ADMINISTRATOR: `
+    INSERT INTO psc_administrators (
+      email, password
+    ) VALUES (
+      $1, $2
+    );
+  `,
+  SELECT_CARE_TAKER: `
+    SELECT * FROM care_takers WHERE email=$1;
+  `,
+  SELECT_PET_OWNER: `
+    SELECT * FROM pet_owners WHERE email=$1;
+  `,
+  SELECT_ADMINISTRATOR: `
+    SELECT * FROM psc_administrators WHERE email=$1;
+  `,
+  DELETE_CARE_TAKER: `
+    UPDATE care_takers SET is_deleted=true WHERE email=$1;
+  `,
+  DELETE_PET_OWNER: `
+    UPDATE pet_owners SET is_deleted=true WHERE email=$1;
+  `,
+  DELETE_ADMINISTRATOR: `
+    UPDATE psc_administrators SET is_deleted=true WHERE email=$1;
   `,
 };
 

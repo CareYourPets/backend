@@ -1,51 +1,67 @@
 import Assert from 'assert';
-import moment from 'moment';
 import pool from '../../src/Utils/DBUtils';
+import UserFixtures from '../Fixtures/UserFixtures';
 import UserService from '../../src/User/UserService';
 import RoleUtils from '../../src/Utils/RoleUtils';
-import {DecodeAccessToken} from '../../src/Utils/AuthUtils';
 
-describe('Test UserInfo Service', () => {
-  beforeEach('UserInfoService beforeEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
+describe('Test UserLogin Service', () => {
+  beforeEach('UserLoginService beforeEach', async () => {
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
+    await UserFixtures.SeedCareTakers(1);
+    await UserFixtures.SeedPetOwners(2);
   });
 
-  afterEach('UserInfoService afterEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
+  afterEach('UserLoginService afterEach', async () => {
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
   });
 
-  it('Should fetch user information', async () => {
-    const timestamp = moment(Date.now()).format();
-    const {accessToken} = await UserService.UserCreate({
-      email: 'test@example.com',
-      password: 'password',
-      role: RoleUtils.CARE_TAKER,
-      firstName: 'Brandon',
-      lastName: 'Ng',
+  it('Service should return care taker info', async () => {
+    const email = 'test0@example.com';
+    const password = 'password';
+    const role = RoleUtils.CARE_TAKER;
+    const userInfo = await UserService.UserInfo({
+      email,
+      password,
+      role,
     });
-    const decodedToken = DecodeAccessToken(accessToken);
-    await pool.query(
-      `
-      INSERT INTO roles 
-        (
-          uid, 
-          role, 
-          is_deleted, 
-          created_at, 
-          updated_at
-        ) 
-      VALUES 
-        (
-          '${decodedToken.uid}', 
-          '${RoleUtils.ADMINISTRATOR}', 
-          false, 
-          '${timestamp}', 
-          '${timestamp}'
-        );`,
+    Assert.deepStrictEqual(
+      {
+        email,
+        name: null,
+        gender: null,
+        contact: null,
+        location: null,
+        bio: null,
+        is_deleted: false,
+      },
+      userInfo,
     );
-    const userInfo = await UserService.UserInfo(decodedToken);
-    Assert.equal(2, userInfo.roles.length);
+  });
+
+  it('Service should return pet owner info', async () => {
+    const email = 'test0@example.com';
+    const password = 'password';
+    const role = RoleUtils.PET_OWNER;
+    const userInfo = await UserService.UserInfo({
+      email,
+      password,
+      role,
+    });
+    Assert.deepStrictEqual(
+      {
+        email,
+        name: null,
+        gender: null,
+        contact: null,
+        location: null,
+        bio: null,
+        is_deleted: false,
+      },
+      userInfo,
+    );
   });
 });

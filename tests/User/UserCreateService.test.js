@@ -1,50 +1,108 @@
 import Assert from 'assert';
 import pool from '../../src/Utils/DBUtils';
-import UserFixtures from '../Fixtures/UserFixtures';
 import UserService from '../../src/User/UserService';
 import {IsPasswordVerified} from '../../src/Utils/AuthUtils';
 import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('Test UserCreate Service', () => {
   beforeEach('UserCreateService beforeEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
-    await UserFixtures.SeedCareTakers(2);
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
   });
 
   afterEach('UserCreateService afterEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
   });
 
-  it('Service should create user', async () => {
+  it('Service should create care taker', async () => {
+    const email = 'test@example.com';
+    const password = 'password';
+    const role = RoleUtils.CARE_TAKER;
+
     await UserService.UserCreate({
-      email: 'test@example.com',
-      password: 'password',
-      role: 'CARE_TAKER',
-      firstName: 'Brandon',
-      lastName: 'Ng',
+      email,
+      password,
+      role,
     });
+
     const {rows: users} = await pool.query(
-      "SELECT * FROM users WHERE email='test@example.com'",
+      `SELECT * FROM care_takers WHERE email='${email}'`,
     );
-    Assert.equal(1, users.length);
-    Assert.equal(true, await IsPasswordVerified('password', users[0].password));
-    const {rows: roles} = await pool.query(
-      `SELECT * FROM roles WHERE uid='${users[0].uid}'`,
-    );
-    Assert.equal(1, roles.length);
+    Assert.deepStrictEqual(email, users[0].email);
   });
 
-  it('Service should throw error on same email', async () => {
+  it('Service should create pet owner', async () => {
+    const email = 'test@example.com';
+    const password = 'password';
+    const role = RoleUtils.PET_OWNER;
+
+    await UserService.UserCreate({
+      email,
+      password,
+      role,
+    });
+
+    const {rows: users} = await pool.query(
+      `SELECT * FROM pet_owners WHERE email='${email}'`,
+    );
+    Assert.deepStrictEqual(email, users[0].email);
+  });
+
+  it('Service should create user with password with valid hashed', async () => {
+    const email = 'test@example.com';
+    const password = 'password';
+    const role = RoleUtils.PET_OWNER;
+
+    await UserService.UserCreate({
+      email,
+      password,
+      role,
+    });
+
+    const {rows: users} = await pool.query(
+      `SELECT * FROM pet_owners WHERE email='${email}'`,
+    );
+    Assert.deepStrictEqual(
+      true,
+      await IsPasswordVerified(password, users[0].password),
+    );
+  });
+
+  it('Service should reject administrator', async () => {
+    const email = 'test@example.com';
+    const password = 'password';
+    const role = RoleUtils.ADMINISTRATOR;
+
     await Assert.rejects(
       () =>
         UserService.UserCreate({
-          email: 'caretaker1@example.com',
-          password: 'password',
-          role: RoleUtils.CARE_TAKER,
-          firstName: 'Brandon',
-          lastName: 'Ng',
+          email,
+          password,
+          role,
+        }),
+      Error,
+    );
+  });
+
+  it('Service should reject duplicate email', async () => {
+    const email = 'test@example.com';
+    const password = 'password';
+    const role = RoleUtils.CARE_TAKER;
+
+    await UserService.UserCreate({
+      email,
+      password,
+      role,
+    });
+    await Assert.rejects(
+      () =>
+        UserService.UserCreate({
+          email,
+          password,
+          role,
         }),
       Error,
     );

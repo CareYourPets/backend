@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {validationResult} from 'express-validator';
-import _ from 'lodash';
 import pool from './DBUtils';
 import SQLQueries from './SQLUtils';
+import RoleUtils from "./RoleUtils";
 
 const salt = 10;
 
@@ -32,20 +32,25 @@ export async function AuthRequired(req, res, next) {
   }
   try {
     const accessToken = req.headers.accesstoken;
-    const decodedToken = DecodeAccessToken(accessToken);
-    const {email} = decodedToken;
+    const {email, role} = DecodeAccessToken(accessToken);
 
-    const {rows} = await pool.query(SQLQueries.SELECT_USER_ROLE_FOR_AUTH, [
-      email,
-    ]);
-    const roles = _.map(rows, (row) => row.role);
+    let users = [];
+    if (role === RoleUtils.CARE_TAKER) {
+      users = await pool.query(SQLQueries.SELECT_CARE_TAKER, [email]);
+    } else if (role === RoleUtils.PET_OWNER) {
+      users = await pool.query(SQLQueries.SELECT_PET_OWNER, [email]);
+    } else {
+      throw new Error('Invalid Role');
+    }
+    if (users.rows.length !== 1) {
+      res.status(401);
+      return res.json({error: 'Unauthorized'});
+    }
 
-    const user = {...decodedToken, roles};
-
-    req.user = user; // {uid, email, roles, role}
+    req.user = {email, role};
     next();
-  } catch {
+  } catch (e) {
     res.status(401);
-    return res.json({error: 'Not Authorized'});
+    return res.json({error: 'Unauthorized'});
   }
 }
