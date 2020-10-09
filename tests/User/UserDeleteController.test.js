@@ -3,54 +3,54 @@ import Chai from 'chai';
 import ChaiHttp from 'chai-http';
 import pool from '../../src/Utils/DBUtils';
 import UserFixtures from '../Fixtures/UserFixtures';
-import RoleUtils from '../../src/Utils/RoleUtils';
 import App from '../../src/App';
 
 Chai.use(ChaiHttp);
 
 describe('Test UserDelete Controller', () => {
   beforeEach('UserDeleteController beforeEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
-    await UserFixtures.SeedCareTakers(2);
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
   });
 
   afterEach('UserDeleteController afterEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
   });
 
-  it('Should return user information', async () => {
-    const {
-      body: {accessToken},
-    } = await Chai.request(App).post('/user/login').send({
-      email: 'caretaker1@example.com',
-      password: 'password',
-      role: RoleUtils.CARE_TAKER,
-    });
+  it('Should delete pet owner', async () => {
+    const users = await UserFixtures.SeedPetOwners(1);
+    const {email, accessToken} = users[0];
 
     await Chai.request(App)
       .post('/user/delete')
       .set('accessToken', accessToken);
 
-    const {rows: deletedUsers} = await pool.query(
-      `
-      SELECT * 
-        FROM users 
-      WHERE 
-      email='caretaker1@example.com' AND 
-      is_deleted=false;`,
+    const {rows} = await pool.query(
+      `SELECT * FROM pet_owners WHERE email='${email}'`,
     );
-    Assert.equal(0, deletedUsers.length);
+    Assert.deepStrictEqual(true, rows[0].is_deleted);
+  });
 
-    const {rows: existingUsers} = await pool.query(
-      `
-      SELECT * 
-        FROM users 
-      WHERE 
-        email='caretaker0@example.com' AND 
-        is_deleted=false;`,
+  it('Should delete care taker', async () => {
+    const users = await UserFixtures.SeedCareTakers(1);
+    const {email, accessToken} = users[0];
+
+    await Chai.request(App)
+      .post('/user/delete')
+      .set('accessToken', accessToken);
+
+    const {rows} = await pool.query(
+      `SELECT * FROM care_takers WHERE email='${email}'`,
     );
-    Assert.equal(1, existingUsers.length);
+    Assert.deepStrictEqual(true, rows[0].is_deleted);
+  });
+
+  it('Should return 401 for missing accesstoken', async () => {
+    const res = await Chai.request(App).post('/user/delete');
+
+    Assert.deepStrictEqual(401, res.status);
   });
 });

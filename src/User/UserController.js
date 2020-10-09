@@ -11,8 +11,6 @@ app.post(
   [
     body('email').isEmail(),
     body('password').isLength({min: 5}),
-    body('firstName').isLength({min: 1}),
-    body('lastName').isLength({min: 1}),
     body('role').custom((value) => {
       if (!(value === RoleUtils.CARE_TAKER || value === RoleUtils.PET_OWNER)) {
         throw new Error('Invalid Role');
@@ -60,7 +58,7 @@ app.post(
       const response = await service.UserLogin(req.body);
       return res.json(response);
     } catch (error) {
-      return res.status(403).json({error});
+      return res.status(401).json({error});
     }
   },
 );
