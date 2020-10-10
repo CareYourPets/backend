@@ -21,6 +21,7 @@ CREATE TABLE psc_administrators (
 	gender gender_enum,
   contact VARCHAR,
   location VARCHAR,
+  is_approved BOOLEAN NOT NULL DEFAULT false,
   is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 

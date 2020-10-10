@@ -4,16 +4,17 @@ import UserFixtures from '../Fixtures/UserFixtures';
 import UserService from '../../src/User/UserService';
 import RoleUtils from '../../src/Utils/RoleUtils';
 
-describe('Test UserLogin Service', () => {
-  beforeEach('UserLoginService beforeEach', async () => {
+describe('Test UserDelete Service', () => {
+  beforeEach('UserDeleteService beforeEach', async () => {
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM psc_administrators');
     await UserFixtures.SeedCareTakers(1);
     await UserFixtures.SeedPetOwners(2);
+    await UserFixtures.SeedAdministrators(2);
   });
 
-  afterEach('UserLoginService afterEach', async () => {
+  afterEach('UserDeleteService afterEach', async () => {
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM psc_administrators');
@@ -39,6 +40,18 @@ describe('Test UserLogin Service', () => {
 
     const {rows: users} = await pool.query(
       `SELECT * FROM pet_owners WHERE email='${email}'`,
+    );
+    Assert.deepStrictEqual(true, users[0].is_deleted);
+  });
+
+  it('Service should delete administrator', async () => {
+    const email = 'test0@example.com';
+    const role = RoleUtils.ADMINISTRATOR;
+
+    await UserService.UserDelete({email, role});
+
+    const {rows: users} = await pool.query(
+      `SELECT * FROM psc_administrators WHERE email='${email}'`,
     );
     Assert.deepStrictEqual(true, users[0].is_deleted);
   });

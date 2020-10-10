@@ -48,6 +48,20 @@ describe('Test UserDelete Controller', () => {
     Assert.deepStrictEqual(true, rows[0].is_deleted);
   });
 
+  it('Should delete administrator', async () => {
+    const users = await UserFixtures.SeedAdministrators(1);
+    const {email, accessToken} = users[0];
+
+    await Chai.request(App)
+      .post('/user/delete')
+      .set('accessToken', accessToken);
+
+    const {rows} = await pool.query(
+      `SELECT * FROM psc_administrators WHERE email='${email}'`,
+    );
+    Assert.deepStrictEqual(true, rows[0].is_deleted);
+  });
+
   it('Should return 401 for missing accesstoken', async () => {
     const res = await Chai.request(App).post('/user/delete');
 
