@@ -21,7 +21,7 @@ describe('Test UserApprove Controller', () => {
     await pool.query('DELETE FROM psc_administrators');
   });
 
-  it('Should delete administrator', async () => {
+  it('Should approve administrator', async () => {
     const users = await UserFixtures.SeedAdministrators(2);
     const {accessToken} = users[0];
     const {email} = users[1];

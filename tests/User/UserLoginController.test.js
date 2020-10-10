@@ -41,7 +41,7 @@ describe('Test UserLogin Controller', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
   });
 
@@ -60,7 +60,7 @@ describe('Test UserLogin Controller', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
   });
 
@@ -68,6 +68,10 @@ describe('Test UserLogin Controller', () => {
     const email = 'test0@example.com';
     const password = 'password';
     const role = RoleUtils.ADMINISTRATOR;
+    await pool.query(
+      `UPDATE psc_administrators SET is_approved=true WHERE email='${email}';`,
+    );
+
     const res = await Chai.request(App).post('/user/login').send({
       email,
       password,
@@ -79,8 +83,21 @@ describe('Test UserLogin Controller', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
+  });
+
+  it('API should reject unapproved administrator', async () => {
+    const email = 'test0@example.com';
+    const password = 'password';
+    const role = RoleUtils.ADMINISTRATOR;
+
+    const res = await Chai.request(App).post('/user/login').send({
+      email,
+      password,
+      role,
+    });
+    Assert.deepStrictEqual(401, res.status);
   });
 
   it('API should return 422 for missing email', async () => {

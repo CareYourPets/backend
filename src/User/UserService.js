@@ -49,6 +49,9 @@ const UserLogin = async ({email, password, role}) => {
     throw new Error('Invalid Role');
   }
   const user = users.rows[0];
+  if (role === RoleUtils.ADMINISTRATOR && user.is_approved === false) {
+    throw new Error('Unapproved');
+  }
   if (await IsPasswordVerified(password, user.password)) {
     return {accessToken: GenerateAccessToken({email, role})};
   }
