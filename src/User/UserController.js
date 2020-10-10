@@ -117,6 +117,52 @@ app.post(
   },
 );
 
+app.post(
+  '/update/petowner',
+  [
+    body('name').isString(),
+    body('gender').isIn([GenderUtils.MALE, GenderUtils.FEMALE]),
+    body('contact').isString(),
+    body('location').isString(),
+    body('bio').isString(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserPetOwnerUpdate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/update/caretaker',
+  [
+    body('name').isString(),
+    body('gender').isIn([GenderUtils.MALE, GenderUtils.FEMALE]),
+    body('contact').isString(),
+    body('location').isString(),
+    body('bio').isString(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerUpdate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
 export default {
   app,
 };
