@@ -77,10 +77,68 @@ const UserApprove = async ({role, approvedEmail}) => {
   return {status: 'ok'};
 };
 
+const UserPetOwnerUpdate = async ({
+  email,
+  name,
+  gender,
+  contact,
+  location,
+  bio,
+}) => {
+  await pool.query(SQLQueries.UPDATE_PET_OWNER, [
+    email,
+    name,
+    gender,
+    contact,
+    location,
+    bio,
+  ]);
+  return {status: 'ok'};
+};
+
+const UserCareTakerUpdate = async ({
+  email,
+  name,
+  gender,
+  contact,
+  location,
+  bio,
+}) => {
+  await pool.query(SQLQueries.UPDATE_CARE_TAKER, [
+    email,
+    name,
+    gender,
+    contact,
+    location,
+    bio,
+  ]);
+  return {status: 'ok'};
+};
+
+const UserAdministratorUpdate = async ({
+  email,
+  name,
+  gender,
+  contact,
+  location,
+}) => {
+  await pool.query(SQLQueries.UPDATE_ADMINISTRATOR, [
+    email,
+    name,
+    gender,
+    contact,
+    location,
+  ]);
+  return {status: 'ok'};
+};
+
 export default {
   UserCreate,
   UserLogin,
   UserInfo,
   UserDelete,
   UserApprove,
+  UserPetOwnerUpdate,
+  UserCareTakerUpdate,
+  UserAdministratorUpdate,
 };

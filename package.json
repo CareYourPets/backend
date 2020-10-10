@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon --exec babel-node index.js",
     "precommit": "lint-staged",
-    "test": "mocha 'tests/**/**.test.js'"
+    "test": "mocha 'tests/**/User**Update**.test.js'"
   },
   "husky": {
     "hooks": {

@@ -1,6 +1,7 @@
 import express from 'express';
 import {body, validationResult} from 'express-validator';
 import RoleUtils from '../Utils/RoleUtils';
+import GenderUtils from '../Utils/GenderUtils';
 import service from './UserService';
 import {AuthRequired} from '../Utils/AuthUtils';
 
@@ -87,6 +88,28 @@ app.post(
   async (req, res) => {
     try {
       const response = await service.UserApprove({...req.user, ...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/update/admin',
+  [
+    body('name').isString(),
+    body('gender').isIn([GenderUtils.MALE, GenderUtils.FEMALE]),
+    body('contact').isString(),
+    body('location').isString(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserAdministratorUpdate({
+        ...req.user,
+        ...req.body,
+      });
       return res.json(response);
     } catch (error) {
       return res.status(403).json({error});
