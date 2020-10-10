@@ -38,6 +38,9 @@ const SQLQueries = {
   DELETE_ADMINISTRATOR: `
     UPDATE psc_administrators SET is_deleted=true WHERE email=$1;
   `,
+  APPROVE_ADMINISTRATOR: `
+    UPDATE psc_administrators SET is_approved=true WHERE email=$1;
+  `,
 };
 
 export default SQLQueries;

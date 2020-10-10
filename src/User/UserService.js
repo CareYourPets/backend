@@ -68,9 +68,19 @@ const UserDelete = async ({email, role}) => {
   return {status: 'ok'};
 };
 
+const UserApprove = async ({role, approvedEmail}) => {
+  if (role === RoleUtils.ADMINISTRATOR) {
+    await pool.query(SQLQueries.APPROVE_ADMINISTRATOR, [approvedEmail]);
+  } else {
+    throw new Error('Invalid Role');
+  }
+  return {status: 'ok'};
+};
+
 export default {
   UserCreate,
   UserLogin,
   UserInfo,
   UserDelete,
+  UserApprove,
 };
