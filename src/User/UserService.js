@@ -6,7 +6,7 @@ import {
   IsPasswordVerified,
 } from '../Utils/AuthUtils';
 import SQLQueries from '../Utils/SQLUtils';
-import RoleUtils from "../Utils/RoleUtils";
+import RoleUtils from '../Utils/RoleUtils';
 
 const UserCreate = async ({email, password, role}) => {
   const hashed = await HashPassword(password);
@@ -14,6 +14,8 @@ const UserCreate = async ({email, password, role}) => {
     await pool.query(SQLQueries.CREATE_CARE_TAKER, [email, hashed]);
   } else if (role === RoleUtils.PET_OWNER) {
     await pool.query(SQLQueries.CREATE_PET_OWNER, [email, hashed]);
+  } else if (role === RoleUtils.ADMINISTRATOR) {
+    await pool.query(SQLQueries.CREATE_ADMINISTRATOR, [email, hashed]);
   } else {
     throw new Error('Invalid Role');
   }
@@ -26,6 +28,8 @@ const UserInfo = async ({email, role}) => {
     users = await pool.query(SQLQueries.SELECT_CARE_TAKER, [email]);
   } else if (role === RoleUtils.PET_OWNER) {
     users = await pool.query(SQLQueries.SELECT_PET_OWNER, [email]);
+  } else if (role === RoleUtils.ADMINISTRATOR) {
+    users = await pool.query(SQLQueries.SELECT_ADMINISTRATOR, [email]);
   } else {
     throw new Error('Invalid Role');
   }
@@ -39,15 +43,16 @@ const UserLogin = async ({email, password, role}) => {
     users = await pool.query(SQLQueries.SELECT_CARE_TAKER, [email]);
   } else if (role === RoleUtils.PET_OWNER) {
     users = await pool.query(SQLQueries.SELECT_PET_OWNER, [email]);
+  } else if (role === RoleUtils.ADMINISTRATOR) {
+    users = await pool.query(SQLQueries.SELECT_ADMINISTRATOR, [email]);
   } else {
     throw new Error('Invalid Role');
   }
   const user = users.rows[0];
   if (await IsPasswordVerified(password, user.password)) {
     return {accessToken: GenerateAccessToken({email, role})};
-  } 
-    throw new Error('Unauthorized');
-  
+  }
+  throw new Error('Unauthorized');
 };
 
 const UserDelete = async ({email, role}) => {
@@ -55,6 +60,8 @@ const UserDelete = async ({email, role}) => {
     await pool.query(SQLQueries.DELETE_CARE_TAKER, [email]);
   } else if (role === RoleUtils.PET_OWNER) {
     await pool.query(SQLQueries.DELETE_PET_OWNER, [email]);
+  } else if (role === RoleUtils.ADMINISTRATOR) {
+    await pool.query(SQLQueries.DELETE_ADMINISTRATOR, [email]);
   } else {
     throw new Error('Invalid Role');
   }

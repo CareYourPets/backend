@@ -12,7 +12,13 @@ app.post(
     body('email').isEmail(),
     body('password').isLength({min: 5}),
     body('role').custom((value) => {
-      if (!(value === RoleUtils.CARE_TAKER || value === RoleUtils.PET_OWNER)) {
+      if (
+        !(
+          value === RoleUtils.CARE_TAKER ||
+          value === RoleUtils.PET_OWNER ||
+          value === RoleUtils.ADMINISTRATOR
+        )
+      ) {
         throw new Error('Invalid Role');
       }
       return true;
@@ -43,7 +49,13 @@ app.post(
     body('email').isEmail(),
     body('password').isLength({min: 5}),
     body('role').custom((value) => {
-      if (!(value === RoleUtils.CARE_TAKER || value === RoleUtils.PET_OWNER)) {
+      if (
+        !(
+          value === RoleUtils.CARE_TAKER ||
+          value === RoleUtils.PET_OWNER ||
+          value === RoleUtils.ADMINISTRATOR
+        )
+      ) {
         throw new Error('Invalid Role');
       }
       return true;

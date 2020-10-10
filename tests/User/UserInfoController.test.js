@@ -62,6 +62,27 @@ describe('Test UserInfo Controller', () => {
     );
   });
 
+  it('Should return administrator information', async () => {
+    const users = await UserFixtures.SeedAdministrators(1);
+    const {email, accessToken} = users[0];
+
+    const res = await Chai.request(App)
+      .get('/user/info')
+      .set('accessToken', accessToken);
+    Assert.deepStrictEqual(
+      {
+        email,
+        name: null,
+        gender: null,
+        contact: null,
+        location: null,
+        is_approved: false,
+        is_deleted: false,
+      },
+      res.body,
+    );
+  });
+
   it('Should return 401 for missing accesstoken', async () => {
     const res = await Chai.request(App).get('/user/info');
     Assert.deepStrictEqual(401, res.status);

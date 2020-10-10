@@ -17,6 +17,7 @@ describe('Test UserLogin Controller', () => {
     await pool.query('DELETE FROM psc_administrators');
     await UserFixtures.SeedCareTakers(1);
     await UserFixtures.SeedPetOwners(1);
+    await UserFixtures.SeedAdministrators(1);
   });
 
   afterEach('UserLoginController afterEach', async () => {
@@ -63,29 +64,10 @@ describe('Test UserLogin Controller', () => {
     );
   });
 
-  it('API should return care taker access token', async () => {
+  it('API should return administrator access token', async () => {
     const email = 'test0@example.com';
     const password = 'password';
-    const role = RoleUtils.CARE_TAKER;
-    const res = await Chai.request(App).post('/user/login').send({
-      email,
-      password,
-      role,
-    });
-    const decodedToken = DecodeAccessToken(res.body.accessToken);
-    Assert.deepStrictEqual(
-      {
-        email,
-        role,
-      },
-      _.omit(decodedToken, ['uid', 'iat']),
-    );
-  });
-
-  it('API should return care taker access token', async () => {
-    const email = 'test0@example.com';
-    const password = 'password';
-    const role = RoleUtils.CARE_TAKER;
+    const role = RoleUtils.ADMINISTRATOR;
     const res = await Chai.request(App).post('/user/login').send({
       email,
       password,
@@ -127,18 +109,6 @@ describe('Test UserLogin Controller', () => {
     const res = await Chai.request(App).post('/user/login').send({
       email,
       password,
-    });
-    Assert.deepStrictEqual(422, res.status);
-  });
-
-  it('API should return 422 for invalid role', async () => {
-    const email = 'test0@example.com';
-    const password = 'password';
-    const role = RoleUtils.ADMINISTRATOR;
-    const res = await Chai.request(App).post('/user/login').send({
-      email,
-      password,
-      role,
     });
     Assert.deepStrictEqual(422, res.status);
   });
