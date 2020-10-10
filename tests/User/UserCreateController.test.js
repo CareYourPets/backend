@@ -37,7 +37,7 @@ describe('Test UserCreate Controller', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
   });
 
@@ -56,7 +56,7 @@ describe('Test UserCreate Controller', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
   });
 
@@ -75,7 +75,7 @@ describe('Test UserCreate Controller', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
   });
 
