@@ -10,8 +10,9 @@ app.post('/createPet', AuthRequired, async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({errors: errors.array()});
   }
+  const {email} = req.user;
   const response = await service.PetCreate(
-    req.user,
+    email,
     req.body.category,
     req.body.special_needs,
     req.body.diet,

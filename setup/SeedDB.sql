@@ -1,52 +1,39 @@
-INSERT INTO users (
-  uid, email, 
-  password, 
-  is_deleted, 
-  first_name, 
-  last_name, 
-  created_at, 
-  updated_at
+INSERT INTO psc_administrators (
+	email,
+	password,
+	name,
+	gender,
+  contact,
+  location,
+  is_deleted
 ) VALUES (
-  'e584bdfc-8253-42de-bfb3-2c658533a881', 
   'nwjbrandon@gmail.com', 
   '$2b$10$/IJdSgnkHJ4kOgEPxiLEuebNDJ4Jtig.KVG7OtvVd8l1qKANnneu2', 
-  false, 
-  'Brandon', 
-  'Ng', 
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
+  'Brandon Ng',
+  'MALE',
+  '(+65)93221923',
+  '32-B Haw Par Village',
+  false
 );
 
-INSERT INTO roles (
-  uid,
-  role,
-  is_deleted,
-  created_at,
-  updated_at
+INSERT INTO pet_owners (
+  email,
+	password,
+	name,
+	gender,
+  contact,
+  location,
+  bio,
+  is_deleted
 ) VALUES (
-  'e584bdfc-8253-42de-bfb3-2c658533a881',
-  'PET_OWNER',
-  false,
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
-), (
-  'e584bdfc-8253-42de-bfb3-2c658533a881',
-  'ADMINISTRATOR',
-  false,
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
-);
-
-INSERT INTO pet_owner (
-  uid,
-  is_deleted,
-  created_at,
-  updated_at
-) VALUES (
-  'e584bdfc-8253-42de-bfb3-2c658533a881',
-  false,
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
+  'pet-owner-01@gmail.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
+  'Michael Scott',
+  'MALE',
+  '(+65)98765432',
+  'Pulau Tekong',
+  'I am a little kid lover.',
+  false
 );
 
 INSERT INTO pet_category (
@@ -83,7 +70,7 @@ INSERT INTO pet (
 ) VALUES (
   'jackie',
   'bulldog',
-  'e584bdfc-8253-42de-bfb3-2c658533a881',
+  'pet-owner-01@gmail.com',
   NULL,
   'vegan',
   false,
@@ -92,7 +79,7 @@ INSERT INTO pet (
 ), (
   'tommy',
   'rabbit',
-  'e584bdfc-8253-42de-bfb3-2c658533a881',
+  'pet-owner-01@gmail.com',
   'He is blind.',
   'cannibal',
   false,

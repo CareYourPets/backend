@@ -1,54 +1,47 @@
 const SQLQueries = {
-  CREATE_USER: `
-      INSERT INTO users (
-        uid, email, password, is_deleted, first_name, last_name, created_at, updated_at
+  CREATE_CARE_TAKER: `
+      INSERT INTO care_takers (
+        email, password
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8
+        $1, $2
       );
     `,
-  CREATE_ROLE: `
-      INSERT INTO roles (
-        uid, role, is_deleted, created_at, updated_at
-      ) VALUES (
-        $1, $2, $3, $4, $5
-      );
-    `,
-  SELECT_USER_ROLE_FOR_AUTH: `
-      SELECT 
-        users.uid AS uid, 
-        email, 
-        first_name AS firstname, 
-        password,
-        last_name AS lastname, 
-        roles.role AS role 
-      FROM 
-        users 
-      LEFT JOIN roles 
-        ON 
-          users.uid=roles.uid 
-        WHERE 
-          users.email=$1 AND 
-          users.is_deleted=false AND 
-          roles.is_deleted=false;
-    `,
-  DELETE_USER: `
-    UPDATE users SET is_deleted=true, updated_at=$2 WHERE email=$1 AND is_deleted=false;
+  CREATE_PET_OWNER: `
+    INSERT INTO pet_owners (
+      email, password
+    ) VALUES (
+      $1, $2
+    );
+  `,
+  CREATE_ADMINISTRATOR: `
+    INSERT INTO psc_administrators (
+      email, password
+    ) VALUES (
+      $1, $2
+    );
+  `,
+  SELECT_CARE_TAKER: `
+    SELECT * FROM care_takers WHERE email=$1;
+  `,
+  SELECT_PET_OWNER: `
+    SELECT * FROM pet_owners WHERE email=$1;
+  `,
+  SELECT_ADMINISTRATOR: `
+    SELECT * FROM psc_administrators WHERE email=$1;
+  `,
+  DELETE_CARE_TAKER: `
+    UPDATE care_takers SET is_deleted=true WHERE email=$1;
+  `,
+  DELETE_PET_OWNER: `
+    UPDATE pet_owners SET is_deleted=true WHERE email=$1;
+  `,
+  DELETE_ADMINISTRATOR: `
+    UPDATE psc_administrators SET is_deleted=true WHERE email=$1;
   `,
   /* 
      Section: Pet
      Author: Arun
   */
-  SELECT_PET_OWNER_FOR_ID: `
-    SELECT 
-      users.uid AS uid
-    FROM 
-      users
-    INNER JOIN 
-      pet_owner_profile   ON    users.uid  = pet_owner_profile.uid
-    WHERE
-      users.email                   = $1    AND
-      pet_owner_profile.is_deleted  = false;
-  `,
   CREATE_PET_CATEGORY: `
     INSERT INTO pet_category (
       category, base_price, created_at, updated_at 
@@ -61,13 +54,6 @@ const SQLQueries = {
       name, category, pet_owner_id, special_needs, diet, is_deleted, created_at, updated_at
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8
-    );
-  `,
-  CREATE_PET_OWNER: `
-    INSERT INTO pet_owner (
-      uid, is_deleted, created_at, updated_at
-    ) VALUES (
-      $1, $2, $3, $4
     );
   `,
   SELECT_ALL_PET_CATEGORIES: `
@@ -106,6 +92,12 @@ const SQLQueries = {
       pet.name         = $1 AND
       pet.pet_owner_id = $2 AND
       pet.is_deleted   = false;
+  `,
+  UPDATE_PET_CATEGORY: `
+    UPDATE pet_category SET category=$1, base_price=$2 WHERE category=$3;
+  `,
+  DELETE_PET: `
+    UPDATE pet SET is_deleted=true WHERE name=$1 AND pet_category_id=$2;
   `,
 };
 

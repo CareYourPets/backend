@@ -2,47 +2,44 @@ import Assert from 'assert';
 import pool from '../../src/Utils/DBUtils';
 import UserFixtures from '../Fixtures/UserFixtures';
 import UserService from '../../src/User/UserService';
-import {DecodeAccessToken} from '../../src/Utils/AuthUtils';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('Test UserLogin Service', () => {
   beforeEach('UserLoginService beforeEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
-    await UserFixtures.SeedCareTakers(2);
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
+    await UserFixtures.SeedCareTakers(1);
+    await UserFixtures.SeedPetOwners(2);
   });
 
   afterEach('UserLoginService afterEach', async () => {
-    await pool.query('DELETE FROM roles');
-    await pool.query('DELETE FROM users');
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
   });
 
-  it('Service should delete user', async () => {
-    const {accessToken} = await UserService.UserLogin({
-      email: 'caretaker1@example.com',
-      password: 'password',
-      role: 'CARE_TAKER',
-    });
-    const decodedToken = DecodeAccessToken(accessToken);
-    await UserService.UserDelete(decodedToken);
+  it('Service should delete care taker', async () => {
+    const email = 'test0@example.com';
+    const role = RoleUtils.CARE_TAKER;
 
-    const {rows: deletedUsers} = await pool.query(
-      `
-      SELECT * 
-        FROM users 
-      WHERE 
-      email='caretaker1@example.com' AND 
-      is_deleted=false;`,
-    );
-    Assert.equal(0, deletedUsers.length);
+    await UserService.UserDelete({email, role});
 
-    const {rows: existingUsers} = await pool.query(
-      `
-      SELECT * 
-        FROM users 
-      WHERE 
-        email='caretaker0@example.com' AND 
-        is_deleted=false;`,
+    const {rows: users} = await pool.query(
+      `SELECT * FROM care_takers WHERE email='${email}'`,
     );
-    Assert.equal(1, existingUsers.length);
+    Assert.deepStrictEqual(true, users[0].is_deleted);
+  });
+
+  it('Service should delete pet owner', async () => {
+    const email = 'test0@example.com';
+    const role = RoleUtils.PET_OWNER;
+
+    await UserService.UserDelete({email, role});
+
+    const {rows: users} = await pool.query(
+      `SELECT * FROM pet_owners WHERE email='${email}'`,
+    );
+    Assert.deepStrictEqual(true, users[0].is_deleted);
   });
 });
