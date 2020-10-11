@@ -51,6 +51,23 @@ describe('Test UserCreate Service', () => {
     Assert.deepStrictEqual(email, users[0].email);
   });
 
+  it('Service should create administrator', async () => {
+    const email = 'test@example.com';
+    const password = 'password';
+    const role = RoleUtils.ADMINISTRATOR;
+
+    await UserService.UserCreate({
+      email,
+      password,
+      role,
+    });
+
+    const {rows: users} = await pool.query(
+      `SELECT * FROM psc_administrators WHERE email='${email}'`,
+    );
+    Assert.deepStrictEqual(email, users[0].email);
+  });
+
   it('Service should create user with password with valid hashed', async () => {
     const email = 'test@example.com';
     const password = 'password';
@@ -71,11 +88,16 @@ describe('Test UserCreate Service', () => {
     );
   });
 
-  it('Service should reject administrator', async () => {
+  it('Service should reject duplicate email for care takers', async () => {
     const email = 'test@example.com';
     const password = 'password';
-    const role = RoleUtils.ADMINISTRATOR;
+    const role = RoleUtils.CARE_TAKER;
 
+    await UserService.UserCreate({
+      email,
+      password,
+      role,
+    });
     await Assert.rejects(
       () =>
         UserService.UserCreate({
@@ -87,10 +109,31 @@ describe('Test UserCreate Service', () => {
     );
   });
 
-  it('Service should reject duplicate email', async () => {
+  it('Service should reject duplicate email for pet owners', async () => {
     const email = 'test@example.com';
     const password = 'password';
-    const role = RoleUtils.CARE_TAKER;
+    const role = RoleUtils.PET_OWNER;
+
+    await UserService.UserCreate({
+      email,
+      password,
+      role,
+    });
+    await Assert.rejects(
+      () =>
+        UserService.UserCreate({
+          email,
+          password,
+          role,
+        }),
+      Error,
+    );
+  });
+
+  it('Service should reject duplicate email for administrators', async () => {
+    const email = 'test@example.com';
+    const password = 'password';
+    const role = RoleUtils.ADMINISTRATOR;
 
     await UserService.UserCreate({
       email,

@@ -37,7 +37,7 @@ describe('Test UserCreate Controller', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
   });
 
@@ -56,11 +56,11 @@ describe('Test UserCreate Controller', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
   });
 
-  it('API should return 422 for invalid role', async () => {
+  it('API should return access token for administrator', async () => {
     const email = 'test@example.com';
     const password = 'password';
     const role = RoleUtils.ADMINISTRATOR;
@@ -69,7 +69,14 @@ describe('Test UserCreate Controller', () => {
       password,
       role,
     });
-    Assert.deepStrictEqual(422, res.status);
+    const decodedToken = DecodeAccessToken(res.body.accessToken);
+    Assert.deepStrictEqual(
+      {
+        email,
+        role,
+      },
+      _.omit(decodedToken, ['iat']),
+    );
   });
 
   it('API should return 422 for missing role', async () => {

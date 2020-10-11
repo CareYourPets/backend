@@ -13,6 +13,7 @@ describe('Test UserLogin Service', () => {
     await pool.query('DELETE FROM psc_administrators');
     await UserFixtures.SeedCareTakers(1);
     await UserFixtures.SeedPetOwners(2);
+    await UserFixtures.SeedAdministrators(2);
   });
 
   afterEach('UserLoginService afterEach', async () => {
@@ -36,7 +37,7 @@ describe('Test UserLogin Service', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
     );
   });
 
@@ -55,7 +56,46 @@ describe('Test UserLogin Service', () => {
         email,
         role,
       },
-      _.omit(decodedToken, ['uid', 'iat']),
+      _.omit(decodedToken, ['iat']),
+    );
+  });
+
+  it('Service should return administrator access token', async () => {
+    const email = 'test0@example.com';
+    const password = 'password';
+    const role = RoleUtils.ADMINISTRATOR;
+    await pool.query(
+      `UPDATE psc_administrators SET is_approved=true WHERE email='${email}';`,
+    );
+    const {accessToken} = await UserService.UserLogin({
+      email,
+      password,
+      role,
+    });
+    const decodedToken = DecodeAccessToken(accessToken);
+    Assert.deepStrictEqual(
+      {
+        email,
+        role,
+      },
+      _.omit(decodedToken, ['iat']),
+    );
+  });
+
+  it('Service should reject unapproved administrator', async () => {
+    const email = 'test0@example.com';
+    const password = 'password';
+    const role = RoleUtils.ADMINISTRATOR;
+
+    await Assert.rejects(
+      () =>
+        UserService.UserLogin({
+          email,
+          password,
+          role,
+        }),
+
+      Error,
     );
   });
 });

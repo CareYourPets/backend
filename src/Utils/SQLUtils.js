@@ -38,10 +38,18 @@ const SQLQueries = {
   DELETE_ADMINISTRATOR: `
     UPDATE psc_administrators SET is_deleted=true WHERE email=$1;
   `,
-  /* 
-     Section: Pet
-     Author: Arun
-  */
+  APPROVE_ADMINISTRATOR: `
+    UPDATE psc_administrators SET is_approved=true WHERE email=$1;
+  `,
+  UPDATE_PET_OWNER: `
+    UPDATE pet_owners SET name=$2, gender=$3, contact=$4, location=$5, bio=$6 WHERE email=$1
+  `,
+  UPDATE_CARE_TAKER: `
+    UPDATE care_takers SET name=$2, gender=$3, contact=$4, location=$5, bio=$6 WHERE email=$1
+  `,
+  UPDATE_ADMINISTRATOR: `
+    UPDATE psc_administrators SET name=$2, gender=$3, contact=$4, location=$5 WHERE email=$1
+  `,
   CREATE_PET_CATEGORY: `
     INSERT INTO pet_category (
       category, base_price, created_at, updated_at 

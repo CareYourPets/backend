@@ -39,6 +39,8 @@ export async function AuthRequired(req, res, next) {
       users = await pool.query(SQLQueries.SELECT_CARE_TAKER, [email]);
     } else if (role === RoleUtils.PET_OWNER) {
       users = await pool.query(SQLQueries.SELECT_PET_OWNER, [email]);
+    } else if (role === RoleUtils.ADMINISTRATOR) {
+      users = await pool.query(SQLQueries.SELECT_ADMINISTRATOR, [email]);
     } else {
       throw new Error('Invalid Role');
     }
