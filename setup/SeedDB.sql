@@ -38,24 +38,16 @@ INSERT INTO pet_owners (
 
 INSERT INTO pet_category (
   category,
-  base_price,
-  created_at,
-  updated_at
+  base_price
 ) VALUES (
   'bulldog',
-  55.50,
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
+  55.50
 ), (
   'snail',
-  10.90,
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
+  10.90
 ), (
   'rabbit',
-  28.00,
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
+  28.00
 );
 
 INSERT INTO pet (
@@ -64,25 +56,19 @@ INSERT INTO pet (
   pet_owner_id,
   special_needs,
   diet,
-  is_deleted,
-  created_at,
-  updated_at
+  is_deleted
 ) VALUES (
   'jackie',
   'bulldog',
   'pet-owner-01@gmail.com',
   NULL,
   'vegan',
-  false,
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
+  false
 ), (
   'tommy',
   'rabbit',
   'pet-owner-01@gmail.com',
   'He is blind.',
   'cannibal',
-  false,
-  '2020-09-19T12:43:27+08:00', 
-  '2020-09-19T12:43:27+08:00'
+  false
 );

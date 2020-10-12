@@ -52,16 +52,16 @@ const SQLQueries = {
   `,
   CREATE_PET_CATEGORY: `
     INSERT INTO pet_category (
-      category, base_price, created_at, updated_at 
+      category, base_price
     ) VALUES (
-      $1, $2, $3, $4
+      $1, $2
     );
   `,
   CREATE_PET: `
     INSERT INTO pet (
-      name, category, pet_owner_id, special_needs, diet, is_deleted, created_at, updated_at
+      name, category, pet_owner_id, special_needs, diet, is_deleted
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8
+      $1, $2, $3, $4, $5, $6
     );
   `,
   SELECT_ALL_PET_CATEGORIES: `
@@ -95,7 +95,7 @@ const SQLQueries = {
     FROM 
       pet
     INNER JOIN 
-      pet_category ON ON pet_category.category = pet.category
+      pet_category ON pet_category.category = pet.category
     WHERE 
       pet.name         = $1 AND
       pet.pet_owner_id = $2 AND

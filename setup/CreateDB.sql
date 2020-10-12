@@ -38,9 +38,7 @@ CREATE TABLE care_takers (
 
 CREATE TABLE IF NOT EXISTS pet_category (
   category        VARCHAR(100)    PRIMARY KEY,
-  base_price      NUMERIC(12,2)   NOT NULL,
-  created_at      TIMESTAMP WITH  TIME ZONE NOT NULL,
-  updated_at      TIMESTAMP WITH  TIME ZONE NOT NULL
+  base_price      NUMERIC(12,2)   NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS pet (
@@ -50,7 +48,5 @@ CREATE TABLE IF NOT EXISTS pet (
   special_needs         VARCHAR,
   diet                  VARCHAR   NOT NULL,
   is_deleted            BOOLEAN   NOT NULL,
-  created_at            TIMESTAMP WITH TIME ZONE NOT NULL,
-  updated_at            TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY(name, pet_owner_id)
 );

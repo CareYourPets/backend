@@ -1,11 +1,7 @@
-import moment from 'moment';
 import pool from '../Utils/DBUtils';
 import SQLQueries from '../Utils/SQLUtils';
 
 const PetCreate = async (userEmail, category, specialNeeds, diet, name) => {
-  // Create timestamp and uid for pet
-  const timestamp = moment(Date.now()).format();
-
   await pool.query(SQLQueries.CREATE_PET, [
     name,
     category,
@@ -13,22 +9,13 @@ const PetCreate = async (userEmail, category, specialNeeds, diet, name) => {
     specialNeeds,
     diet,
     false,
-    timestamp,
-    timestamp,
   ]);
 
   return {status: 'ok'};
 };
 
 const PetCategoryCreate = async (category, basePrice) => {
-  const timestamp = moment(Date.now()).format();
-
-  await pool.query(SQLQueries.CREATE_PET_CATEGORY, [
-    category,
-    basePrice,
-    timestamp,
-    timestamp,
-  ]);
+  await pool.query(SQLQueries.CREATE_PET_CATEGORY, [category, basePrice]);
 
   return {status: 'ok'};
 };

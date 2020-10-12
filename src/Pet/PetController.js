@@ -10,15 +10,19 @@ app.post('/createPet', AuthRequired, async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({errors: errors.array()});
   }
-  const {email} = req.user;
-  const response = await service.PetCreate(
-    email,
-    req.body.category,
-    req.body.special_needs,
-    req.body.diet,
-    req.body.name,
-  );
-  return res.json(response);
+  try {
+    const {email} = req.user;
+    const response = await service.PetCreate(
+      email,
+      req.body.category,
+      req.body.special_needs,
+      req.body.diet,
+      req.body.name,
+    );
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
 });
 
 app.get('/getPet', AuthRequired, async (req, res) => {
@@ -26,7 +30,7 @@ app.get('/getPet', AuthRequired, async (req, res) => {
   return res.json(response);
 });
 
-app.get('/getAllPetCategories', async (req, res) => {
+app.get('/getAllPetCategories', AuthRequired, async (req, res) => {
   const response = await service.SelectAllCategories();
   return res.json(response);
 });
