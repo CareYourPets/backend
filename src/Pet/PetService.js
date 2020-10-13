@@ -1,40 +1,66 @@
 import pool from '../Utils/DBUtils';
 import SQLQueries from '../Utils/SQLUtils';
 
-const PetCreate = async (userEmail, category, specialNeeds, diet, name) => {
-  await pool.query(SQLQueries.CREATE_PET, [
-    name,
-    category,
-    userEmail,
-    specialNeeds,
-    diet,
-    false,
-  ]);
-
-  return {status: 'ok'};
-};
-
-const PetCategoryCreate = async (category, basePrice) => {
+const PetCategoryCreate = async ({category, basePrice}) => {
   await pool.query(SQLQueries.CREATE_PET_CATEGORY, [category, basePrice]);
 
   return {status: 'ok'};
 };
 
-const SelectAllCategories = async () => {
-  const client = await pool.connect();
-  const {rows} = await pool.query(SQLQueries.SELECT_ALL_PET_CATEGORIES);
-  client.release();
-  return rows;
+const PetCategoryFetch = async ({category}) => {
+  let petCategories = [];
+  if (category === null) {
+    const results = await pool.query(SQLQueries.FETCH_PET_CATEGORIES);
+    petCategories = results.rows;
+  } else {
+    const results = await pool.query(SQLQueries.FETCH_PET_CATEGORY, [category]);
+    petCategories = results.rows;
+  }
+  return petCategories;
 };
 
-const SelectAllPets = async ({email}) => {
-  const {rows} = await pool.query(SQLQueries.SELECT_OWNER_PETS, [email]);
-  return rows;
+const PetCategoryDelete = async ({category}) => {
+  await pool.query(SQLQueries.DELETE_PET_CATEGORY, [category]);
+  return {status: 'ok'};
+};
+
+const PetCategoryUpdate = async ({currentCategory, category, basePrice}) => {
+  await pool.query(SQLQueries.UPDATE_PET_CATEGORY, [
+    category,
+    basePrice,
+    currentCategory,
+  ]);
+  return {status: 'ok'};
+};
+
+const PetCreate = async ({email, category, needs, diet, name}) => {
+  await pool.query(SQLQueries.CREATE_PET, [name, category, email, needs, diet]);
+  return {status: 'ok'};
+};
+
+const PetDelete = async ({email, name}) => {
+  await pool.query(SQLQueries.DELETE_PET, [name, email]);
+  return {status: 'ok'};
+};
+
+const PetUpdate = async ({email, currentName, category, needs, diet, name}) => {
+  await pool.query(SQLQueries.UPDATE_PET, [
+    name,
+    category,
+    needs,
+    diet,
+    currentName,
+    email,
+  ]);
+  return {status: 'ok'};
 };
 
 export default {
-  PetCreate,
   PetCategoryCreate,
-  SelectAllPets,
-  SelectAllCategories,
+  PetCategoryFetch,
+  PetCategoryDelete,
+  PetCreate,
+  PetDelete,
+  PetUpdate,
+  PetCategoryUpdate,
 };
