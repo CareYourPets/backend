@@ -36,7 +36,7 @@ INSERT INTO pet_owners (
   false
 );
 
-INSERT INTO pet_category (
+INSERT INTO pet_categories (
   category,
   base_price
 ) VALUES (
@@ -50,11 +50,11 @@ INSERT INTO pet_category (
   28.00
 );
 
-INSERT INTO pet (
+INSERT INTO pets (
   name,
   category,
-  pet_owner_id,
-  special_needs,
+  email,
+  needs,
   diet,
   is_deleted
 ) VALUES (

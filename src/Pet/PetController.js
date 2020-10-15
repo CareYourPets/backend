@@ -1,39 +1,134 @@
 import express from 'express';
-import {validationResult} from 'express-validator';
+import {body} from 'express-validator';
 import service from './PetService';
 import {AuthRequired} from '../Utils/AuthUtils';
 
 const app = express();
 
-app.post('/createPet', AuthRequired, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({errors: errors.array()});
-  }
-  try {
-    const {email} = req.user;
-    const response = await service.PetCreate(
-      email,
-      req.body.category,
-      req.body.special_needs,
-      req.body.diet,
-      req.body.name,
-    );
-    return res.json(response);
-  } catch (error) {
-    return res.status(403).json({error});
-  }
-});
+app.post(
+  '/category/create',
+  [body('category').isString(), body('basePrice').isNumeric()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.PetCategoryCreate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
 
-app.get('/getPet', AuthRequired, async (req, res) => {
-  const response = await service.SelectAllPets(req.user);
-  return res.json(response);
-});
+app.post(
+  '/category/fetch',
+  [body('category').exists()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.PetCategoryFetch({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
 
-app.get('/getAllPetCategories', AuthRequired, async (req, res) => {
-  const response = await service.SelectAllCategories();
-  return res.json(response);
-});
+app.post(
+  '/category/update',
+  [
+    body('category').isString(),
+    body('currentCategory').isString(),
+    body('basePrice').isNumeric(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.PetCategoryUpdate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/category/delete',
+  [body('category').isString()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.PetCategoryDelete({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/create',
+  [
+    body('category').isString(),
+    body('name').isString(),
+    body('diet').exists(),
+    body('needs').exists(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.PetCreate({...req.user, ...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/update',
+  [
+    body('currentName').isString(),
+    body('category').isString(),
+    body('name').isString(),
+    body('diet').exists(),
+    body('needs').exists(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.PetUpdate({...req.user, ...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/delete',
+  [body('name').isString()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.PetDelete({...req.user, ...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
 
 export default {
   app,

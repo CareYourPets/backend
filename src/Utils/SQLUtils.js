@@ -51,61 +51,35 @@ const SQLQueries = {
     UPDATE psc_administrators SET name=$2, gender=$3, contact=$4, location=$5 WHERE email=$1
   `,
   CREATE_PET_CATEGORY: `
-    INSERT INTO pet_category (
+    INSERT INTO pet_categories (
       category, base_price
     ) VALUES (
       $1, $2
     );
   `,
+  FETCH_PET_CATEGORIES: `
+    SELECT * FROM pet_categories WHERE is_deleted=false;
+  `,
+  FETCH_PET_CATEGORY: `
+    SELECT * FROM pet_categories WHERE category=$1 AND is_deleted=false;`,
+  DELETE_PET_CATEGORY: `
+    UPDATE pet_categories SET is_deleted=true WHERE category=$1;
+  `,
   CREATE_PET: `
-    INSERT INTO pet (
-      name, category, pet_owner_id, special_needs, diet, is_deleted
+    INSERT INTO pets (
+      name, category, email, needs, diet
     ) VALUES (
-      $1, $2, $3, $4, $5, $6
+      $1, $2, $3, $4, $5
     );
   `,
-  SELECT_ALL_PET_CATEGORIES: `
-    SELECT 
-      category, 
-      base_price 
-    FROM 
-      pet_category;
-  `,
-  SELECT_OWNER_PETS: `
-    SELECT
-      pet.name,
-      pet.special_needs,
-      pet.diet,
-      pet.category,
-      pet_category.base_price
-    FROM 
-      pet
-    INNER JOIN 
-      pet_category ON pet_category.category = pet.category
-    WHERE
-      pet.pet_owner_id     = $1     AND
-      pet.is_deleted       = false;
-  `,
-  SELECT_EACH_PET: `
-    SELECT
-      pet.special_needs,
-      pet.diet,
-      pet.category,
-      pet_category.base_price,
-    FROM 
-      pet
-    INNER JOIN 
-      pet_category ON pet_category.category = pet.category
-    WHERE 
-      pet.name         = $1 AND
-      pet.pet_owner_id = $2 AND
-      pet.is_deleted   = false;
+  DELETE_PET: `
+    UPDATE pets SET is_deleted=true WHERE name=$1 AND email=$2;
   `,
   UPDATE_PET_CATEGORY: `
-    UPDATE pet_category SET category=$1, base_price=$2 WHERE category=$3;
+    UPDATE pet_categories SET category=$1, base_price=$2 WHERE category=$3;
   `,
-  DELETE_PET: `
-    UPDATE pet SET is_deleted=true WHERE name=$1 AND pet_category_id=$2;
+  UPDATE_PET: `
+    UPDATE pets SET name=$1, category=$2, needs=$3, diet=$4 WHERE name=$5 AND email=$6;
   `,
 };
 

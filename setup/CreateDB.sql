@@ -36,17 +36,18 @@ CREATE TABLE care_takers (
   is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 
-CREATE TABLE IF NOT EXISTS pet_category (
-  category        VARCHAR(100)    PRIMARY KEY,
-  base_price      NUMERIC(12,2)   NOT NULL
+CREATE TABLE pet_categories (
+  category VARCHAR PRIMARY KEY,
+  base_price NUMERIC NOT NULL,
+  is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 
-CREATE TABLE IF NOT EXISTS pet (
-  name                  VARCHAR   NOT NULL,
-  category              VARCHAR   REFERENCES pet_category(category),
-  pet_owner_id          VARCHAR   REFERENCES pet_owners(email) ON DELETE CASCADE,
-  special_needs         VARCHAR,
-  diet                  VARCHAR   NOT NULL,
-  is_deleted            BOOLEAN   NOT NULL,
-  PRIMARY KEY(name, pet_owner_id)
+CREATE TABLE pets (
+  name VARCHAR NOT NULL,
+  category VARCHAR REFERENCES pet_categories(category) ON UPDATE CASCADE,
+  email VARCHAR REFERENCES pet_owners(email) ON DELETE CASCADE,
+  needs VARCHAR,
+  diet VARCHAR,
+  is_deleted BOOLEAN NOT NULL DEFAULT false,
+  PRIMARY KEY(name, email)
 );

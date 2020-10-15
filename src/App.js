@@ -16,6 +16,7 @@ app.use(
 app.use(bodyParser.json());
 
 app.use('/user', User.app);
+app.use('/pet', Pet.app);
 app.use('/', Version.app);
 app.use('/pet', Pet.app);
 
