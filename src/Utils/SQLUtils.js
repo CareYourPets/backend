@@ -50,6 +50,37 @@ const SQLQueries = {
   UPDATE_ADMINISTRATOR: `
     UPDATE psc_administrators SET name=$2, gender=$3, contact=$4, location=$5 WHERE email=$1
   `,
+  CREATE_PET_CATEGORY: `
+    INSERT INTO pet_categories (
+      category, base_price
+    ) VALUES (
+      $1, $2
+    );
+  `,
+  FETCH_PET_CATEGORIES: `
+    SELECT * FROM pet_categories WHERE is_deleted=false;
+  `,
+  FETCH_PET_CATEGORY: `
+    SELECT * FROM pet_categories WHERE category=$1 AND is_deleted=false;`,
+  DELETE_PET_CATEGORY: `
+    UPDATE pet_categories SET is_deleted=true WHERE category=$1;
+  `,
+  CREATE_PET: `
+    INSERT INTO pets (
+      name, category, email, needs, diet
+    ) VALUES (
+      $1, $2, $3, $4, $5
+    );
+  `,
+  DELETE_PET: `
+    UPDATE pets SET is_deleted=true WHERE name=$1 AND email=$2;
+  `,
+  UPDATE_PET_CATEGORY: `
+    UPDATE pet_categories SET category=$1, base_price=$2 WHERE category=$3;
+  `,
+  UPDATE_PET: `
+    UPDATE pets SET name=$1, category=$2, needs=$3, diet=$4 WHERE name=$5 AND email=$6;
+  `,
 };
 
 export default SQLQueries;
