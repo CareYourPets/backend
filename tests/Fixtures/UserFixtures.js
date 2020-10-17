@@ -2,6 +2,7 @@ import _ from 'lodash';
 import pool from '../../src/Utils/DBUtils';
 import RoleUtils from '../../src/Utils/RoleUtils';
 import SQLQueries from '../../src/Utils/SQLUtils';
+import PetFixtures from './PetFixtures';
 import {HashPassword, GenerateAccessToken} from '../../src/Utils/AuthUtils';
 
 const SeedUsers = async ({email, role}) => {
@@ -37,8 +38,27 @@ const SeedAdministrators = async (i) => {
   );
 };
 
+const SeedSkills = async ({email, category, price}) => {
+  await pool.query(SQLQueries.CREATE_CARE_TAKER_SKILL, [
+    email,
+    category,
+    price,
+  ]);
+  return {email, category, price};
+};
+
+const SeedCareTakerSkills = async (i, email) => {
+  await PetFixtures.SeedPetCategories(i);
+  return Promise.all(
+    _.times(i, (idx) =>
+      SeedSkills({email, category: `category${idx}`, price: `${idx}`}),
+    ),
+  );
+};
+
 export default {
   SeedAdministrators,
   SeedPetOwners,
   SeedCareTakers,
+  SeedCareTakerSkills,
 };

@@ -51,3 +51,10 @@ CREATE TABLE pets (
   is_deleted BOOLEAN NOT NULL DEFAULT false,
   PRIMARY KEY(name, email)
 );
+
+CREATE TABLE care_taker_skills (
+  email VARCHAR REFERENCES care_takers(email),
+  category VARCHAR REFERENCES pet_categories(category),
+  price NUMERIC NOT NULL,
+  PRIMARY KEY(email, category)
+)

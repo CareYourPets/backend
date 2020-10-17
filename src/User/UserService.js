@@ -135,6 +135,29 @@ const UserAdministratorUpdate = async ({
   return {status: 'ok'};
 };
 
+const UserCareTakerSkillCreate = async ({email, category, price}) => {
+  await pool.query(SQLQueries.CREATE_CARE_TAKER_SKILL, [
+    email,
+    category,
+    price,
+  ]);
+  return {status: 'ok'};
+};
+
+const UserCareTakerSkillDelete = async ({email, category}) => {
+  await pool.query(SQLQueries.DELETE_CARE_TAKER_SKILL, [email, category]);
+  return {status: 'ok'};
+};
+
+const UserCareTakerSkillUpdate = async ({email, category, price}) => {
+  await pool.query(SQLQueries.UPDATE_CARE_TAKER_SKILL, [
+    price,
+    email,
+    category,
+  ]);
+  return {status: 'ok'};
+};
+
 export default {
   UserCreate,
   UserLogin,
@@ -144,4 +167,7 @@ export default {
   UserPetOwnerUpdate,
   UserCareTakerUpdate,
   UserAdministratorUpdate,
+  UserCareTakerSkillCreate,
+  UserCareTakerSkillDelete,
+  UserCareTakerSkillUpdate,
 };

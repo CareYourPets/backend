@@ -149,6 +149,57 @@ app.post(
   },
 );
 
+app.post(
+  '/caretaker/skill/create',
+  [body('category').isString(), body('price').isNumeric()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerSkillCreate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/caretaker/skill/update',
+  [body('category').isString(), body('price').isNumeric()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerSkillUpdate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/caretaker/skill/delete',
+  [body('category').isString()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerSkillDelete({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
 export default {
   app,
 };
