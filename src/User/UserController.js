@@ -200,6 +200,50 @@ app.post(
   },
 );
 
+app.post(
+  '/caretaker/type/create',
+  [
+    body('type').isIn([
+      RoleUtils.CARE_TAKER_FULL_TIMER,
+      RoleUtils.CARE_TAKER_PART_TIMER,
+    ]),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerTypeCreate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/caretaker/type/delete',
+  [
+    body('type').isIn([
+      RoleUtils.CARE_TAKER_FULL_TIMER,
+      RoleUtils.CARE_TAKER_PART_TIMER,
+    ]),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerTypeDelete({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
 export default {
   app,
 };

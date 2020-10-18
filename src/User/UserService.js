@@ -158,6 +158,26 @@ const UserCareTakerSkillUpdate = async ({email, category, price}) => {
   return {status: 'ok'};
 };
 
+const UserCareTakerTypeCreate = async ({email, type}) => {
+  if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
+    await pool.query(SQLQueries.CREATE_CARE_TAKER_FULL_TIMER, [email]);
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    await pool.query(SQLQueries.CREATE_CARE_TAKER_PART_TIMER, [email]);
+  } else {
+    throw new Error('Invalid Type');
+  }
+};
+
+const UserCareTakerTypeDelete = async ({email, type}) => {
+  if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
+    await pool.query(SQLQueries.DELETE_CARE_TAKER_FULL_TIMER, [email]);
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    await pool.query(SQLQueries.DELETE_CARE_TAKER_PART_TIMER, [email]);
+  } else {
+    throw new Error('Invalid Type');
+  }
+};
+
 export default {
   UserCreate,
   UserLogin,
@@ -170,4 +190,6 @@ export default {
   UserCareTakerSkillCreate,
   UserCareTakerSkillDelete,
   UserCareTakerSkillUpdate,
+  UserCareTakerTypeCreate,
+  UserCareTakerTypeDelete,
 };

@@ -56,9 +56,49 @@ const SeedCareTakerSkills = async (i, email) => {
   );
 };
 
+const SeedCareTakerRole = async ({email, role}) => {
+  if (role === RoleUtils.CARE_TAKER_PART_TIMER) {
+    return pool.query(SQLQueries.CREATE_CARE_TAKER_PART_TIMER, [email]);
+  } 
+    return pool.query(SQLQueries.CREATE_CARE_TAKER_FULL_TIMER, [email]);
+  
+};
+
+const SeedCareTakerFullTimers = async (i) => {
+  return Promise.all(
+    _.times(i, async (idx) => {
+      const role = RoleUtils.CARE_TAKER;
+      const timerRole = RoleUtils.CARE_TAKER_FULL_TIMER;
+      const {email, accessToken} = await SeedUsers({
+        email: `test${idx}@example.com`,
+        role,
+      });
+      await SeedCareTakerRole({email, role: timerRole});
+      return {email, role, accessToken};
+    }),
+  );
+};
+
+const SeedCareTakerPartTimers = async (i) => {
+  return Promise.all(
+    _.times(i, async (idx) => {
+      const role = RoleUtils.CARE_TAKER;
+      const timerRole = RoleUtils.CARE_TAKER_PART_TIMER;
+      const {email, accessToken} = await SeedUsers({
+        email: `test${idx}@example.com`,
+        role,
+      });
+      await SeedCareTakerRole({email, role: timerRole});
+      return {email, role, accessToken};
+    }),
+  );
+};
+
 export default {
   SeedAdministrators,
   SeedPetOwners,
   SeedCareTakers,
   SeedCareTakerSkills,
+  SeedCareTakerFullTimers,
+  SeedCareTakerPartTimers,
 };

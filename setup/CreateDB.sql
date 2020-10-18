@@ -57,4 +57,61 @@ CREATE TABLE care_taker_skills (
   category VARCHAR REFERENCES pet_categories(category),
   price NUMERIC NOT NULL,
   PRIMARY KEY(email, category)
-)
+);
+
+CREATE TABLE care_taker_full_timers (
+  email VARCHAR REFERENCES care_takers(email),
+  PRIMARY KEY(email)
+);
+
+CREATE TABLE care_taker_part_timers (
+  email VARCHAR REFERENCES care_takers(email),
+  PRIMARY KEY(email)
+);
+
+CREATE OR REPLACE FUNCTION care_taker_full_timer_insert_trigger_funct()
+  RETURNS trigger AS
+$$
+BEGIN
+  IF (
+      SELECT count(*)
+      FROM care_taker_part_timers
+      WHERE email = NEW.email
+     ) > 0
+  THEN
+    RAISE EXCEPTION 'Invalid CareTaker Role';
+  END IF;
+  RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION care_taker_part_timer_insert_trigger_funct()
+  RETURNS trigger AS
+$$
+BEGIN
+  IF (
+      SELECT count(*)
+      FROM care_taker_full_timers
+      WHERE email = NEW.email
+     ) > 0
+  THEN
+    RAISE EXCEPTION 'Invalid CareTaker Role';
+  END IF;
+  RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+
+CREATE TRIGGER care_taker_full_timer_insert_trigger
+BEFORE INSERT
+ON care_taker_full_timers
+FOR EACH ROW
+EXECUTE PROCEDURE care_taker_full_timer_insert_trigger_funct();
+
+CREATE TRIGGER care_taker_part_timer_insert_trigger
+BEFORE INSERT
+ON care_taker_part_timers
+FOR EACH ROW
+EXECUTE PROCEDURE care_taker_part_timer_insert_trigger_funct();
