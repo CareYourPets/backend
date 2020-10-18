@@ -20,7 +20,7 @@ describe('Test UserCareTakerSkillDeleteController', () => {
     await pool.query('DELETE FROM care_takers');
   });
 
-  it('API should create care taker skill', async () => {
+  it('API should delete care taker skill', async () => {
     const users = await UserFixtures.SeedCareTakers(1);
     const {email, accessToken} = users[0];
     await UserFixtures.SeedCareTakerSkills(2, email);

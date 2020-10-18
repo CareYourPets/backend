@@ -79,7 +79,7 @@ BEGIN
       WHERE email = NEW.email
      ) > 0
   THEN
-    RAISE EXCEPTION 'Invalid CareTaker Role';
+    RAISE EXCEPTION 'Caretaker is already part timer';
   END IF;
   RETURN NEW;
 END;
@@ -96,7 +96,7 @@ BEGIN
       WHERE email = NEW.email
      ) > 0
   THEN
-    RAISE EXCEPTION 'Invalid CareTaker Role';
+    RAISE EXCEPTION 'Caretaker is already full timer';
   END IF;
   RETURN NEW;
 END;
