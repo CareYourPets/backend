@@ -81,6 +81,39 @@ const SQLQueries = {
   UPDATE_PET: `
     UPDATE pets SET name=$1, category=$2, needs=$3, diet=$4 WHERE name=$5 AND email=$6;
   `,
+  CREATE_CARE_TAKER_SKILL: `
+    INSERT INTO care_taker_skills (
+      email, category, price
+    ) VALUES (
+      $1, $2, $3
+    );
+  `,
+  DELETE_CARE_TAKER_SKILL: `
+    DELETE FROM care_taker_skills WHERE email=$1 AND category=$2;
+  `,
+  UPDATE_CARE_TAKER_SKILL: `
+    UPDATE care_taker_skills SET price=$1 WHERE email=$2 AND category=$3;
+  `,
+  CREATE_CARE_TAKER_FULL_TIMER: `
+    INSERT INTO care_taker_full_timers (
+      email
+    ) VALUES (
+      $1
+    )
+  `,
+  CREATE_CARE_TAKER_PART_TIMER: `
+    INSERT INTO care_taker_part_timers (
+      email
+    ) VALUES (
+      $1
+    )
+  `,
+  DELETE_CARE_TAKER_FULL_TIMER: `
+    DELETE FROM care_taker_full_timers WHERE email=$1;
+  `,
+  DELETE_CARE_TAKER_PART_TIMER: `
+    DELETE FROM care_taker_part_timers WHERE email=$1;
+  `,
 };
 
 export default SQLQueries;
