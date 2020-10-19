@@ -3,6 +3,17 @@ CREATE TYPE gender_enum AS ENUM (
   'FEMALE'
 );
 
+CREATE TYPE delivery_enum AS ENUM (
+  'PET_OWNER_DELIVER',
+  'CARE_TAKER_PICK_UP',
+  'TRANSFER_THROUGH_PCS'
+)
+
+CREATE TYPE payment_enum AS ENUM (
+  'CASH',
+  'CREDIT'
+)
+
 CREATE TABLE pet_owners (
 	email VARCHAR PRIMARY KEY,
 	password VARCHAR NOT NULL,
@@ -115,3 +126,36 @@ BEFORE INSERT
 ON care_taker_part_timers
 FOR EACH ROW
 EXECUTE PROCEDURE care_taker_part_timer_insert_trigger_funct();
+
+CREATE TABLE bids (
+  pet_name VARCHAR NOT NULL
+  pet_email VARCHAR NOT NULL
+  care_taker REFERENCES(care_takers) /* NULL until bid is accepted by a care_taker*/
+  is_accepted BOOLEAN NOT NULL
+  start_date TIMESTAMP NOT NULL
+  end_date TIMESTAMP NOT NULL
+  transaction_date TIMESTAMP
+  payment_mode payment_enum /* NULL until payment is made when bid accepted */
+  amount NUMERIC /* NULL until bid is accepted by a care_taker*/
+  review_date TIMESTAMP
+  transportation_mode delivery_enum /* NULL until bid is accepted by a care_taker*/
+  review VARCHAR
+  is_deleted BOOLEAN NOT NULL DEFAULT false
+  FOREIGN KEY (pet_name, pet_email) REFERENCES pets (name, email)
+  CHECK(calculate_duration(start_date, end_date) >= 0)
+  PRIMARY KEY (pet_email, start_date)
+);
+
+CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMP, end_date TIMESTAMP)
+  RETURNS INT AS $$
+DECLARE
+  duration_interval INTERVAL;
+  duration INT = 0;
+BEGIN
+  duration_interval = start_date - end_date;
+  duration = DATE_PART('day', duration_interval);
+
+  RETURN duration; 
+END;
+$$ 
+LANGUAGE 'plpgsql';
