@@ -1,3 +1,5 @@
+import {TIME_FORMAT} from "./BidUtils";
+
 const SQLQueries = {
   CREATE_CARE_TAKER: `
       INSERT INTO care_takers (
@@ -118,17 +120,17 @@ const SQLQueries = {
     INSERT INTO bids (
       pet_name, pet_email, care_taker_email, start_date, end_date
     ) VALUES (
-      $1, $2, $3, $4, $5
+      $1, $2, $3, TO_TIMESTAMP($4, ${TIME_FORMAT}), TO_TIMESTAMP($5, ${TIME_FORMAT})
     )
   `,
   UPDATE_BID: `
-    UPDATE bids SET is_accepted=$1, transaction_date=$2, payment_mode=$3, amount=$4, review_date=$5, transportation_mode=$6, review=$7 WHERE pet_name=$8 AND pet_email=$9 AND care_taker_email=$10 AND start_date=$11;
+    UPDATE bids SET is_accepted=$1, transaction_date=TO_TIMESTAMP($2, ${TIME_FORMAT}), payment_mode=$3, amount=$4, review_date=TO_TIMESTAMP($5, ${TIME_FORMAT}), transportation_mode=$6, review=$7 WHERE pet_name=$8 AND pet_email=$9 AND care_taker_email=$10 AND start_date=TO_TIMESTAMP($11, ${TIME_FORMAT});
   `,
   DELETE_BID: `
-    UPDATE bids SET is_deleted=true, WHERE pet_name=$1 AND pet_email=$2 AND care_taker_email=$3 AND start_date=$4;
+    UPDATE bids SET is_deleted=true, WHERE pet_name=$1 AND pet_email=$2 AND care_taker_email=$3 AND start_date=TO_TIMESTAMP($4, ${TIME_FORMAT});
   `,
   SELECT_BID: `
-    SELECT * FROM bids WHERE pet_name=$1 AND pet_email=$2 AND care_taker_email=$3 AND start_date=$4 AND is_deleted=false;
+    SELECT * FROM bids WHERE pet_name=$1 AND pet_email=$2 AND care_taker_email=$3 AND start_date=TO_TIMESTAMP($4, ${TIME_FORMAT}) AND is_deleted=false;
   `,
 };
 
