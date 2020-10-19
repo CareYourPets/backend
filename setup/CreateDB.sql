@@ -128,22 +128,22 @@ FOR EACH ROW
 EXECUTE PROCEDURE care_taker_part_timer_insert_trigger_funct();
 
 CREATE TABLE bids (
-  pet_name VARCHAR NOT NULL
-  pet_email VARCHAR NOT NULL
-  care_taker REFERENCES(care_takers) /* NULL until bid is accepted by a care_taker*/
-  is_accepted BOOLEAN NOT NULL
-  start_date TIMESTAMP NOT NULL
-  end_date TIMESTAMP NOT NULL
-  transaction_date TIMESTAMP
-  payment_mode payment_enum /* NULL until payment is made when bid accepted */
-  amount NUMERIC /* NULL until bid is accepted by a care_taker*/
-  review_date TIMESTAMP
-  transportation_mode delivery_enum /* NULL until bid is accepted by a care_taker*/
-  review VARCHAR
-  is_deleted BOOLEAN NOT NULL DEFAULT false
-  FOREIGN KEY (pet_name, pet_email) REFERENCES pets (name, email)
-  CHECK(calculate_duration(start_date, end_date) >= 0)
-  PRIMARY KEY (pet_email, start_date)
+  pet_name VARCHAR NOT NULL,
+  pet_owner_email VARCHAR NOT NULL,
+  care_taker_email REFERENCES care_takers(email), /* NULL until bid is accepted by a care_taker*/
+  is_accepted BOOLEAN NOT NULL DEFAULT false,
+  start_date TIMESTAMP NOT NULL,
+  end_date TIMESTAMP NOT NULL,
+  transaction_date TIMESTAMP,
+  payment_mode payment_enum, /* NULL until payment is made when bid accepted */
+  amount NUMERIC, /* NULL until bid is accepted by a care_taker*/
+  review_date TIMESTAMP,
+  transportation_mode delivery_enum, /* NULL until bid is accepted by a care_taker*/
+  review VARCHAR,
+  is_deleted BOOLEAN NOT NULL DEFAULT false,
+  FOREIGN KEY (pet_name, pet_email) REFERENCES pets (name, email),
+  CHECK(calculate_duration(start_date, end_date) >= 0),
+  PRIMARY KEY (pet_name, pet_email, care_taker_email, start_date),
 );
 
 CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMP, end_date TIMESTAMP)

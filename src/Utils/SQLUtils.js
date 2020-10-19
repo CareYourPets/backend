@@ -114,6 +114,22 @@ const SQLQueries = {
   DELETE_CARE_TAKER_PART_TIMER: `
     DELETE FROM care_taker_part_timers WHERE email=$1;
   `,
+  CREATE_BID: `
+    INSERT INTO bids (
+      pet_name, pet_email, care_taker_email, start_date, end_date
+    ) VALUES (
+      $1, $2, $3, $4, $5
+    )
+  `,
+  UPDATE_BID: `
+    UPDATE bids SET is_accepted=$1, transaction_date=$2, payment_mode=$3, amount=$4, review_date=$5, transportation_mode=$6, review=$7 WHERE pet_name=$8 AND pet_email=$9 AND care_taker_email=$10 AND start_date=$11;
+  `,
+  DELETE_BID: `
+    UPDATE bids SET is_deleted=true, WHERE pet_name=$1 AND pet_email=$2 AND care_taker_email=$3 AND start_date=$4;
+  `,
+  SELECT_BID: `
+    SELECT * FROM bids WHERE pet_name=$1 AND pet_email=$2 AND care_taker_email=$3 AND start_date=$4 AND is_deleted=false;
+  `,
 };
 
 export default SQLQueries;
