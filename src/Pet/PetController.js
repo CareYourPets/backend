@@ -130,6 +130,38 @@ app.post(
   },
 );
 
+app.post('/fetch', AuthRequired, async (req, res) => {
+  try {
+    const response = await service.PetFetch({...req.user});
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
+});
+
+app.post(
+  '/petowner/fetchcaretaker',
+  [body('isByLocation').exists()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.CareTakerFetch({...req.user, ...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post('/petowner/fetchpetowners', AuthRequired, async (req, res) => {
+  try {
+    const response = await service.NeighbouringPetOwnersFetch({...req.user});
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
+});
+
 export default {
   app,
 };

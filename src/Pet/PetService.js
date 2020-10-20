@@ -55,6 +55,35 @@ const PetUpdate = async ({email, currentName, category, needs, diet, name}) => {
   return {status: 'ok'};
 };
 
+const PetFetch = async ({email}) => {
+  const results = await pool.query(SQLQueries.FETCH_PET, [email]);
+  return results.rows;
+};
+
+const CareTakerFetch = async ({email, isByLocation}) => {
+  let careTakers = [];
+  if (isByLocation) {
+    const results = await pool.query(
+      SQLQueries.FETCH_CARE_TAKERS_FOR_PET_OWNERS_BY_LOCATION,
+      [email],
+    );
+    careTakers = results.rows;
+  } else {
+    const results = await pool.query(
+      SQLQueries.FETCH_CARE_TAKERS_FOR_PET_OWNERS,
+    );
+    careTakers = results.rows;
+  }
+  return careTakers;
+};
+
+const NeighbouringPetOwnersFetch = async ({email}) => {
+  const results = await pool.query(SQLQueries.FETCH_PET_OWNERS_BY_LOCATION, [
+    email,
+  ]);
+  return results.rows;
+};
+
 export default {
   PetCategoryCreate,
   PetCategoryFetch,
@@ -63,4 +92,7 @@ export default {
   PetDelete,
   PetUpdate,
   PetCategoryUpdate,
+  PetFetch,
+  CareTakerFetch,
+  NeighbouringPetOwnersFetch,
 };

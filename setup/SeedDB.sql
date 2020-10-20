@@ -31,7 +31,7 @@ INSERT INTO pet_owners (
   'Michael Scott',
   'MALE',
   '(+65)98765432',
-  'Pulau Tekong',
+  'north east-#-Hougang Ave 9, Blk 1, #02-1322, Singapore 123001',
   'I am a little kid lover.',
   false
 );

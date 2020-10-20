@@ -81,6 +81,27 @@ const SQLQueries = {
   UPDATE_PET: `
     UPDATE pets SET name=$1, category=$2, needs=$3, diet=$4 WHERE name=$5 AND email=$6;
   `,
+  FETCH_PET: `
+    SELECT * FROM pets WHERE email=$1 AND is_deleted=false;
+  `,
+  FETCH_CARE_TAKERS_FOR_PET_OWNERS_BY_LOCATION: `
+    SELECT care_takers.email, care_takers.name, split_part(care_takers.location, '-#-', 2), care_takers.gender, care_takers.contact, care_takers.bio 
+    FROM care_takers INNER JOIN pet_owners ON split_part(care_takers.location, '-#-', 1) = split_part(pet_owners.location, '-#-', 1)
+    WHERE pet_owners.email = $1 AND pet_owners.is_deleted = false AND care_takers.is_deleted = false;
+  `,
+  FETCH_CARE_TAKERS_FOR_PET_OWNERS: `
+    SELECT email, name, location, gender, contact, bio FROM care_takers
+    WHERE is_deleted = false;
+  `,
+  FETCH_PET_OWNERS_BY_LOCATION: `
+  SELECT p1.name, p1.bio
+  FROM pet_owners p1
+  WHERE location = $1
+  EXCEPT
+  SELECT p2.name, p2.bio
+  FROM pet_owners p2
+  WHERE email = $2;
+  `,
 };
 
 export default SQLQueries;
