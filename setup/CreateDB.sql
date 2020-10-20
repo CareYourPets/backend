@@ -147,12 +147,13 @@ CREATE TABLE bids (
 );
 
 CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMP, end_date TIMESTAMP)
-  RETURNS INT AS $$
+  RETURNS INT AS 
+$$
 DECLARE
   duration_interval INTERVAL;
   duration INT = 0;
 BEGIN
-  duration_interval = start_date - end_date;
+  duration_interval = end_date - start_date;
   duration = DATE_PART('day', duration_interval);
 
   RETURN duration; 
