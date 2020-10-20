@@ -1,5 +1,6 @@
 import pool from '../Utils/DBUtils';
 import SQLQueries from '../Utils/SQLUtils';
+import RoleUtils from '../Utils/RoleUtils';
 
 const BidCreate = async ({
   petName,
@@ -18,14 +19,19 @@ const BidCreate = async ({
   return {status: 'ok'};
 };
 
-const BidInfo = async ({petName, petOwnerEmail, careTakerEmail, startDate}) => {
-  const bid = await pool.query(SQLQueries.SELECT_BID, [
-    petName,
-    petOwnerEmail,
-    careTakerEmail,
-    startDate,
-  ]);
-  return bid;
+/**
+ * Fetches all bids involving a user.
+ * @param {String} email
+ * @param {Enum} role
+ */
+const BidsInfo = async ({email, role}) => {
+  let bids = null;
+  if (role === RoleUtils.CARE_TAKER) {
+    bids = await pool.query(SQLQueries.SELECT_CARE_TAKER_BIDS, [email]);
+  } else if (role === RoleUtils.PET_OWNER) {
+    bids = await pool.query(SQLQueries.SELECT_PET_OWNER_BIDS, [email]);
+  }
+  return bids.rows;
 };
 
 const BidDelete = async ({
@@ -73,8 +79,8 @@ const BidUpdate = async ({
 };
 
 export default {
-  BidCreate,
-  BidInfo,
-  BidUpdate,
+  BidsInfo,
   BidDelete,
+  BidCreate,
+  BidUpdate,
 };

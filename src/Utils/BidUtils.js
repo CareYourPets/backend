@@ -8,5 +8,3 @@ export const BID_PAYMENT_MODE = {
   CASH: 'CASH',
   CREDIT: 'CREDIT',
 };
-
-export const TIME_FORMAT = 'DD-MM-YYYY HH24:MI:SS';

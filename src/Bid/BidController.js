@@ -34,8 +34,14 @@ app.post(
 );
 
 app.get('/info', AuthRequired, async (req, res) => {
-  const response = await service.BidInfo(req.bid);
-  return res.json(response);
+  try {
+    const response = await service.BidsInfo({
+      ...req.user,
+    });
+    return res.json({response});
+  } catch (error) {
+    return res.status(403).json({error});
+  }
 });
 
 app.post('/delete', AuthRequired, async (req, res) => {
