@@ -133,7 +133,7 @@ const SQLQueries = {
     WHERE pet_name=$8 AND pet_owner_email=$9 AND care_taker_email=$10 AND start_date=$11;
   `,
   DELETE_BID: `
-    UPDATE bids SET is_deleted=true, WHERE pet_name=$1 AND pet_owner_email=$2 AND care_taker_email=$3 AND start_date=$4;
+    UPDATE bids SET is_deleted=true WHERE pet_name=$1 AND pet_owner_email=$2 AND care_taker_email=$3 AND start_date=$4;
   `,
   SELECT_CARE_TAKER_BIDS: `
     SELECT * FROM bids WHERE care_taker_email=$1 AND is_deleted=false;
