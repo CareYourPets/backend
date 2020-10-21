@@ -67,7 +67,7 @@ describe('Test BidCreate Controller', () => {
     Assert.deepStrictEqual(bids[0].care_taker_email, careTakerEmail);
     Assert.deepStrictEqual(
       moment(bids[0].start_date).format(MOMENT_TIME_FORMAT),
-      moment(startDate).format(MOMENT_TIME_FORMAT),
+      startDate,
     );
   });
 
