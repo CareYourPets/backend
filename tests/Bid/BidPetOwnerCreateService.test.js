@@ -5,7 +5,7 @@ import BidService from '../../src/Bid/BidService';
 import UserFixtures from '../Fixtures/UserFixtures';
 import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
-import {MOMENT_TIME_FORMAT} from '../../src/Utils/DateTimeUtils';
+import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
 
 describe('Test BidCreate Service', () => {
   beforeEach('BidCreateService beforeEach', async () => {

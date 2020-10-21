@@ -57,14 +57,14 @@ app.post(
   [
     body('isAccepted').isBoolean(),
     body('transactionDate').isDate(),
-    body('paymentMode').isIn[(BID_PAYMENT_MODE.CASH, BID_PAYMENT_MODE.CREDIT)],
+    body('paymentMode').isIn([BID_PAYMENT_MODE.CASH, BID_PAYMENT_MODE.CREDIT]),
     body('amount').isFloat(),
     body('reviewDate').isDate(),
-    body('transportationMode').isIn[
-      (PET_DELIVERY_MODE.CARE_TAKER_PICK_UP,
+    body('transportationMode').isIn([
+      PET_DELIVERY_MODE.CARE_TAKER_PICK_UP,
       PET_DELIVERY_MODE.PET_OWNER_DELIVER,
-      PET_DELIVERY_MODE.TRANSFER_THROUGH_PCS)
-    ],
+      PET_DELIVERY_MODE.TRANSFER_THROUGH_PCS,
+    ]),
     body('review').isString(),
     // validate PK
     body('petName').isString(),
