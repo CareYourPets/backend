@@ -7,7 +7,7 @@ import {AuthRequired} from '../Utils/AuthUtils';
 const app = express();
 
 /**
- * TODO: Validate end_date - start_date >= 0 as backup
+ * TODO: Validate dates
  */
 app.post(
   '/create',
@@ -16,8 +16,8 @@ app.post(
     body('petName').isString(),
     body('petOwnerEmail').isEmail(),
     body('careTakerEmail').isEmail(),
-    body('startDate').isDate(),
-    body('endDate').isDate(),
+    body('startDate').isString(),
+    body('endDate').isString(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
