@@ -44,7 +44,7 @@ describe('Test BidDeleteConroller', () => {
     const petName = 'pet0';
     const {startDate, endDate} = BidFixtures.CreateBidDates();
 
-    BidFixtures.SeedBids({
+    await BidFixtures.SeedBids({
       petName,
       petOwnerEmail,
       careTakerEmail,
@@ -76,7 +76,9 @@ describe('Test BidDeleteConroller', () => {
       MOMENT_TIME_FORMAT,
     );
     bids[0].start_date = formattedStartDate;
-    const formattedEndDate = moment(bids[0].end_date).format(MOMENT_TIME_FORMAT);
+    const formattedEndDate = moment(bids[0].end_date).format(
+      MOMENT_TIME_FORMAT,
+    );
     bids[0].end_date = formattedEndDate;
 
     Assert.deepStrictEqual(
@@ -105,7 +107,7 @@ describe('Test BidDeleteConroller', () => {
     const petName = 'pet0';
     const {startDate, endDate} = BidFixtures.CreateBidDates();
 
-    BidFixtures.SeedBids({
+    await BidFixtures.SeedBids({
       petName,
       petOwnerEmail,
       careTakerEmail,

@@ -9,9 +9,9 @@ import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
 
 describe('Test BidDeleteService', () => {
   beforeEach('BidDeleteService beforeEach', async () => {
+    await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
-    await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
@@ -65,7 +65,9 @@ describe('Test BidDeleteService', () => {
       MOMENT_TIME_FORMAT,
     );
     bids[0].start_date = formattedStartDate;
-    const formattedEndDate = moment(bids[0].end_date).format(MOMENT_TIME_FORMAT);
+    const formattedEndDate = moment(bids[0].end_date).format(
+      MOMENT_TIME_FORMAT,
+    );
     bids[0].end_date = formattedEndDate;
 
     Assert.deepStrictEqual(
