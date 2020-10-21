@@ -16,8 +16,8 @@ app.post(
     body('petName').isString(),
     body('petOwnerEmail').isEmail(),
     body('careTakerEmail').isEmail(),
-    body('startDate').isString(),
-    body('endDate').isString(),
+    body('startDate').isISO8601(),
+    body('endDate').isISO8601(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -56,10 +56,10 @@ app.post(
   '/update',
   [
     body('isAccepted').isBoolean(),
-    body('transactionDate').isDate(),
+    body('transactionDate').isISO8601(),
     body('paymentMode').isIn([BID_PAYMENT_MODE.CASH, BID_PAYMENT_MODE.CREDIT]),
     body('amount').isFloat(),
-    body('reviewDate').isDate(),
+    body('reviewDate').isISO8601(),
     body('transportationMode').isIn([
       PET_DELIVERY_MODE.CARE_TAKER_PICK_UP,
       PET_DELIVERY_MODE.PET_OWNER_DELIVER,
@@ -70,7 +70,7 @@ app.post(
     body('petName').isString(),
     body('petOwnerEmail').isEmail(),
     body('careTakerEmail').isEmail(),
-    body('startDate').isDate(),
+    body('startDate').isISO8601(),
   ],
   AuthRequired,
   async (req, res) => {

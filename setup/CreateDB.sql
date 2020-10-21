@@ -149,10 +149,10 @@ CREATE TABLE bids (
   is_accepted BOOLEAN NOT NULL DEFAULT false,
   start_date TIMESTAMPTZ NOT NULL,
   end_date TIMESTAMPTZ NOT NULL,
-  transaction_date TIMESTAMP,
+  transaction_date TIMESTAMPTZ,
   payment_mode payment_enum, /* NULL until payment is made when bid accepted */
-  amount NUMERIC, /* NULL until bid is accepted by a care_taker*/
-  review_date TIMESTAMP,
+  amount FLOAT, /* NULL until bid is accepted by a care_taker*/
+  review_date TIMESTAMPTZ,
   transportation_mode delivery_enum, /* NULL until bid is accepted by a care_taker*/
   review VARCHAR,
   is_deleted BOOLEAN NOT NULL DEFAULT false,
