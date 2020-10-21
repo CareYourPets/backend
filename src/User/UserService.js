@@ -135,6 +135,49 @@ const UserAdministratorUpdate = async ({
   return {status: 'ok'};
 };
 
+const UserCareTakerSkillCreate = async ({email, category, price}) => {
+  await pool.query(SQLQueries.CREATE_CARE_TAKER_SKILL, [
+    email,
+    category,
+    price,
+  ]);
+  return {status: 'ok'};
+};
+
+const UserCareTakerSkillDelete = async ({email, category}) => {
+  await pool.query(SQLQueries.DELETE_CARE_TAKER_SKILL, [email, category]);
+  return {status: 'ok'};
+};
+
+const UserCareTakerSkillUpdate = async ({email, category, price}) => {
+  await pool.query(SQLQueries.UPDATE_CARE_TAKER_SKILL, [
+    price,
+    email,
+    category,
+  ]);
+  return {status: 'ok'};
+};
+
+const UserCareTakerTypeCreate = async ({email, type}) => {
+  if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
+    await pool.query(SQLQueries.CREATE_CARE_TAKER_FULL_TIMER, [email]);
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    await pool.query(SQLQueries.CREATE_CARE_TAKER_PART_TIMER, [email]);
+  } else {
+    throw new Error('Invalid Type');
+  }
+};
+
+const UserCareTakerTypeDelete = async ({email, type}) => {
+  if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
+    await pool.query(SQLQueries.DELETE_CARE_TAKER_FULL_TIMER, [email]);
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    await pool.query(SQLQueries.DELETE_CARE_TAKER_PART_TIMER, [email]);
+  } else {
+    throw new Error('Invalid Type');
+  }
+};
+
 export default {
   UserCreate,
   UserLogin,
@@ -144,4 +187,9 @@ export default {
   UserPetOwnerUpdate,
   UserCareTakerUpdate,
   UserAdministratorUpdate,
+  UserCareTakerSkillCreate,
+  UserCareTakerSkillDelete,
+  UserCareTakerSkillUpdate,
+  UserCareTakerTypeCreate,
+  UserCareTakerTypeDelete,
 };

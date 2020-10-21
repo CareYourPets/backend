@@ -22,6 +22,7 @@ INSERT INTO pet_owners (
 	name,
 	gender,
   contact,
+  area,
   location,
   bio,
   is_deleted
@@ -31,8 +32,31 @@ INSERT INTO pet_owners (
   'Michael Scott',
   'MALE',
   '(+65)98765432',
-  'north east-#-Hougang Ave 9, Blk 1, #02-1322, Singapore 123001',
+  'NORTH-EAST',
+  'Hougang Ave 9, Blk 1, #02-1322, Singapore 123001',
   'I am a little kid lover.',
+  false
+);
+
+INSERT INTO care_takers (
+  email,
+	password,
+	name,
+	gender,
+  contact,
+  area,
+  location,
+  bio,
+  is_deleted
+) VALUES (
+  'care-taker-01@gmail.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
+  'Dwight Schrute',
+  'MALE',
+  '(+65)98123456',
+  'NORTH-EAST',
+  'Hougang Ave 2, Blk 10, #05-14, Singapore 145010',
+  'Beets.',
   false
 );
 

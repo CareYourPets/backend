@@ -60,28 +60,31 @@ const PetFetch = async ({email}) => {
   return results.rows;
 };
 
-const CareTakerFetch = async ({email, isByLocation}) => {
+const FetchAllCareTakers = async ({email, isByLocation}) => {
   let careTakers = [];
   if (isByLocation) {
     const results = await pool.query(
-      SQLQueries.FETCH_CARE_TAKERS_FOR_PET_OWNERS_BY_LOCATION,
+      SQLQueries.FETCH_ALL_CARE_TAKERS_BY_LOCATION,
       [email],
     );
     careTakers = results.rows;
   } else {
-    const results = await pool.query(
-      SQLQueries.FETCH_CARE_TAKERS_FOR_PET_OWNERS,
-    );
+    const results = await pool.query(SQLQueries.FETCH_ALL_CARE_TAKERS);
     careTakers = results.rows;
   }
   return careTakers;
 };
 
-const NeighbouringPetOwnersFetch = async ({email}) => {
-  const results = await pool.query(SQLQueries.FETCH_PET_OWNERS_BY_LOCATION, [
-    email,
-  ]);
-  return results.rows;
+const FetchCareTaker = async ({email}) => {
+  const caretakers = await pool.query(SQLQueries.FETCH_CARE_TAKER, [email]);
+  const skills = await pool.query(SQLQueries.FETCH_CARE_TAKER_SKILLS, [email]);
+  return [caretakers.rows, skills.rows];
+};
+
+const FetchPetOwner = async ({email}) => {
+  const petowner = await pool.query(SQLQueries.FETCH_PET_OWNER, [email]);
+  const pets = await pool.query(SQLQueries.FETCH_PET, [email]);
+  return [petowner.rows, pets.rows];
 };
 
 export default {
@@ -93,6 +96,7 @@ export default {
   PetUpdate,
   PetCategoryUpdate,
   PetFetch,
-  CareTakerFetch,
-  NeighbouringPetOwnersFetch,
+  FetchAllCareTakers,
+  FetchCareTaker,
+  FetchPetOwner,
 };
