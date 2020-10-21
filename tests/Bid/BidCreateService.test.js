@@ -12,6 +12,8 @@ describe('Test BidCreate Service', () => {
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM pets');
+    await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
     await UserFixtures.SeedCareTakers(1);
     await PetFixtures.SeedPetCategories(1);
@@ -47,7 +49,7 @@ describe('Test BidCreate Service', () => {
 			WHERE pet_name='${petName}' 
 			AND pet_owner_email='${petOwnerEmail}'
 			AND care_taker_email='${careTakerEmail}'
-			AND start_date='${startDate}'
+			AND start_date='${startDate}'::timestamp
 			`,
     );
     Assert.deepStrictEqual(bids[0].pet_name, petName);
