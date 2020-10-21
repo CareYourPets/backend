@@ -147,8 +147,8 @@ CREATE TABLE bids (
   pet_owner_email VARCHAR NOT NULL,
   care_taker_email VARCHAR REFERENCES care_takers(email), /* NULL until bid is accepted by a care_taker*/
   is_accepted BOOLEAN NOT NULL DEFAULT false,
-  start_date TIMESTAMP NOT NULL,
-  end_date TIMESTAMP NOT NULL,
+  start_date TIMESTAMPTZ NOT NULL,
+  end_date TIMESTAMPTZ NOT NULL,
   transaction_date TIMESTAMP,
   payment_mode payment_enum, /* NULL until payment is made when bid accepted */
   amount NUMERIC, /* NULL until bid is accepted by a care_taker*/

@@ -1,7 +1,6 @@
 import moment from 'moment';
 import pool from '../../src/Utils/DBUtils';
 import SQLQueries from '../../src/Utils/SQLUtils';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
 
 const SeedBids = async ({
   petName,
@@ -21,14 +20,14 @@ const SeedBids = async ({
 };
 
 const CreateBidDates = () => {
-  const startDate = moment().format(MOMENT_TIME_FORMAT);
-  const endDate = moment().add(7, 'days').format(MOMENT_TIME_FORMAT);
+  const startDate = moment().toISOString();
+  const endDate = moment().add(7, 'days').toISOString();
   return {startDate, endDate};
 };
 
 const CreateInvalidBidDates = () => {
-  const startDate = moment().format(MOMENT_TIME_FORMAT);
-  const endDate = moment().subtract(7, 'days').format(MOMENT_TIME_FORMAT);
+  const startDate = moment().toISOString();
+  const endDate = moment().subtract(7, 'days').toISOString();
   return {startDate, endDate};
 };
 

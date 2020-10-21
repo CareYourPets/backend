@@ -118,7 +118,7 @@ const SQLQueries = {
     INSERT INTO bids (
       pet_name, pet_owner_email, care_taker_email, start_date, end_date
     ) VALUES (
-      $1, $2, $3, $4::timestamp, $5::timestamp
+      $1, $2, $3, $4, $5
     )
   `,
   UPDATE_BID: `

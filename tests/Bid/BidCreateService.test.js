@@ -49,7 +49,7 @@ describe('Test BidCreate Service', () => {
 			WHERE pet_name='${petName}' 
 			AND pet_owner_email='${petOwnerEmail}'
 			AND care_taker_email='${careTakerEmail}'
-			AND start_date='${startDate}'::timestamp
+			AND start_date='${startDate}'
 			`,
     );
     Assert.deepStrictEqual(bids[0].pet_name, petName);
@@ -57,7 +57,7 @@ describe('Test BidCreate Service', () => {
     Assert.deepStrictEqual(bids[0].care_taker_email, careTakerEmail);
     Assert.deepStrictEqual(
       moment(bids[0].start_date).format(MOMENT_TIME_FORMAT),
-      startDate,
+      moment(startDate).format(MOMENT_TIME_FORMAT),
     );
   });
 

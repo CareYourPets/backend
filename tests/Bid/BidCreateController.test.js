@@ -60,7 +60,7 @@ describe('Test BidCreate Controller', () => {
 			WHERE pet_name='${petName}' 
 			AND pet_owner_email='${petOwnerEmail}'
 			AND care_taker_email='${careTakerEmail}'
-			AND start_date='${startDate}'::timestamp
+			AND start_date='${startDate}'
 			`,
     );
 
@@ -68,8 +68,9 @@ describe('Test BidCreate Controller', () => {
     Assert.deepStrictEqual(bids[0].pet_owner_email, petOwnerEmail);
     Assert.deepStrictEqual(bids[0].care_taker_email, careTakerEmail);
     Assert.deepStrictEqual(
+      // moment(bids[0].start_date).toISOString(),
       moment(bids[0].start_date).format(MOMENT_TIME_FORMAT),
-      startDate,
+      moment(startDate).format(MOMENT_TIME_FORMAT),
     );
   });
 
