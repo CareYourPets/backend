@@ -85,6 +85,7 @@ const UserPetOwnerUpdate = async ({
   name,
   gender,
   contact,
+  area,
   location,
   bio,
 }) => {
@@ -93,6 +94,7 @@ const UserPetOwnerUpdate = async ({
     name,
     gender,
     contact,
+    area,
     location,
     bio,
   ]);
@@ -104,6 +106,7 @@ const UserCareTakerUpdate = async ({
   name,
   gender,
   contact,
+  area,
   location,
   bio,
 }) => {
@@ -112,6 +115,7 @@ const UserCareTakerUpdate = async ({
     name,
     gender,
     contact,
+    area,
     location,
     bio,
   ]);

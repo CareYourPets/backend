@@ -40,7 +40,7 @@ describe('Test PetCategoryUpdateController', () => {
       });
 
     const {rows: pets} = await pool.query(
-      `SELECT * FROM pets WHERE email='${email}'`,
+      `SELECT * FROM pets WHERE email='${email}' ORDER BY name`,
     );
     Assert.deepStrictEqual(
       [

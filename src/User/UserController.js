@@ -2,6 +2,7 @@ import express from 'express';
 import {body, validationResult} from 'express-validator';
 import RoleUtils from '../Utils/RoleUtils';
 import GenderUtils from '../Utils/GenderUtils';
+import AreaUtils from '../Utils/AreaUtils';
 import service from './UserService';
 import {AuthRequired} from '../Utils/AuthUtils';
 
@@ -109,6 +110,16 @@ app.post(
     body('name').isString(),
     body('gender').isIn([GenderUtils.MALE, GenderUtils.FEMALE]),
     body('contact').isString(),
+    body('area').isIn([
+      AreaUtils.NORTH,
+      AreaUtils.SOUTH,
+      AreaUtils.EAST,
+      AreaUtils.WEST,
+      AreaUtils.NORTHEAST,
+      AreaUtils.NORTHWEST,
+      AreaUtils.SOUTHEAST,
+      AreaUtils.SOUTHWEST,
+    ]),
     body('location').isString(),
     body('bio').isString(),
   ],
@@ -132,6 +143,16 @@ app.post(
     body('name').isString(),
     body('gender').isIn([GenderUtils.MALE, GenderUtils.FEMALE]),
     body('contact').isString(),
+    body('area').isIn([
+      AreaUtils.NORTH,
+      AreaUtils.SOUTH,
+      AreaUtils.EAST,
+      AreaUtils.WEST,
+      AreaUtils.NORTHEAST,
+      AreaUtils.NORTHWEST,
+      AreaUtils.SOUTHEAST,
+      AreaUtils.SOUTHWEST,
+    ]),
     body('location').isString(),
     body('bio').isString(),
   ],
