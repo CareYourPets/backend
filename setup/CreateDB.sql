@@ -5,6 +5,12 @@ CREATE TYPE gender_enum AS ENUM (
   'FEMALE'
 );
 
+CREATE TYPE area_enum AS enum (
+  'NORTH', 'SOUTH', 'EAST', 'WEST', 'CENTRAL',
+  'NORTH-EAST', 'NORTH-WEST',
+  'SOUTH-EAST', 'SOUTH-WEST'
+);
+
 CREATE TYPE delivery_enum AS ENUM (
   'PET_OWNER_DELIVER',
   'CARE_TAKER_PICK_UP',
@@ -22,6 +28,7 @@ CREATE TABLE pet_owners (
 	name VARCHAR,
 	gender gender_enum,
   contact VARCHAR,
+  area area_enum,
   location VARCHAR,
   bio TEXT,
   is_deleted BOOLEAN NOT NULL DEFAULT false
@@ -44,6 +51,7 @@ CREATE TABLE care_takers (
 	name VARCHAR,
 	gender gender_enum,
   contact VARCHAR,
+  area area_enum,
   location VARCHAR,
   bio TEXT,
   is_deleted BOOLEAN NOT NULL DEFAULT false
