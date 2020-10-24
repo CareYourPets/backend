@@ -30,6 +30,10 @@ const BidsInfo = async ({email, role}) => {
     bids = await pool.query(SQLQueries.SELECT_CARE_TAKER_BIDS, [email]);
   } else if (role === RoleUtils.PET_OWNER) {
     bids = await pool.query(SQLQueries.SELECT_PET_OWNER_BIDS, [email]);
+  } else if (role === RoleUtils.ADMINISTRATOR) {
+    bids = await pool.query(SQLQueries.SELECT_BIDS);
+  } else {
+    throw new Error('Invalid Role');
   }
   return bids.rows;
 };

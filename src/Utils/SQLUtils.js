@@ -177,6 +177,9 @@ const SQLQueries = {
   DELETE_BID: `
     UPDATE bids SET is_deleted=true WHERE pet_name=$1 AND pet_owner_email=$2 AND care_taker_email=$3 AND start_date=$4;
   `,
+  SELECT_BIDS: `
+    SELECT * FROM bids WHERE is_deleted=false;
+  `,
   SELECT_CARE_TAKER_BIDS: `
     SELECT * FROM bids WHERE care_taker_email=$1 AND is_deleted=false;
   `,
