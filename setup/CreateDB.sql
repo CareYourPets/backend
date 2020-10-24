@@ -69,6 +69,30 @@ CREATE TABLE care_taker_part_timers (
   PRIMARY KEY(email)
 );
 
+CREATE TABLE pet_owner_notifications (
+  notif_date TIMESTAMPTZ DEFAULT current_timestamp,
+  email VARCHAR REFERENCES pet_owners(email),
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  message VARCHAR,
+  PRIMARY KEY(notif_date)
+);
+
+CREATE TABLE care_taker_notifications (
+  notif_date TIMESTAMPTZ DEFAULT current_timestamp,
+  email VARCHAR REFERENCES care_takers(email),
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  message VARCHAR,
+  PRIMARY KEY(notif_date)
+);
+
+CREATE TABLE psc_administrator_notifications (
+  notif_date TIMESTAMPTZ DEFAULT current_timestamp,
+  email VARCHAR REFERENCES psc_administrators(email),
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  message VARCHAR,
+  PRIMARY KEY(notif_date)
+);
+
 CREATE OR REPLACE FUNCTION care_taker_full_timer_insert_trigger_funct()
   RETURNS trigger AS
 $$
@@ -103,6 +127,34 @@ END;
 $$
 LANGUAGE 'plpgsql';
 
+/*
+CREATE OR REPLACE FUNCTION create_pet_owner_notification_funct()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  IF()
+END;
+$$
+LANGUAGE 'plpgsql'
+
+CREATE OR REPLACE FUNCTION create_psc_administrator_notification_funct()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  IF()
+END;
+$$
+LANGUAGE 'plpgsql'
+
+CREATE OR REPLACE FUNCTION create_care_taker_notification_funct()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  IF()
+END;
+$$
+LANGUAGE 'plpgsql'
+*/
 
 CREATE TRIGGER care_taker_full_timer_insert_trigger
 BEFORE INSERT

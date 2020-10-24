@@ -114,6 +114,24 @@ const SQLQueries = {
   DELETE_CARE_TAKER_PART_TIMER: `
     DELETE FROM care_taker_part_timers WHERE email=$1;
   `,
+  SELECT_PET_OWNER_NOTIFICATION: `
+    SELECT * FROM pet_owner_notifications WHERE email=$1;
+  `,
+  SELECT_CARE_TAKER_NOTIFICATION: `
+    SELECT * FROM care_taker_notifications WHERE email=$1;
+  `,
+  SELECT_PSC_ADMINISTRATOR_NOTIFICATION: `
+    SELECT * FROM psc_administrator_notifications WHERE email=$1;
+  `,
+  READ_PET_OWNER_NOTIFICATION: `
+    UPDATE pet_owner_notifications SET is_read=TRUE WHERE notif_date=$1;
+  `,
+  READ_CARE_TAKER_NOTIFICATION: `
+    UPDATE care_taker_notifications SET is_read=TRUE WHERE notif_date=$1;
+  `,
+  READ_PSC_ADMINISTRATOR_NOTIFICATION: `
+    UPDATE psc_administrator_notifications SET is_read=TRUE WHERE notif_date=$1;
+  `,
 };
 
 export default SQLQueries;
