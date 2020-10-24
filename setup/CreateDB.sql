@@ -1,6 +1,19 @@
+SET timezone TO 'Asia/Singapore';
+
 CREATE TYPE gender_enum AS ENUM (
   'MALE', 
   'FEMALE'
+);
+
+CREATE TYPE delivery_enum AS ENUM (
+  'PET_OWNER_DELIVER',
+  'CARE_TAKER_PICK_UP',
+  'TRANSFER_THROUGH_PCS'
+);
+
+CREATE TYPE payment_enum AS ENUM (
+  'CASH',
+  'CREDIT'
 );
 
 CREATE TABLE pet_owners (
@@ -115,3 +128,37 @@ BEFORE INSERT
 ON care_taker_part_timers
 FOR EACH ROW
 EXECUTE PROCEDURE care_taker_part_timer_insert_trigger_funct();
+
+CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMPTZ, end_date TIMESTAMPTZ)
+  RETURNS INT AS 
+$$
+DECLARE
+  duration_interval INTERVAL;
+  duration INT = 0;
+BEGIN
+  duration_interval = end_date - start_date;
+  duration = DATE_PART('day', duration_interval);
+
+  RETURN duration; 
+END;
+$$ 
+LANGUAGE 'plpgsql';
+
+CREATE TABLE bids (
+  pet_name VARCHAR NOT NULL,
+  pet_owner_email VARCHAR NOT NULL,
+  care_taker_email VARCHAR REFERENCES care_takers(email), /* NULL until bid is accepted by a care_taker*/
+  is_accepted BOOLEAN NOT NULL DEFAULT false,
+  start_date TIMESTAMPTZ NOT NULL,
+  end_date TIMESTAMPTZ NOT NULL,
+  transaction_date TIMESTAMPTZ,
+  payment_mode payment_enum, /* NULL until payment is made when bid accepted */
+  amount FLOAT, /* NULL until bid is accepted by a care_taker*/
+  review_date TIMESTAMPTZ,
+  transportation_mode delivery_enum, /* NULL until bid is accepted by a care_taker*/
+  review VARCHAR,
+  is_deleted BOOLEAN NOT NULL DEFAULT false,
+  FOREIGN KEY (pet_name, pet_owner_email) REFERENCES pets (name, email) ON DELETE CASCADE,
+  CHECK(calculate_duration(start_date, end_date) >= 0),
+  PRIMARY KEY (pet_name, pet_owner_email, care_taker_email, start_date)
+);
