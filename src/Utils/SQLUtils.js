@@ -143,7 +143,8 @@ const SQLQueries = {
   `,
   FETCH_CARE_TAKER_SKILLS: `
       SELECT category, price FROM care_taker_skills
-      WHERE email = $1;
+      WHERE email = $1
+      ORDER BY category;
   `,
   FETCH_PET_OWNERS_BY_LOCATION: `
     SELECT email, name, area, location, gender, contact, bio
