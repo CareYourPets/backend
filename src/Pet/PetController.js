@@ -158,7 +158,7 @@ app.post(
 
 app.post(
   '/caretaker/fetch',
-  [body('email').isString()],
+  [body('email').isEmail()],
   AuthRequired,
   async (req, res) => {
     try {
