@@ -172,7 +172,7 @@ app.post(
 
 app.post(
   '/petowner/fetch',
-  [body('email').isString()],
+  [body('email').isEmail()],
   AuthRequired,
   async (req, res) => {
     try {
