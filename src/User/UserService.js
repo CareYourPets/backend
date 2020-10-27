@@ -182,6 +182,23 @@ const UserCareTakerTypeDelete = async ({email, type}) => {
   }
 };
 
+const UserCareTakerFullTimeAvailabilityDateCreate = async ({
+  email,
+  date,
+  type,
+}) => {
+  if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
+    await pool.query(SQLQueries.CREATE_CARE_TAKER_UNAVAILABLE_DATE, [
+      email,
+      date,
+    ]);
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    // await pool.query(SQLQueries.DELETE_CARE_TAKER_PART_TIMER, [email]);
+  } else {
+    throw new Error('Invalid Type');
+  }
+};
+
 export default {
   UserCreate,
   UserLogin,
@@ -196,4 +213,5 @@ export default {
   UserCareTakerSkillUpdate,
   UserCareTakerTypeCreate,
   UserCareTakerTypeDelete,
+  UserCareTakerFullTimeAvailabilityDateCreate,
 };

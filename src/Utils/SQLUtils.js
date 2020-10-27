@@ -186,6 +186,13 @@ const SQLQueries = {
   SELECT_PET_OWNER_BIDS: `
     SELECT * FROM bids WHERE pet_owner_email=$1 AND is_deleted=false;
   `,
+  CREATE_CARE_TAKER_UNAVAILABLE_DATE: `
+    INSERT INTO care_taker_full_timers_unavailable_dates (
+      email, date
+    ) VALUES (
+      $1, $2
+    )
+  `,
 };
 
 export default SQLQueries;

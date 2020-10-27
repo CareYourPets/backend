@@ -90,6 +90,116 @@ CREATE TABLE care_taker_part_timers (
   PRIMARY KEY(email)
 );
 
+CREATE OR REPLACE FUNCTION check_care_taker_availability(email VARCHAR, date DATE)
+  RETURNS BOOLEAN AS 
+$$
+DECLARE
+  start_of_year DATE = (date_trunc('year', NOW()::date))::date;
+  end_of_year DATE = (date_trunc('year', NOW()::date) + interval '1 year' - interval '1 day')::date;
+BEGIN
+  IF (
+    SELECT count(*)
+    FROM bids
+    WHERE care_taker_email = email
+    AND is_accepted = true
+    AND date BETWEEN start_date AND end_date
+  ) > 0
+  THEN 
+    RETURN false;
+  END IF;
+  RETURN date BETWEEN start_of_year AND end_of_year;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TABLE care_taker_full_timers_unavailable_dates (
+  email VARCHAR REFERENCES care_taker_full_timers(email),
+  date DATE NOT NULL,
+  CHECK(check_care_taker_availability(email, date)),
+  PRIMARY KEY(email, date)
+);
+
+CREATE TABLE care_taker_part_timers_available_dates (
+  email VARCHAR REFERENCES care_taker_part_timers(email),
+  date DATE NOT NULL,
+  PRIMARY KEY(email, date)
+);
+
+CREATE OR REPLACE FUNCTION care_taker_full_timer_unavailable_dates_insert_trigger_funct()
+  RETURNS trigger AS
+$$
+DECLARE
+  start_of_year DATE = (date_trunc('year', NOW()::date))::date;
+  end_of_year DATE = (date_trunc('year', NOW()::date) + interval '1 year' - interval '1 day')::date;
+  num_threehundred INT;
+  num_onefifty INT;
+BEGIN
+  /* Ensures there at least 300 working days */
+  IF (
+    SELECT count(*)
+    FROM care_taker_full_timers_unavailable_dates
+    WHERE email = NEW.email
+    ) > 65
+  THEN 
+    RAISE EXCEPTION 'No leave days left %', NEW.date;
+  END IF;
+  /* Generate available dates */
+  WITH available_dates AS (
+    SELECT *
+    FROM (
+      SELECT date::date
+      FROM GENERATE_SERIES(start_of_year, end_of_year,  '1 day'::INTERVAL) AS date
+      EXCEPT
+      SELECT date
+      FROM care_taker_full_timers_unavailable_dates
+      WHERE email = NEW.email
+    ) AS series
+    ORDER BY series.date
+  ),
+  /* Create paritions of consecutive available dates */
+  /* Credits to Anon: Adapted from top answer to https://stackoverflow.com/questions/20402089/detect-consecutive-dates-ranges-using-sql */
+  grouped_available_dates AS (
+    SELECT MIN(date) AS min, MAX(date) max
+    FROM (
+      SELECT date, (ROW_NUMBER() OVER (ORDER BY date))::int AS i 
+      FROM available_dates
+      GROUP BY date
+    ) AS grouped
+    GROUP BY DATE_PART('day', date - i)
+  )
+
+  /* Splits data into two cases, parition with at least 150 (and below 300) and another with atleast 300 */
+  /* Date_part calculates FULL days between, so offset of -2 is need to include max and min */
+  SELECT COUNT(one_fifty) , COUNT(three_hundred) INTO num_onefifty, num_threehundred
+  FROM (
+    SELECT
+    CASE
+      WHEN calculate_duration(min::timestamp, max::timestamp) >= 298 THEN 1
+      ELSE NULL
+    END AS three_hundred,
+    CASE
+      WHEN calculate_duration(min::timestamp, max::timestamp) >= 298 THEN NULL
+      WHEN calculate_duration(min::timestamp, max::timestamp) >= 148 THEN 1
+      ELSE NULL
+    END AS one_fifty
+    FROM grouped_available_dates
+  ) AS sub;
+
+  IF num_onefifty < 2 AND num_threehundred < 1 
+  THEN
+    RAISE EXCEPTION 'No leave days left %', NEW.date;
+  END IF;
+  RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER care_taker_full_timers_unavailable_dates_insert_trigger
+AFTER INSERT
+ON care_taker_full_timers_unavailable_dates
+FOR EACH ROW
+EXECUTE PROCEDURE care_taker_full_timer_unavailable_dates_insert_trigger_funct();
+
 CREATE OR REPLACE FUNCTION care_taker_full_timer_insert_trigger_funct()
   RETURNS trigger AS
 $$
