@@ -182,11 +182,7 @@ const UserCareTakerTypeDelete = async ({email, type}) => {
   }
 };
 
-const UserCareTakerFullTimeAvailabilityDateCreate = async ({
-  email,
-  date,
-  type,
-}) => {
+const UserCareTakerAvailabilityDateCreate = async ({email, date, type}) => {
   if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
     await pool.query(SQLQueries.CREATE_CARE_TAKER_UNAVAILABLE_DATE, [
       email,
@@ -213,5 +209,5 @@ export default {
   UserCareTakerSkillUpdate,
   UserCareTakerTypeCreate,
   UserCareTakerTypeDelete,
-  UserCareTakerFullTimeAvailabilityDateCreate,
+  UserCareTakerAvailabilityDateCreate,
 };

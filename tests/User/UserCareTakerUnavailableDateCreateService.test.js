@@ -7,7 +7,7 @@ import RoleUtils from '../../src/Utils/RoleUtils';
 import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import DateFixtures from '../Fixtures/DateFixtures';
 
-describe('Test UserCareTakerFullTimeAvailabilityDateCreate', () => {
+describe('Test UserCareTakerAvailabilityDateCreateService', () => {
   beforeEach('UserCareTakerTypeCreateService beforeEach', async () => {
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
     await pool.query('DELETE FROM care_taker_part_timers');
