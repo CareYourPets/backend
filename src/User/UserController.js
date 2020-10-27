@@ -272,7 +272,7 @@ app.post(
       RoleUtils.CARE_TAKER_FULL_TIMER,
       RoleUtils.CARE_TAKER_PART_TIMER,
     ]),
-    body('date').isISO8601(),
+    body('date').isDate(),
   ],
   AuthRequired,
   async (req, res) => {

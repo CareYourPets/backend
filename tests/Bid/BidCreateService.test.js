@@ -5,7 +5,7 @@ import BidService from '../../src/Bid/BidService';
 import UserFixtures from '../Fixtures/UserFixtures';
 import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 
 describe('Test BidCreate Service', () => {
   beforeEach('BidCreateService beforeEach', async () => {
@@ -56,8 +56,8 @@ describe('Test BidCreate Service', () => {
     Assert.deepStrictEqual(bids[0].pet_owner_email, petOwnerEmail);
     Assert.deepStrictEqual(bids[0].care_taker_email, careTakerEmail);
     Assert.deepStrictEqual(
-      moment(bids[0].start_date).format(MOMENT_TIME_FORMAT),
-      moment(startDate).format(MOMENT_TIME_FORMAT),
+      moment(bids[0].start_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+      moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
     );
   });
 

@@ -7,7 +7,7 @@ import UserFixtures from '../Fixtures/UserFixtures';
 import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
 import App from '../../src/App';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 
 Chai.use(ChaiHttp);
 
@@ -69,8 +69,8 @@ describe('Test BidCreate Controller', () => {
     Assert.deepStrictEqual(bids[0].care_taker_email, careTakerEmail);
     Assert.deepStrictEqual(
       // moment(bids[0].start_date).toISOString(),
-      moment(bids[0].start_date).format(MOMENT_TIME_FORMAT),
-      moment(startDate).format(MOMENT_TIME_FORMAT),
+      moment(bids[0].start_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+      moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
     );
   });
 
