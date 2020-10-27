@@ -13,6 +13,7 @@ Chai.use(ChaiHttp);
 describe('Test UserCareTakerAvailabilityDateCreateController', () => {
   beforeEach('UserCareTakerTypeCreateService beforeEach', async () => {
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_taker_full_timers');
     await pool.query('DELETE FROM care_takers');
@@ -20,6 +21,7 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
 
   afterEach('UserCareTakerTypeCreateService afterEach', async () => {
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_taker_full_timers');
     await pool.query('DELETE FROM care_takers');
@@ -40,6 +42,34 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
 
     const {rows: dates} = await pool.query(
       `SELECT email, timezone('Asia/Singapore', date) AS date FROM care_taker_full_timers_unavailable_dates WHERE email='${email}' AND date='${date}'`,
+    );
+    Assert.deepStrictEqual(
+      {
+        email,
+        date,
+      },
+      {
+        email: dates[0].email,
+        date: moment(dates[0].date).format(DateTimeUtils.MOMENT_DATE_FORMAT),
+      },
+    );
+  });
+
+  it('API should create available date for part timer', async () => {
+    const data = await UserFixtures.SeedCareTakerPartTimers(1);
+    const {email, accessToken} = data[0];
+    const type = RoleUtils.CARE_TAKER_PART_TIMER;
+    const date = moment().format(DateTimeUtils.MOMENT_DATE_FORMAT);
+    await Chai.request(App)
+      .post('/user/caretaker/availability/create')
+      .set('accessToken', accessToken)
+      .send({
+        date,
+        type,
+      });
+
+    const {rows: dates} = await pool.query(
+      `SELECT email, timezone('Asia/Singapore', date) AS date FROM care_taker_part_timers_available_dates WHERE email='${email}' AND date='${date}'`,
     );
     Assert.deepStrictEqual(
       {

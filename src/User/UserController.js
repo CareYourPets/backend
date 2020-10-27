@@ -288,6 +288,51 @@ app.post(
   },
 );
 
+app.get(
+  '/caretaker/availability/info',
+  [
+    body('type').isIn([
+      RoleUtils.CARE_TAKER_FULL_TIMER,
+      RoleUtils.CARE_TAKER_PART_TIMER,
+    ]),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerAvailabilityDateCreate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/caretaker/availability/delete',
+  [
+    body('type').isIn([
+      RoleUtils.CARE_TAKER_FULL_TIMER,
+      RoleUtils.CARE_TAKER_PART_TIMER,
+    ]),
+    body('date').isString(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerAvailabilityDateDelete({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
 export default {
   app,
 };

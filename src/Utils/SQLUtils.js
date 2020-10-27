@@ -200,6 +200,18 @@ const SQLQueries = {
       $1, $2
     )
   `,
+  SELECT_CARE_TAKER_FT_UNAVAILABLE_DATES: `
+    SELECT * FROM care_taker_full_timers_unavailable_dates WHERE email=$1
+  `,
+  SELECT_CARE_TAKER_PT_AVAILABLE_DATES: `
+    SELECT * FROM care_taker_part_timers_available_dates WHERE email=$1
+  `,
+  DELETE_CARE_TAKER_FT_UNAVAILABLE_DATE: `
+    DELETE * FROM care_taker_full_timers_unavailable_dates WHERE email=$1 AND date=$2
+  `,
+  DELETE_CARE_TAKER_PT_AVAILABLE_DATE: `
+    DELETE * FROM care_taker_part_timers_available_dates WHERE email=$1 AND date=$3
+  `,
 };
 
 export default SQLQueries;
