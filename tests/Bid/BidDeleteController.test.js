@@ -13,12 +13,16 @@ Chai.use(ChaiHttp);
 
 describe('Test BidDeleteConroller', () => {
   beforeEach('BidDeleteController beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
-    await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM psc_administrators');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
-    await pool.query('DELETE FROM psc_administrators');
     await UserFixtures.SeedPetOwners(1);
     await UserFixtures.SeedCareTakers(1);
     await PetFixtures.SeedPetCategories(1);
@@ -28,12 +32,16 @@ describe('Test BidDeleteConroller', () => {
   });
 
   afterEach('BidDeleteController afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
-    await pool.query('DELETE FROM psc_administrators');
   });
 
   it('API should delete bid', async () => {

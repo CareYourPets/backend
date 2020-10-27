@@ -13,9 +13,13 @@ Chai.use(ChaiHttp);
 
 describe('Test BidCreate Controller', () => {
   beforeEach('BidCreateController beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
-    await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM psc_administrators');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
@@ -28,7 +32,11 @@ describe('Test BidCreate Controller', () => {
   });
 
   afterEach('BidCreateController afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM pets');
