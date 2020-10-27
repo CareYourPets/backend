@@ -193,6 +193,13 @@ const SQLQueries = {
       $1, $2
     )
   `,
+  CREATE_CARE_TAKER_AVAILABLE_DATE: `
+    INSERT INTO care_taker_part_timers_available_dates (
+      email, date
+    ) VALUES (
+      $1, $2
+    )
+  `,
 };
 
 export default SQLQueries;

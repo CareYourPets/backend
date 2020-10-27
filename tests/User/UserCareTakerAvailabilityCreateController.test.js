@@ -29,7 +29,7 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
     const data = await UserFixtures.SeedCareTakerFullTimers(1);
     const {email, accessToken} = data[0];
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
-    const date = moment().toISOString();
+    const date = moment().format(DateTimeUtils.MOMENT_DATE_FORMAT);
     await Chai.request(App)
       .post('/user/caretaker/availability/create')
       .set('accessToken', accessToken)
@@ -39,12 +39,12 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
       });
 
     const {rows: dates} = await pool.query(
-      `SELECT * FROM care_taker_full_timers_unavailable_dates WHERE email='${email}' AND date='${date}'`,
+      `SELECT email, timezone('Asia/Singapore', date) AS date FROM care_taker_full_timers_unavailable_dates WHERE email='${email}' AND date='${date}'`,
     );
     Assert.deepStrictEqual(
       {
         email,
-        date: moment(date).format(DateTimeUtils.MOMENT_DATE_FORMAT),
+        date,
       },
       {
         email: dates[0].email,
@@ -55,7 +55,7 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
 
   it('API should return 401 on missing access token', async () => {
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
-    const date = moment().toISOString();
+    const date = moment().format(DateTimeUtils.MOMENT_DATE_FORMAT);
     const res = await Chai.request(App)
       .post('/user/caretaker/availability/create')
       .send({

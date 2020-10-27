@@ -189,7 +189,10 @@ const UserCareTakerAvailabilityDateCreate = async ({email, date, type}) => {
       date,
     ]);
   } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
-    // await pool.query(SQLQueries.DELETE_CARE_TAKER_PART_TIMER, [email]);
+    await pool.query(SQLQueries.CREATE_CARE_TAKER_AVAILABLE_DATE, [
+      email,
+      date,
+    ]);
   } else {
     throw new Error('Invalid Type');
   }

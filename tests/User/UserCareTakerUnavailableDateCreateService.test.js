@@ -10,6 +10,7 @@ import DateFixtures from '../Fixtures/DateFixtures';
 describe('Test UserCareTakerAvailabilityDateCreateService', () => {
   beforeEach('UserCareTakerTypeCreateService beforeEach', async () => {
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_taker_full_timers');
     await pool.query('DELETE FROM care_takers');
@@ -17,6 +18,7 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
 
   afterEach('UserCareTakerTypeCreateService afterEach', async () => {
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_taker_full_timers');
     await pool.query('DELETE FROM care_takers');
@@ -26,19 +28,44 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
     const data = await UserFixtures.SeedCareTakerFullTimers(1);
     const {email} = data[0];
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
-    const date = moment().toISOString();
-    await UserService.UserCareTakerFullTimeAvailabilityDateCreate({
+    const date = moment().format(DateTimeUtils.MOMENT_DATE_FORMAT);
+    await UserService.UserCareTakerAvailabilityDateCreate({
       email,
       date,
       type,
     });
     const {rows: dates} = await pool.query(
-      `SELECT * FROM care_taker_full_timers_unavailable_dates WHERE email='${email}' AND date='${date}'`,
+      `SELECT email, timezone('Asia/Singapore', date) AS date FROM care_taker_full_timers_unavailable_dates WHERE email='${email}' AND date='${date}'`,
     );
     Assert.deepStrictEqual(
       {
         email,
-        date: moment(date).format(DateTimeUtils.MOMENT_DATE_FORMAT),
+        date,
+      },
+      {
+        email: dates[0].email,
+        date: moment(dates[0].date).format(DateTimeUtils.MOMENT_DATE_FORMAT),
+      },
+    );
+  });
+
+  it('Service should create available date for part timer', async () => {
+    const data = await UserFixtures.SeedCareTakerPartTimers(1);
+    const {email} = data[0];
+    const type = RoleUtils.CARE_TAKER_PART_TIMER;
+    const date = moment().format(DateTimeUtils.MOMENT_DATE_FORMAT);
+    await UserService.UserCareTakerAvailabilityDateCreate({
+      email,
+      date,
+      type,
+    });
+    const {rows: dates} = await pool.query(
+      `SELECT email, timezone('Asia/Singapore', date) AS date FROM care_taker_part_timers_available_dates WHERE email='${email}' AND date='${date}'`,
+    );
+    Assert.deepStrictEqual(
+      {
+        email,
+        date,
       },
       {
         email: dates[0].email,
@@ -51,21 +78,23 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
     const data = await UserFixtures.SeedCareTakerFullTimers(1);
     const {email} = data[0];
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
-    const date = moment().startOf('year').add(214, 'days').toISOString();
-    await UserService.UserCareTakerFullTimeAvailabilityDateCreate({
+    await DateFixtures.SeedEdgeCaseDates();
+    const date = moment()
+      .startOf('year')
+      .add(214, 'days')
+      .format(DateTimeUtils.MOMENT_DATE_FORMAT);
+    await UserService.UserCareTakerAvailabilityDateCreate({
       email,
       date,
       type,
     });
     const {rows: dates} = await pool.query(
-      `SELECT * FROM care_taker_full_timers_unavailable_dates WHERE email='${email}' AND date='${date}'`,
+      `SELECT email, timezone('Asia/Singapore', date) AS date FROM care_taker_full_timers_unavailable_dates WHERE email='${email}' AND date='${date}'`,
     );
     Assert.deepStrictEqual(
       {
         email,
-        date: moment(date)
-          .subtract(1, 'day')
-          .format(DateTimeUtils.MOMENT_DATE_FORMAT),
+        date,
       },
       {
         email: dates[0].email,
@@ -83,7 +112,7 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
 
     await Assert.rejects(
       () =>
-        UserService.UserCareTakerFullTimeAvailabilityDateCreate({
+        UserService.UserCareTakerAvailabilityDateCreate({
           email,
           date,
           type,
@@ -98,11 +127,14 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
     await DateFixtures.SeedEdgeCaseDates();
     // adding a day inside one of the 150 day blocks
-    const date = moment().startOf('year').add(220, 'days').toISOString();
+    const date = moment()
+      .startOf('year')
+      .add(220, 'days')
+      .format(DateTimeUtils.MOMENT_DATE_FORMAT);
 
     await Assert.rejects(
       () =>
-        UserService.UserCareTakerFullTimeAvailabilityDateCreate({
+        UserService.UserCareTakerAvailabilityDateCreate({
           email,
           date,
           type,
@@ -116,11 +148,14 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
     const {email} = data[0];
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
     // adding a day inside one of the 150 day blocks
-    const date = moment().startOf('year').subtract(10, 'days').toISOString();
+    const date = moment()
+      .startOf('year')
+      .subtract(10, 'days')
+      .format(DateTimeUtils.MOMENT_DATE_FORMAT);
 
     await Assert.rejects(
       () =>
-        UserService.UserCareTakerFullTimeAvailabilityDateCreate({
+        UserService.UserCareTakerAvailabilityDateCreate({
           email,
           date,
           type,
