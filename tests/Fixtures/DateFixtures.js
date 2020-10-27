@@ -19,7 +19,9 @@ const SeedAllLeaveDays = async () => {
     _.times(65, (idx) => {
       const next = moment().startOf('year').add(idx, 'days');
       return pool.query(
-        `INSERT INTO care_taker_full_timers_unavailable_dates ( email, date ) VALUES ( '${email}', '${next.toISOString()}')`,
+        `INSERT INTO care_taker_full_timers_unavailable_dates ( email, date ) VALUES ( '${email}', '${next.format(
+          DateTimeUtils.MOMENT_DATE_FORMAT,
+        )}')`,
       );
     }),
   );
