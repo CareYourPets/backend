@@ -10,6 +10,8 @@ DROP TABLE pets CASCADE;
 DROP TABLE care_taker_skills CASCADE;
 DROP TABLE care_taker_full_timers CASCADE;
 DROP TABLE care_taker_part_timers CASCADE;
+DROP FUNCTION calculate_duration CASCADE;
+DROP TABLE bids CASCADE;
 DROP TABLE pet_owner_notifications CASCADE;
 DROP TABLE care_taker_notifications CASCADE;
 DROP TABLE psc_administrator_notifications CASCADE;

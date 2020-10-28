@@ -6,6 +6,7 @@ import pool from '../../src/Utils/DBUtils';
 import UserFixtures from '../Fixtures/UserFixtures';
 import App from '../../src/App';
 import GenderUtils from '../../src/Utils/GenderUtils';
+import AreaUtils from '../../src/Utils/AreaUtils';
 
 Chai.use(ChaiHttp);
 
@@ -24,6 +25,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
     const name = 'test';
     const gender = GenderUtils.MALE;
     const contact = 'test';
+    const area = AreaUtils.NORTH;
     const location = 'test';
     const bio = 'test';
 
@@ -34,6 +36,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
         name,
         gender,
         contact,
+        area,
         location,
         bio,
       });
@@ -48,6 +51,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
         name,
         gender,
         contact,
+        area,
         location,
         bio,
         is_deleted: false,
@@ -61,6 +65,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
     const {accessToken} = users[0];
     const gender = GenderUtils.MALE;
     const contact = 'test';
+    const area = AreaUtils.NORTH;
     const location = 'test';
     const bio = 'test';
 
@@ -70,6 +75,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
       .send({
         gender,
         contact,
+        area,
         location,
         bio,
       });
@@ -82,6 +88,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
     const {accessToken} = users[0];
     const name = 'test';
     const contact = 'test';
+    const area = AreaUtils.NORTH;
     const location = 'test';
     const bio = 'test';
 
@@ -91,6 +98,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
       .send({
         name,
         contact,
+        area,
         location,
         bio,
       });
@@ -103,6 +111,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
     const {accessToken} = users[0];
     const name = 'test';
     const gender = GenderUtils.MALE;
+    const area = AreaUtils.NORTH;
     const location = 'test';
     const bio = 'test';
 
@@ -112,6 +121,30 @@ describe('Test UserCareTakerUpdate Controller', () => {
       .send({
         name,
         gender,
+        area,
+        location,
+        bio,
+      });
+
+    Assert.deepStrictEqual(422, res.status);
+  });
+
+  it('Should return 422 for missing area', async () => {
+    const users = await UserFixtures.SeedCareTakers(2);
+    const {accessToken} = users[0];
+    const name = 'test';
+    const gender = GenderUtils.MALE;
+    const contact = 'test';
+    const location = 'test';
+    const bio = 'test';
+
+    const res = await Chai.request(App)
+      .post('/user/update/caretaker')
+      .set('accessToken', accessToken)
+      .send({
+        name,
+        gender,
+        contact,
         location,
         bio,
       });
@@ -125,6 +158,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
     const name = 'test';
     const gender = GenderUtils.MALE;
     const contact = 'test';
+    const area = AreaUtils.NORTH;
     const bio = 'test';
 
     const res = await Chai.request(App)
@@ -134,6 +168,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
         name,
         gender,
         contact,
+        area,
         bio,
       });
 
@@ -146,6 +181,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
     const name = 'test';
     const gender = GenderUtils.MALE;
     const contact = 'test';
+    const area = AreaUtils.NORTH;
     const location = 'test';
 
     const res = await Chai.request(App)
@@ -155,6 +191,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
         name,
         gender,
         contact,
+        area,
         location,
       });
 
@@ -167,6 +204,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
     const name = 'test';
     const gender = 'test';
     const contact = 'test';
+    const area = AreaUtils.NORTH;
     const location = 'test';
     const bio = 'test';
 
@@ -177,6 +215,32 @@ describe('Test UserCareTakerUpdate Controller', () => {
         name,
         gender,
         contact,
+        area,
+        location,
+        bio,
+      });
+
+    Assert.deepStrictEqual(422, res.status);
+  });
+
+  it('Should return 422 for invalid area', async () => {
+    const users = await UserFixtures.SeedCareTakers(2);
+    const {accessToken} = users[0];
+    const name = 'test';
+    const gender = GenderUtils.MALE;
+    const contact = 'test';
+    const area = 'test';
+    const location = 'test';
+    const bio = 'test';
+
+    const res = await Chai.request(App)
+      .post('/user/update/caretaker')
+      .set('accessToken', accessToken)
+      .send({
+        name,
+        gender,
+        contact,
+        area,
         location,
         bio,
       });
@@ -188,6 +252,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
     const name = 'test';
     const gender = GenderUtils.MALE;
     const contact = 'test';
+    const area = AreaUtils.NORTH;
     const location = 'test';
     const bio = 'test';
 
@@ -195,6 +260,7 @@ describe('Test UserCareTakerUpdate Controller', () => {
       name,
       gender,
       contact,
+      area,
       location,
       bio,
     });

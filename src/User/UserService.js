@@ -85,6 +85,7 @@ const UserPetOwnerUpdate = async ({
   name,
   gender,
   contact,
+  area,
   location,
   bio,
 }) => {
@@ -93,6 +94,7 @@ const UserPetOwnerUpdate = async ({
     name,
     gender,
     contact,
+    area,
     location,
     bio,
   ]);
@@ -104,6 +106,7 @@ const UserCareTakerUpdate = async ({
   name,
   gender,
   contact,
+  area,
   location,
   bio,
 }) => {
@@ -112,6 +115,7 @@ const UserCareTakerUpdate = async ({
     name,
     gender,
     contact,
+    area,
     location,
     bio,
   ]);
@@ -178,6 +182,62 @@ const UserCareTakerTypeDelete = async ({email, type}) => {
   }
 };
 
+const NotificationsInfo = async ({email, role}) => {
+  let notifs = null;
+  if (role === RoleUtils.CARE_TAKER) {
+    notifs = await pool.query(SQLQueries.SELECT_CARE_TAKER_NOTIFICATIONS, [
+      email,
+    ]);
+  } else if (role === RoleUtils.PET_OWNER) {
+    notifs = await pool.query(SQLQueries.SELECT_PET_OWNER_NOTIFICATIONS, [
+      email,
+    ]);
+  } else {
+    throw new Error('Invalid Role');
+  }
+  return notifs.rows;
+};
+
+// eslint-disable-next-line camelcase
+const NotificationDelete = async ({notif_date, email, role}) => {
+  if (role === RoleUtils.CARE_TAKER) {
+    await pool.query(SQLQueries.DELETE_CARE_TAKER_NOTIFICATION, [
+      // eslint-disable-next-line camelcase
+      notif_date,
+      email,
+    ]);
+  } else if (role === RoleUtils.PET_OWNER) {
+    await pool.query(SQLQueries.DELETE_PET_OWNER_NOTIFICATION, [
+      // eslint-disable-next-line camelcase
+      notif_date,
+      email,
+    ]);
+  } else {
+    throw new Error('Invalid Role');
+  }
+  return {status: 'ok'};
+};
+
+// eslint-disable-next-line camelcase
+const NotificationRead = async ({notif_date, email, role}) => {
+  if (role === RoleUtils.CARE_TAKER) {
+    await pool.query(SQLQueries.READ_CARE_TAKER_NOTIFICATION, [
+      // eslint-disable-next-line camelcase
+      notif_date,
+      email,
+    ]);
+  } else if (role === RoleUtils.PET_OWNER) {
+    await pool.query(SQLQueries.READ_PET_OWNER_NOTIFICATION, [
+      // eslint-disable-next-line camelcase
+      notif_date,
+      email,
+    ]);
+  } else {
+    throw new Error('Invalid Role');
+  }
+  return {status: 'ok'};
+};
+
 export default {
   UserCreate,
   UserLogin,
@@ -192,4 +252,7 @@ export default {
   UserCareTakerSkillUpdate,
   UserCareTakerTypeCreate,
   UserCareTakerTypeDelete,
+  NotificationRead,
+  NotificationDelete,
+  NotificationsInfo,
 };

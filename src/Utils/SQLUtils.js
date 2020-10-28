@@ -42,10 +42,10 @@ const SQLQueries = {
     UPDATE psc_administrators SET is_approved=true WHERE email=$1;
   `,
   UPDATE_PET_OWNER: `
-    UPDATE pet_owners SET name=$2, gender=$3, contact=$4, location=$5, bio=$6 WHERE email=$1
+    UPDATE pet_owners SET name=$2, gender=$3, contact=$4, area=$5, location=$6, bio=$7 WHERE email=$1
   `,
   UPDATE_CARE_TAKER: `
-    UPDATE care_takers SET name=$2, gender=$3, contact=$4, location=$5, bio=$6 WHERE email=$1
+    UPDATE care_takers SET name=$2, gender=$3, contact=$4, area=$5, location=$6, bio=$7 WHERE email=$1
   `,
   UPDATE_ADMINISTRATOR: `
     UPDATE psc_administrators SET name=$2, gender=$3, contact=$4, location=$5 WHERE email=$1
@@ -114,24 +114,105 @@ const SQLQueries = {
   DELETE_CARE_TAKER_PART_TIMER: `
     DELETE FROM care_taker_part_timers WHERE email=$1;
   `,
-  SELECT_PET_OWNER_NOTIFICATION: `
+  FETCH_PET: `
+    SELECT * FROM pets WHERE email=$1 AND is_deleted=false;
+  `,
+  FETCH_ALL_CARE_TAKERS: `
+    SELECT email, name, area, location, gender, contact, bio
+    FROM care_takers
+    WHERE is_deleted = false
+    ORDER BY email ASC, name ASC;
+  `,
+  FETCH_ALL_CARE_TAKERS_BY_LOCATION: `
+    SELECT c1.email, c1.name, c1.area, c1.location, c1.gender, c1.contact, c1.bio
+    FROM care_takers c1
+    INNER JOIN pet_owners p1 ON p1.area = c1.area
+    WHERE c1.is_deleted = false AND p1.is_deleted = false AND p1.email=$1
+    ORDER BY email;
+  `,
+  FETCH_CARE_TAKER: `
+    SELECT CASE
+              WHEN ctf.email IS NULL THEN 'Part Timer'
+              WHEN ctp.email IS NULL THEN 'Full Timer'
+            END AS type, 
+            ct.email, ct.name, ct.area, ct.location, ct.gender, ct.contact, ct.bio
+    FROM care_takers ct
+    LEFT JOIN care_taker_full_timers ctf ON ctf.email=ct.email
+    LEFT JOIN care_taker_part_timers ctp ON ctp.email=ct.email
+    WHERE ct.email = $1;
+  `,
+  FETCH_CARE_TAKER_SKILLS: `
+      SELECT category, price FROM care_taker_skills
+      WHERE email = $1
+      ORDER BY category;
+  `,
+  FETCH_PET_OWNERS_BY_LOCATION: `
+    SELECT email, name, area, location, gender, contact, bio
+    FROM pet_owners
+    WHERE is_deleted=false AND area = $1;
+  `,
+  FETCH_PET_OWNER: `
+    SELECT email, name, area, location, gender, contact, bio
+    FROM pet_owners
+    WHERE email = $1;
+  `,
+  CREATE_BID: `
+    INSERT INTO bids (
+      pet_name, pet_owner_email, care_taker_email, start_date, end_date
+    ) VALUES (
+      $1, $2, $3, $4, $5
+    )
+  `,
+  UPDATE_BID: `
+    UPDATE bids
+    SET is_accepted=$1,
+        transaction_date=$2,
+        payment_mode=$3,
+        amount=$4,
+        review_date=$5,
+        transportation_mode=$6,
+        review=$7
+    WHERE pet_name=$8 AND pet_owner_email=$9 AND care_taker_email=$10 AND start_date=$11;
+  `,
+  DELETE_BID: `
+    UPDATE bids SET is_deleted=true WHERE pet_name=$1 AND pet_owner_email=$2 AND care_taker_email=$3 AND start_date=$4;
+  `,
+  SELECT_BIDS: `
+    SELECT * FROM bids WHERE is_deleted=false;
+  `,
+  SELECT_CARE_TAKER_BIDS: `
+    SELECT * FROM bids WHERE care_taker_email=$1 AND is_deleted=false;
+  `,
+  SELECT_PET_OWNER_BIDS: `
+    SELECT * FROM bids WHERE pet_owner_email=$1 AND is_deleted=false;
+  `,
+  SELECT_PET_OWNER_NOTIFICATIONS: `
     SELECT * FROM pet_owner_notifications WHERE email=$1;
   `,
-  SELECT_CARE_TAKER_NOTIFICATION: `
+  SELECT_CARE_TAKER_NOTIFICATIONS: `
     SELECT * FROM care_taker_notifications WHERE email=$1;
   `,
-  SELECT_PSC_ADMINISTRATOR_NOTIFICATION: `
-    SELECT * FROM psc_administrator_notifications WHERE email=$1;
-  `,
+  // SELECT_PSC_ADMINISTRATOR_NOTIFICATIONS: `
+  //   SELECT * FROM psc_administrator_notifications WHERE email=$1;
+  // `,
   READ_PET_OWNER_NOTIFICATION: `
-    UPDATE pet_owner_notifications SET is_read=TRUE WHERE notif_date=$1;
+    UPDATE pet_owner_notifications SET is_read=TRUE WHERE notif_date=$1 AND email=$2;
   `,
   READ_CARE_TAKER_NOTIFICATION: `
-    UPDATE care_taker_notifications SET is_read=TRUE WHERE notif_date=$1;
+    UPDATE care_taker_notifications SET is_read=TRUE WHERE notif_date=$1 AND email=$2;
   `,
-  READ_PSC_ADMINISTRATOR_NOTIFICATION: `
-    UPDATE psc_administrator_notifications SET is_read=TRUE WHERE notif_date=$1;
+  // READ_PSC_ADMINISTRATOR_NOTIFICATION: `
+  //   UPDATE psc_administrator_notifications SET is_read=TRUE WHERE notif_date=$1 AND email=$2;
+  // `,
+  DELETE_PET_OWNER_NOTIFICATION: `
+    UPDATE pet_owner_notifications SET is_deleted=TRUE WHERE notif_date=$1 AND email=$2;
   `,
+  DELETE_CARE_TAKER_NOTIFICATION: `
+    UPDATE care_taker_notifications SET is_deleted=TRUE WHERE notif_date=$1 AND email=$2;
+  `,
+  // DELETE_PSC_ADMINISTRATOR_NOTIFICATION: `
+  //   UPDATE psc_administrator_notifications SET is_deleted=TRUE WHERE notif_date=$1 AND email=$2;
+  // `,
 };
 
 export default SQLQueries;
