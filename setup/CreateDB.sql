@@ -95,7 +95,8 @@ CREATE OR REPLACE FUNCTION check_care_taker_pt_availability(email VARCHAR, date 
   RETURNS BOOLEAN AS 
 $$
 DECLARE
-  upper_bound DATE = (current_timestamp::date + interval '2 year' - interval '1 day')::date;
+  /* Must be within 2 years window of current_timestamp's year */
+  upper_bound DATE = (date_trunc('year', current_timestamp::date) + interval '2 year' - interval '1 day')::date;
 BEGIN
   IF date NOT BETWEEN current_timestamp::date AND upper_bound
   THEN 
