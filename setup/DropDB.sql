@@ -5,6 +5,7 @@ DROP TRIGGER care_taker_full_timers_unavailable_dates_insert_trigger ON care_tak
 DROP FUNCTION calculate_duration CASCADE;
 DROP FUNCTION check_care_taker_availability CASCADE;
 DROP TABLE pet_categories CASCADE;
+DROP FUNCTION check_care_taker_pt_availability CASCADE;
 
 DROP TABLE pet_owners CASCADE;
 DROP TABLE psc_administrators CASCADE;
