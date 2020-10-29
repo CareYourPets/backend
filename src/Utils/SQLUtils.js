@@ -58,7 +58,7 @@ const SQLQueries = {
     );
   `,
   FETCH_PET_CATEGORIES: `
-    SELECT * FROM pet_categories WHERE is_deleted=false;
+    SELECT * FROM pet_categories WHERE is_deleted=false ORDER BY category;
   `,
   FETCH_PET_CATEGORY: `
     SELECT * FROM pet_categories WHERE category=$1 AND is_deleted=false;`,
