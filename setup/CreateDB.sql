@@ -91,7 +91,7 @@ CREATE TABLE care_taker_part_timers (
 );
 
 CREATE TABLE pet_owner_notifications (
-  notif_date TIMESTAMPTZ DEFAULT current_timestamp,
+  notif_date TIMESTAMPTZ DEFAULT current_timestamp(2),
   email VARCHAR REFERENCES pet_owners(email) ON DELETE CASCADE,
   is_read BOOLEAN NOT NULL DEFAULT false,
   message VARCHAR,
@@ -100,7 +100,7 @@ CREATE TABLE pet_owner_notifications (
 );
 
 CREATE TABLE care_taker_notifications (
-  notif_date TIMESTAMPTZ DEFAULT current_timestamp,
+  notif_date TIMESTAMPTZ DEFAULT current_timestamp(2),
   email VARCHAR REFERENCES care_takers(email) ON DELETE CASCADE,
   is_read BOOLEAN NOT NULL DEFAULT false,
   message VARCHAR,
@@ -192,7 +192,7 @@ CREATE OR REPLACE FUNCTION create_pet_owner_notification_trigger_funct()
 $$
 BEGIN
   INSERT INTO pet_owner_notifications(email, message)
-  VALUES(NEW.pet_owner_email, 'New Notification for ' || NEW.pet_owner_email);
+  VALUES(NEW.pet_owner_email, 'Bid has been created for ' || NEW.pet_owner_email);
   RETURN NEW;
 END;
 $$
@@ -203,7 +203,29 @@ CREATE OR REPLACE FUNCTION create_care_taker_notification_trigger_funct()
 $$
 BEGIN
   INSERT INTO care_taker_notifications(email, message)
-  VALUES(NEW.care_taker_email, 'New Notification for ' || NEW.care_taker_email);
+  VALUES(NEW.care_taker_email, 'Bid has been created for ' || NEW.care_taker_email);
+  RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION update_pet_owner_notification_trigger_funct()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  INSERT INTO pet_owner_notifications(email, message)
+  VALUES(NEW.pet_owner_email, 'Bid has been updated for ' || NEW.pet_owner_email);
+  RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION update_care_taker_notification_trigger_funct()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  INSERT INTO care_taker_notifications(email, message)
+  VALUES(NEW.care_taker_email, 'Bid has been updated for ' || NEW.care_taker_email);
   RETURN NEW;
 END;
 $$
@@ -245,6 +267,18 @@ AFTER INSERT
 ON bids
 FOR EACH ROW
 EXECUTE PROCEDURE create_care_taker_notification_trigger_funct();
+
+CREATE TRIGGER update_pet_owner_notification_trigger
+AFTER UPDATE
+ON bids
+FOR EACH ROW
+EXECUTE PROCEDURE update_pet_owner_notification_trigger_funct();
+
+CREATE TRIGGER update_care_taker_notification_trigger
+AFTER UPDATE
+ON bids
+FOR EACH ROW
+EXECUTE PROCEDURE update_care_taker_notification_trigger_funct();
 /*
 CREATE TRIGGER create_psc_administrator_notification_trigger
 AFTER INSERT

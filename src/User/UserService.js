@@ -195,7 +195,7 @@ const NotificationsInfo = async ({email, role}) => {
   } else {
     throw new Error('Invalid Role');
   }
-  return notifs.rows;
+  return notifs;
 };
 
 // eslint-disable-next-line camelcase
