@@ -19,6 +19,8 @@ describe('Test BidCreate Controller', () => {
     await pool.query('DELETE FROM psc_administrators');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
+    await pool.query('DELETE FROM care_taker_notifications');
+    await pool.query('DELETE FROM pet_owner_notifications');
     await UserFixtures.SeedPetOwners(1);
     await UserFixtures.SeedCareTakers(1);
     await PetFixtures.SeedPetCategories(1);
@@ -34,6 +36,8 @@ describe('Test BidCreate Controller', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM psc_administrators');
+    await pool.query('DELETE FROM care_taker_notifications');
+    await pool.query('DELETE FROM pet_owner_notifications');
   });
 
   it('API should create bid', async () => {

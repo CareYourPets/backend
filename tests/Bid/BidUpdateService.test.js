@@ -15,6 +15,8 @@ describe('Test BidUpdate Service', () => {
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
+    await pool.query('DELETE FROM care_taker_notifications');
+    await pool.query('DELETE FROM pet_owner_notifications');
     await UserFixtures.SeedPetOwners(1);
     await UserFixtures.SeedCareTakers(1);
     await PetFixtures.SeedPetCategories(1);
@@ -29,6 +31,8 @@ describe('Test BidUpdate Service', () => {
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
+    await pool.query('DELETE FROM care_taker_notifications');
+    await pool.query('DELETE FROM pet_owner_notifications');
   });
 
   it('Service should update bid', async () => {

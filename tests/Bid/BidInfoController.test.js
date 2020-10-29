@@ -18,6 +18,8 @@ describe('Test BidInfo Controller', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM psc_administrators');
+    await pool.query('DELETE FROM care_taker_notifications');
+    await pool.query('DELETE FROM pet_owner_notifications');
   });
 
   afterEach('BidInfoController afterEach', async () => {
@@ -27,6 +29,8 @@ describe('Test BidInfo Controller', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM psc_administrators');
+    await pool.query('DELETE FROM care_taker_notifications');
+    await pool.query('DELETE FROM pet_owner_notifications');
   });
 
   it('API should fetch all bids made by pet owner', async () => {

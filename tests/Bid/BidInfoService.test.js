@@ -14,6 +14,8 @@ describe('Test BidInfo Service', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM psc_administrators');
+    await pool.query('DELETE FROM care_taker_notifications');
+    await pool.query('DELETE FROM pet_owner_notifications');
   });
 
   afterEach('BidInfoService afterEach', async () => {
@@ -23,6 +25,8 @@ describe('Test BidInfo Service', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM psc_administrators');
+    await pool.query('DELETE FROM care_taker_notifications');
+    await pool.query('DELETE FROM pet_owner_notifications');
   });
 
   it('Service should fetch all bids made by pet owner', async () => {
