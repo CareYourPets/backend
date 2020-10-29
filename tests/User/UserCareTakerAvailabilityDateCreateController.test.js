@@ -31,7 +31,7 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
     const data = await UserFixtures.SeedCareTakerFullTimers(1);
     const {email, accessToken} = data[0];
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
-    const date = moment().format(DateTimeUtils.MOMENT_DATE_FORMAT);
+    const date = moment().toISOString(true);
     await Chai.request(App)
       .post('/user/caretaker/availability/create')
       .set('accessToken', accessToken)
@@ -46,7 +46,7 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
     Assert.deepStrictEqual(
       {
         email,
-        date,
+        date: moment(date).format(DateTimeUtils.MOMENT_DATE_FORMAT),
       },
       {
         email: dates[0].email,
@@ -59,7 +59,7 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
     const data = await UserFixtures.SeedCareTakerPartTimers(1);
     const {email, accessToken} = data[0];
     const type = RoleUtils.CARE_TAKER_PART_TIMER;
-    const date = moment().format(DateTimeUtils.MOMENT_DATE_FORMAT);
+    const date = moment().toISOString(true);
     await Chai.request(App)
       .post('/user/caretaker/availability/create')
       .set('accessToken', accessToken)
@@ -74,7 +74,7 @@ describe('Test UserCareTakerAvailabilityDateCreateController', () => {
     Assert.deepStrictEqual(
       {
         email,
-        date,
+        date: moment(date).format(DateTimeUtils.MOMENT_DATE_FORMAT),
       },
       {
         email: dates[0].email,

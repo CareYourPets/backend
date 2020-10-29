@@ -98,7 +98,10 @@ DECLARE
   start_of_year DATE = (date_trunc('year', NOW()::date))::date;
   end_of_year DATE = (date_trunc('year', NOW()::date) + interval '1 year' - interval '1 day')::date;
 BEGIN
-  IF (
+  IF date NOT BETWEEN start_of_year AND end_of_year
+  THEN 
+    RETURN false;
+  ELSIF (
     SELECT count(*)
     FROM bids
     WHERE care_taker_email = email
@@ -107,8 +110,9 @@ BEGIN
   ) > 0
   THEN 
     RETURN false;
+  ELSE
+    RETURN true;
   END IF;
-  RETURN date BETWEEN start_of_year AND end_of_year;
 END;
 $$
 LANGUAGE 'plpgsql';
