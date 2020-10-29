@@ -91,7 +91,7 @@ CREATE TABLE care_taker_part_timers (
 );
 
 CREATE TABLE pet_owner_notifications (
-  notif_date TIMESTAMPTZ DEFAULT current_timestamp(2),
+  notif_date TIMESTAMPTZ DEFAULT current_timestamp(3),
   email VARCHAR REFERENCES pet_owners(email) ON DELETE CASCADE,
   is_read BOOLEAN NOT NULL DEFAULT false,
   message VARCHAR,
@@ -100,7 +100,7 @@ CREATE TABLE pet_owner_notifications (
 );
 
 CREATE TABLE care_taker_notifications (
-  notif_date TIMESTAMPTZ DEFAULT current_timestamp(2),
+  notif_date TIMESTAMPTZ DEFAULT current_timestamp(3),
   email VARCHAR REFERENCES care_takers(email) ON DELETE CASCADE,
   is_read BOOLEAN NOT NULL DEFAULT false,
   message VARCHAR,
