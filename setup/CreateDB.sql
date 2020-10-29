@@ -216,32 +216,6 @@ END;
 $$
 LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE FUNCTION check_care_taker_availability(email VARCHAR, date DATE)
-  RETURNS BOOLEAN AS 
-$$
-DECLARE
-  start_of_year DATE = (date_trunc('year', NOW()::date))::date;
-  end_of_year DATE = (date_trunc('year', NOW()::date) + interval '1 year' - interval '1 day')::date;
-BEGIN
-  IF date NOT BETWEEN start_of_year AND end_of_year
-  THEN 
-    RETURN false;
-  ELSIF (
-    SELECT count(*)
-    FROM bids
-    WHERE care_taker_email = email
-    AND is_accepted = true
-    AND date BETWEEN start_date AND end_date
-  ) > 0
-  THEN 
-    RETURN false;
-  ELSE
-    RETURN true;
-  END IF;
-END;
-$$
-LANGUAGE 'plpgsql';
-
 CREATE TABLE care_taker_full_timers_unavailable_dates (
   email VARCHAR REFERENCES care_taker_full_timers(email),
   date DATE NOT NULL,
