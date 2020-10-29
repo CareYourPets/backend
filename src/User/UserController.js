@@ -299,7 +299,7 @@ app.get(
   AuthRequired,
   async (req, res) => {
     try {
-      const response = await service.UserCareTakerAvailabilityDateCreate({
+      const response = await service.UserCareTakerAvailabilityDatesInfo({
         ...req.user,
         ...req.body,
       });
