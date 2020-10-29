@@ -190,14 +190,14 @@ const SQLQueries = {
     INSERT INTO care_taker_full_timers_unavailable_dates (
       email, date
     ) VALUES (
-      $1, $2
+      $1, $2::date
     )
   `,
   CREATE_CARE_TAKER_AVAILABLE_DATE: `
     INSERT INTO care_taker_part_timers_available_dates (
       email, date
     ) VALUES (
-      $1, $2
+      $1, $2::date
     )
   `,
   SELECT_CARE_TAKER_FT_UNAVAILABLE_DATES: `
@@ -207,10 +207,10 @@ const SQLQueries = {
     SELECT * FROM care_taker_part_timers_available_dates WHERE email=$1
   `,
   DELETE_CARE_TAKER_FT_UNAVAILABLE_DATE: `
-    DELETE * FROM care_taker_full_timers_unavailable_dates WHERE email=$1 AND date=$2
+    DELETE * FROM care_taker_full_timers_unavailable_dates WHERE email=$1 AND date=$2::date
   `,
   DELETE_CARE_TAKER_PT_AVAILABLE_DATE: `
-    DELETE * FROM care_taker_part_timers_available_dates WHERE email=$1 AND date=$3
+    DELETE * FROM care_taker_part_timers_available_dates WHERE email=$1 AND date=$3::date
   `,
 };
 
