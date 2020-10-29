@@ -1,4 +1,5 @@
 SET timezone TO 'Asia/Singapore';
+SET datestyle TO 'ISO, DMY';
 
 CREATE TYPE gender_enum AS ENUM (
   'MALE', 
