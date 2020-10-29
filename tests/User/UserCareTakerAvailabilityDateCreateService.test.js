@@ -6,9 +6,15 @@ import UserService from '../../src/User/UserService';
 import RoleUtils from '../../src/Utils/RoleUtils';
 import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import DateFixtures from '../Fixtures/DateFixtures';
+import BidFixtures from '../Fixtures/BidFixtures';
+import PetFixtures from '../Fixtures/PetFixtures';
 
 describe('Test UserCareTakerAvailabilityDateCreateService', () => {
   beforeEach('UserCareTakerTypeCreateService beforeEach', async () => {
+    await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM pets');
+    await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
     await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM care_taker_part_timers');
@@ -17,6 +23,10 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
   });
 
   afterEach('UserCareTakerTypeCreateService afterEach', async () => {
+    await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM pets');
+    await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
     await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM care_taker_part_timers');
@@ -97,6 +107,59 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
         email: dates[0].email,
         date: moment(dates[0].date).format(DateTimeUtils.MOMENT_DATE_FORMAT),
       },
+    );
+  });
+
+  it('Service should reject available date for pt if it exceeds 2 year window', async () => {
+    const data = await UserFixtures.SeedCareTakerPartTimers(1);
+    const {email} = data[0];
+    const type = RoleUtils.CARE_TAKER_PART_TIMER;
+    const date = moment().add(2, 'years').toISOString(true);
+
+    await Assert.rejects(
+      () =>
+        UserService.UserCareTakerAvailabilityDateCreate({
+          email,
+          date,
+          type,
+        }),
+      Error,
+    );
+  });
+
+  it('Service should reject unavailable dates if full timer has a pet under their care', async () => {
+    const user = await UserFixtures.SeedPetOwners(1);
+    const data = await UserFixtures.SeedCareTakerFullTimers(1);
+    const category = await PetFixtures.SeedPetCategories(1);
+    const pet = await PetFixtures.SeedPets(
+      1,
+      user[0].email,
+      category[0].category,
+    );
+    const {email} = data[0];
+    const type = RoleUtils.CARE_TAKER_FULL_TIMER;
+    const startDate = moment().toISOString();
+    const endDate = moment().add(4, 'days').toISOString(true);
+    const date = moment().add(2, 'days').toISOString(true);
+    await BidFixtures.SeedBids({
+      petName: pet[0].name,
+      petOwnerEmail: user[0].email,
+      careTakerEmail: email,
+      startDate,
+      endDate,
+    });
+    await pool.query(
+      `UPDATE bids SET is_accepted=true WHERE pet_name='${pet[0].name}' AND pet_owner_email='${user[0].email}' AND care_taker_email='${email}' AND start_date='${startDate}'`,
+    );
+
+    await Assert.rejects(
+      () =>
+        UserService.UserCareTakerAvailabilityDateCreate({
+          email,
+          date,
+          type,
+        }),
+      Error,
     );
   });
 
