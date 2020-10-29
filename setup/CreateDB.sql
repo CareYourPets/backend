@@ -218,14 +218,14 @@ LANGUAGE 'plpgsql';
 
 CREATE TABLE care_taker_full_timers_unavailable_dates (
   email VARCHAR REFERENCES care_taker_full_timers(email),
-  date DATE NOT NULL,
+  date DATE,
   CHECK(check_care_taker_availability(email, date)),
   PRIMARY KEY(email, date)
 );
 
 CREATE TABLE care_taker_part_timers_available_dates (
   email VARCHAR REFERENCES care_taker_part_timers(email),
-  date DATE NOT NULL,
+  date DATE,
   PRIMARY KEY(email, date)
 );
 
