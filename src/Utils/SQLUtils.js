@@ -207,10 +207,10 @@ const SQLQueries = {
     SELECT * FROM care_taker_part_timers_available_dates WHERE email=$1
   `,
   DELETE_CARE_TAKER_FT_UNAVAILABLE_DATE: `
-    DELETE * FROM care_taker_full_timers_unavailable_dates WHERE email=$1 AND date=$2::date
+    DELETE FROM care_taker_full_timers_unavailable_dates WHERE email=$1 AND date=$2
   `,
   DELETE_CARE_TAKER_PT_AVAILABLE_DATE: `
-    DELETE * FROM care_taker_part_timers_available_dates WHERE email=$1 AND date=$3::date
+    DELETE FROM care_taker_part_timers_available_dates WHERE email=$1 AND date=$2
   `,
 };
 
