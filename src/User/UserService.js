@@ -199,15 +199,20 @@ const UserCareTakerAvailabilityDateCreate = async ({email, date, type}) => {
 };
 
 const UserCareTakerAvailabilityDatesInfo = async ({email, type}) => {
+  let dates = null;
   if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
-    await pool.query(SQLQueries.SELECT_CARE_TAKER_FT_UNAVAILABLE_DATES, [
+    dates = await pool.query(
+      SQLQueries.SELECT_CARE_TAKER_FT_UNAVAILABLE_DATES,
+      [email],
+    );
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    dates = await pool.query(SQLQueries.SELECT_CARE_TAKER_PT_AVAILABLE_DATES, [
       email,
     ]);
-  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
-    await pool.query(SQLQueries.SELECT_CARE_TAKER_PT_AVAILABLE_DATES, [email]);
   } else {
     throw new Error('Invalid Type');
   }
+  return dates.rows;
 };
 
 const UserCareTakerAvailabilityDateDelete = async ({email, date, type}) => {

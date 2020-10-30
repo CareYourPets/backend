@@ -11,6 +11,11 @@ const SeedUnavailableDate = async ({email, date}) => {
   return {email, date};
 };
 
+const SeedAvailableDate = async ({email, date}) => {
+  await pool.query(SQLQueries.CREATE_CARE_TAKER_AVAILABLE_DATE, [email, date]);
+  return {email, date};
+};
+
 /* Note: Need an offset of +1 to moment#add because of a weird bug with moment#startOf('year') */
 const SeedAllLeaveDays = async () => {
   const email = 'test0@example.com';
@@ -58,4 +63,5 @@ export default {
   SeedUnavailableDate,
   SeedAllLeaveDays,
   SeedEdgeCaseDates,
+  SeedAvailableDate,
 };
