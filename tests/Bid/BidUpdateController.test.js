@@ -7,7 +7,7 @@ import UserFixtures from '../Fixtures/UserFixtures';
 import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
 import App from '../../src/App';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import {BID_PAYMENT_MODE, PET_DELIVERY_MODE} from '../../src/Utils/BidUtils';
 
 Chai.use(ChaiHttp);
@@ -96,14 +96,14 @@ describe('Test BidUpdate Controller', () => {
     Assert.deepStrictEqual(bids[0].payment_mode, paymentMode);
     Assert.deepStrictEqual(bids[0].amount, amount);
     Assert.deepStrictEqual(
-      moment(bids[0].review_date).format(MOMENT_TIME_FORMAT),
-      moment(reviewDate).format(MOMENT_TIME_FORMAT),
+      moment(bids[0].review_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+      moment(reviewDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
     );
     Assert.deepStrictEqual(bids[0].transportation_mode, transportationMode);
     Assert.deepStrictEqual(bids[0].review, review);
     Assert.deepStrictEqual(
-      moment(bids[0].transaction_date).format(MOMENT_TIME_FORMAT),
-      moment(transactionDate).format(MOMENT_TIME_FORMAT),
+      moment(bids[0].transaction_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+      moment(transactionDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
     );
   });
 

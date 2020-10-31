@@ -277,6 +277,49 @@ app.get(
   async (req, res) => {
     const response = await service.NotificationRead({...req.body, ...req.user});
     return res.json(response);
+    
+app.post(
+  '/caretaker/availability/create',
+  [
+    body('type').isIn([
+      RoleUtils.CARE_TAKER_FULL_TIMER,
+      RoleUtils.CARE_TAKER_PART_TIMER,
+    ]),
+    body('date').isString(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerAvailabilityDateCreate({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.get(
+  '/caretaker/availability/info',
+  [
+    body('type').isIn([
+      RoleUtils.CARE_TAKER_FULL_TIMER,
+      RoleUtils.CARE_TAKER_PART_TIMER,
+    ]),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerAvailabilityDatesInfo({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
   },
 );
 
@@ -290,6 +333,29 @@ app.post(
       ...req.user,
     });
     return res.json(response);
+  },
+);
+    
+app.post(
+  '/caretaker/availability/delete',
+  [
+    body('type').isIn([
+      RoleUtils.CARE_TAKER_FULL_TIMER,
+      RoleUtils.CARE_TAKER_PART_TIMER,
+    ]),
+    body('date').isISO8601(),
+  ],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.UserCareTakerAvailabilityDateDelete({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
   },
 );
 

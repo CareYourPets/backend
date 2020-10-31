@@ -6,16 +6,21 @@ import pool from '../../src/Utils/DBUtils';
 import PetFixtures from '../Fixtures/PetFixtures';
 import UserFixtures from '../Fixtures/UserFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import App from '../../src/App';
 
 Chai.use(ChaiHttp);
 
 describe('Test BidDeleteConroller', () => {
   beforeEach('BidDeleteController beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
-    await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM psc_administrators');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM psc_administrators');
@@ -30,9 +35,14 @@ describe('Test BidDeleteConroller', () => {
   });
 
   afterEach('BidDeleteController afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM psc_administrators');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM psc_administrators');
@@ -77,11 +87,11 @@ describe('Test BidDeleteConroller', () => {
     );
 
     const formattedStartDate = moment(bids[0].start_date).format(
-      MOMENT_TIME_FORMAT,
+      DateTimeUtils.MOMENT_TIME_FORMAT,
     );
     bids[0].start_date = formattedStartDate;
     const formattedEndDate = moment(bids[0].end_date).format(
-      MOMENT_TIME_FORMAT,
+      DateTimeUtils.MOMENT_TIME_FORMAT,
     );
     bids[0].end_date = formattedEndDate;
 
@@ -91,8 +101,8 @@ describe('Test BidDeleteConroller', () => {
         pet_owner_email: petOwnerEmail,
         care_taker_email: careTakerEmail,
         is_accepted: false,
-        start_date: moment(startDate).format(MOMENT_TIME_FORMAT),
-        end_date: moment(endDate).format(MOMENT_TIME_FORMAT),
+        start_date: moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+        end_date: moment(endDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
         transaction_date: null,
         payment_mode: null,
         amount: null,

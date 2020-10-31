@@ -7,15 +7,19 @@ import UserFixtures from '../Fixtures/UserFixtures';
 import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
 import App from '../../src/App';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 
 Chai.use(ChaiHttp);
 
 describe('Test BidCreate Controller', () => {
   beforeEach('BidCreateController beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
-    await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM psc_administrators');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
@@ -30,7 +34,11 @@ describe('Test BidCreate Controller', () => {
   });
 
   afterEach('BidCreateController afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM bids');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM pets');
@@ -73,8 +81,8 @@ describe('Test BidCreate Controller', () => {
     Assert.deepStrictEqual(bids[0].care_taker_email, careTakerEmail);
     Assert.deepStrictEqual(
       // moment(bids[0].start_date).toISOString(),
-      moment(bids[0].start_date).format(MOMENT_TIME_FORMAT),
-      moment(startDate).format(MOMENT_TIME_FORMAT),
+      moment(bids[0].start_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+      moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
     );
   });
 
