@@ -7,8 +7,8 @@ import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
 import UserService from '../../src/User/UserService';
 
-describe('TestUserNotificationReadService', () => {
-  beforeEach('UserNotificationReadService beforeEach', async () => {
+describe('TestUserNotificationDeletedService', () => {
+  beforeEach('UserNotificationDeletedService beforeEach', async () => {
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM bids');
@@ -24,7 +24,7 @@ describe('TestUserNotificationReadService', () => {
     await PetFixtures.SeedPets(1, email, category);
   });
 
-  afterEach('UserNotificationReadService afterEach', async () => {
+  afterEach('UserNotificationDeletedService afterEach', async () => {
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
@@ -34,7 +34,7 @@ describe('TestUserNotificationReadService', () => {
     await pool.query('DELETE FROM care_taker_notifications');
   });
 
-  it('Service should read petOwnerNotification', async () => {
+  it('Service should delete petOwnerNotification', async () => {
     const careTakerEmail = 'test0@example.com';
     const role = RoleUtils.PET_OWNER;
     const petOwnerEmail = 'test0@example.com';
@@ -57,21 +57,24 @@ describe('TestUserNotificationReadService', () => {
     // eslint-disable-next-line camelcase
     const new_notif_date = moment(notif_date).toISOString(true);
     // eslint-disable-next-line camelcase
-    const is_read = true;
-    await UserService.NotificationRead({
+    const is_deleted = true;
+    await UserService.NotificationDelete({
       notif_date: new_notif_date,
       email: petOwnerEmail,
       role,
     });
 
     const {
-      rows: petOwnerNotificationsRead,
+      rows: petOwnerNotificationsDeleted,
     } = await UserService.NotificationsInfo({email: petOwnerEmail, role});
 
-    Assert.deepStrictEqual(petOwnerNotificationsRead[0].is_read, is_read);
+    Assert.deepStrictEqual(
+      petOwnerNotificationsDeleted[0].is_deleted,
+      is_deleted,
+    );
   });
 
-  it('Service should read petOwnerNotification', async () => {
+  it('Service should delete petOwnerNotification', async () => {
     const careTakerEmail = 'test0@example.com';
     const role = RoleUtils.PET_OWNER;
     const petOwnerEmail = 'test0@example.com';
@@ -94,17 +97,20 @@ describe('TestUserNotificationReadService', () => {
     // eslint-disable-next-line camelcase
     const new_notif_date = moment(notif_date).toISOString(true);
     // eslint-disable-next-line camelcase
-    const is_read = true;
-    await UserService.NotificationRead({
+    const is_deleted = true;
+    await UserService.NotificationDelete({
       notif_date: new_notif_date,
       email: careTakerEmail,
       role,
     });
 
     const {
-      rows: petOwnerNotificationsRead,
+      rows: petOwnerNotificationsDeleted,
     } = await UserService.NotificationsInfo({email: careTakerEmail, role});
 
-    Assert.deepStrictEqual(petOwnerNotificationsRead[0].is_read, is_read);
+    Assert.deepStrictEqual(
+      petOwnerNotificationsDeleted[0].is_deleted,
+      is_deleted,
+    );
   });
 });
