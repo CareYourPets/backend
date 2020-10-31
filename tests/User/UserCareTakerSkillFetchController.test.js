@@ -27,7 +27,7 @@ describe('Test UserCareTakerSkillFetchController', () => {
     const careTakerSkills = await UserFixtures.SeedCareTakerSkills(2, email);
 
     const res = await Chai.request(App)
-      .post('/user/caretaker/skill/fetch')
+      .get('/user/caretaker/skill/fetch')
       .set('accessToken', accessToken);
 
     Assert.deepStrictEqual(
@@ -41,7 +41,7 @@ describe('Test UserCareTakerSkillFetchController', () => {
     const {email} = users[0];
     await UserFixtures.SeedCareTakerSkills(2, email);
 
-    const res = await Chai.request(App).post('/user/caretaker/skill/fetch');
+    const res = await Chai.request(App).get('/user/caretaker/skill/fetch');
 
     Assert.deepStrictEqual(401, res.status);
   });

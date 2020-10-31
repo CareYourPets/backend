@@ -22,22 +22,17 @@ app.post(
   },
 );
 
-app.post(
-  '/category/fetch',
-  [body('category').exists()],
-  AuthRequired,
-  async (req, res) => {
-    try {
-      const response = await service.PetCategoryFetch({
-        ...req.user,
-        ...req.body,
-      });
-      return res.json(response);
-    } catch (error) {
-      return res.status(403).json({error});
-    }
-  },
-);
+app.post('/category/fetch', [body('category').exists()], async (req, res) => {
+  try {
+    const response = await service.PetCategoryFetch({
+      ...req.user,
+      ...req.body,
+    });
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
+});
 
 app.post(
   '/category/update',

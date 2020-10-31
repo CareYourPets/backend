@@ -170,7 +170,7 @@ app.post(
   },
 );
 
-app.post('/caretaker/skill/fetch', AuthRequired, async (req, res) => {
+app.get('/caretaker/skill/fetch', AuthRequired, async (req, res) => {
   try {
     const response = await service.UserCareTakerSkillFetch({
       ...req.user,
