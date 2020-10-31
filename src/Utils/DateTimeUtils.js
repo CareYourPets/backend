@@ -1,2 +1,7 @@
 const MOMENT_TIME_FORMAT = 'DD-MM-YYYY HH:mm:ss';
-export default MOMENT_TIME_FORMAT;
+const MOMENT_DATE_FORMAT = 'DD-MM-YYYY';
+
+export default {
+  MOMENT_TIME_FORMAT,
+  MOMENT_DATE_FORMAT,
+};
