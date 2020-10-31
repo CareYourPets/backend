@@ -123,15 +123,31 @@ const SQLQueries = {
   FETCH_ALL_CARE_TAKERS: `
     SELECT email, name, area, location, gender, contact, bio
     FROM care_takers
-    WHERE is_deleted = false
+    WHERE 
+      is_deleted = false AND
+      name IS NOT NULL AND
+      area IS NOT NULL AND
+      location IS NOT NULL AND
+      gender IS NOT NULL AND
+      contact IS NOT NULL AND
+      bio IS NOT NULL 
     ORDER BY email ASC, name ASC;
   `,
   FETCH_ALL_CARE_TAKERS_BY_LOCATION: `
     SELECT c1.email, c1.name, c1.area, c1.location, c1.gender, c1.contact, c1.bio
     FROM care_takers c1
     INNER JOIN pet_owners p1 ON p1.area = c1.area
-    WHERE c1.is_deleted = false AND p1.is_deleted = false AND p1.email=$1
-    ORDER BY email;
+    WHERE 
+      c1.is_deleted = false AND 
+      p1.is_deleted = false AND 
+      p1.email=$1 AND
+      c1.name IS NOT NULL AND
+      c1.area IS NOT NULL AND
+      c1.location IS NOT NULL AND
+      c1.gender IS NOT NULL AND
+      c1.contact IS NOT NULL AND
+      c1.bio IS NOT NULL 
+      ORDER BY email;
   `,
   FETCH_CARE_TAKER: `
     SELECT CASE

@@ -4,6 +4,7 @@ import ChaiHttp from 'chai-http';
 import pool from '../../src/Utils/DBUtils';
 import UserFixtures from '../Fixtures/UserFixtures';
 import App from '../../src/App';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 Chai.use(ChaiHttp);
 
@@ -45,6 +46,7 @@ describe('Test UserInfo Controller', () => {
         location: null,
         bio: null,
         is_deleted: false,
+        role: RoleUtils.PET_OWNER,
       },
       res.body,
     );
@@ -67,6 +69,7 @@ describe('Test UserInfo Controller', () => {
         location: null,
         bio: null,
         is_deleted: false,
+        role: RoleUtils.CARE_TAKER,
       },
       res.body,
     );
@@ -88,6 +91,7 @@ describe('Test UserInfo Controller', () => {
         location: null,
         is_approved: false,
         is_deleted: false,
+        role: RoleUtils.ADMINISTRATOR,
       },
       res.body,
     );
