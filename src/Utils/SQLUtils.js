@@ -81,6 +81,9 @@ const SQLQueries = {
   UPDATE_PET: `
     UPDATE pets SET name=$1, category=$2, needs=$3, diet=$4 WHERE name=$5 AND email=$6;
   `,
+  SELECT_CARE_TAKER_SKILLS: `
+    SELECT category, price FROM care_taker_skills WHERE email=$1;
+  `,
   CREATE_CARE_TAKER_SKILL: `
     INSERT INTO care_taker_skills (
       email, category, price

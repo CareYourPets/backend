@@ -27,7 +27,7 @@ INSERT INTO pet_owners (
   bio,
   is_deleted
 ) VALUES (
-  'pet-owner-01@gmail.com',
+  'test@example.com',
   '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Michael Scott',
   'MALE',
@@ -49,7 +49,7 @@ INSERT INTO care_takers (
   bio,
   is_deleted
 ) VALUES (
-  'care-taker-01@gmail.com',
+  'test@example.com',
   '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Dwight Schrute',
   'MALE',
@@ -84,14 +84,14 @@ INSERT INTO pets (
 ) VALUES (
   'jackie',
   'bulldog',
-  'pet-owner-01@gmail.com',
+  'test@example.com',
   NULL,
   'vegan',
   false
 ), (
   'tommy',
   'rabbit',
-  'pet-owner-01@gmail.com',
+  'test@example.com',
   'He is blind.',
   'cannibal',
   false
