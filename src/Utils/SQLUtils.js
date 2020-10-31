@@ -58,7 +58,7 @@ const SQLQueries = {
     );
   `,
   FETCH_PET_CATEGORIES: `
-    SELECT * FROM pet_categories WHERE is_deleted=false;
+    SELECT * FROM pet_categories WHERE is_deleted=false ORDER BY category;
   `,
   FETCH_PET_CATEGORY: `
     SELECT * FROM pet_categories WHERE category=$1 AND is_deleted=false;`,
@@ -213,6 +213,32 @@ const SQLQueries = {
   // DELETE_PSC_ADMINISTRATOR_NOTIFICATION: `
   //   UPDATE psc_administrator_notifications SET is_deleted=TRUE WHERE notif_date=$1 AND email=$2;
   // `,
+  CREATE_CARE_TAKER_UNAVAILABLE_DATE: `
+    INSERT INTO care_taker_full_timers_unavailable_dates (
+      email, date
+    ) VALUES (
+      $1, $2::date
+    )
+  `,
+  CREATE_CARE_TAKER_AVAILABLE_DATE: `
+    INSERT INTO care_taker_part_timers_available_dates (
+      email, date
+    ) VALUES (
+      $1, $2::date
+    )
+  `,
+  SELECT_CARE_TAKER_FT_UNAVAILABLE_DATES: `
+    SELECT * FROM care_taker_full_timers_unavailable_dates WHERE email=$1
+  `,
+  SELECT_CARE_TAKER_PT_AVAILABLE_DATES: `
+    SELECT * FROM care_taker_part_timers_available_dates WHERE email=$1
+  `,
+  DELETE_CARE_TAKER_FT_UNAVAILABLE_DATE: `
+    DELETE FROM care_taker_full_timers_unavailable_dates WHERE email=$1 AND date=$2
+  `,
+  DELETE_CARE_TAKER_PT_AVAILABLE_DATE: `
+    DELETE FROM care_taker_part_timers_available_dates WHERE email=$1 AND date=$2
+  `,
 };
 
 export default SQLQueries;

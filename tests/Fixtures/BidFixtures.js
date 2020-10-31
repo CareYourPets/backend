@@ -1,5 +1,5 @@
 import moment from 'moment';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import pool from '../../src/Utils/DBUtils';
 import SQLQueries from '../../src/Utils/SQLUtils';
 import PetFixtures from './PetFixtures';
@@ -23,7 +23,7 @@ const SeedBids = async ({
     pet_name: petName,
     pet_owner_email: petOwnerEmail,
     care_taker_email: careTakerEmail,
-    start_date: moment(startDate).format(MOMENT_TIME_FORMAT),
+    start_date: moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
   };
 };
 
@@ -63,7 +63,7 @@ const SeedMultipleBids = async () => {
     });
     const bidInfo = {
       ...bid,
-      end_date: moment(endDate).format(MOMENT_TIME_FORMAT),
+      end_date: moment(endDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
       is_deleted: false,
       is_accepted: false,
       transaction_date: null,

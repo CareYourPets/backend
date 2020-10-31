@@ -4,7 +4,7 @@ import pool from '../../src/Utils/DBUtils';
 import BidService from '../../src/Bid/BidService';
 import BidFixtures from '../Fixtures/BidFixtures';
 import UserFixtures from '../Fixtures/UserFixtures';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 
 describe('Test BidInfo Service', () => {
   beforeEach('BidInfoService beforeEach', async () => {
@@ -39,11 +39,11 @@ describe('Test BidInfo Service', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }
@@ -61,11 +61,11 @@ describe('Test BidInfo Service', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }
@@ -83,11 +83,11 @@ describe('Test BidInfo Service', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }

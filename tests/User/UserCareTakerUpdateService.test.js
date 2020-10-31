@@ -8,11 +8,19 @@ import AreaUtils from '../../src/Utils/AreaUtils';
 
 describe('Test UserCareTakerUpdate Service', () => {
   beforeEach('UserCareTakerUpdateService beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await UserFixtures.SeedCareTakers(1);
   });
 
   afterEach('UserCareTakerUpdateService afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
   });
 
