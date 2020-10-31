@@ -170,6 +170,17 @@ app.post(
   },
 );
 
+app.get('/caretaker/skill/fetch', AuthRequired, async (req, res) => {
+  try {
+    const response = await service.UserCareTakerSkillFetch({
+      ...req.user,
+    });
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
+});
+
 app.post(
   '/caretaker/skill/create',
   [body('category').isString(), body('price').isNumeric()],

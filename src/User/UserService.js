@@ -139,6 +139,11 @@ const UserAdministratorUpdate = async ({
   return {status: 'ok'};
 };
 
+const UserCareTakerSkillFetch = async ({email}) => {
+  const {rows} = await pool.query(SQLQueries.SELECT_CARE_TAKER_SKILLS, [email]);
+  return rows;
+};
+
 const UserCareTakerSkillCreate = async ({email, category, price}) => {
   await pool.query(SQLQueries.CREATE_CARE_TAKER_SKILL, [
     email,
@@ -240,6 +245,7 @@ export default {
   UserPetOwnerUpdate,
   UserCareTakerUpdate,
   UserAdministratorUpdate,
+  UserCareTakerSkillFetch,
   UserCareTakerSkillCreate,
   UserCareTakerSkillDelete,
   UserCareTakerSkillUpdate,
