@@ -165,26 +165,6 @@ BEGIN
   THEN 
     RAISE EXCEPTION 'No leave days left %', NEW.date;
   END IF;
-  /* Generate available dates */
-  /* Create paritions of consecutive available dates */
-  /* Credits to Anon: Adapted from top answer to https://stackoverflow.com/questions/20402089/detect-consecutive-dates-ranges-using-sql */
-  WITH grouped_available_dates AS (
-    SELECT MIN(date) AS min, MAX(date) max
-    FROM (
-      SELECT date, (ROW_NUMBER() OVER (ORDER BY date))::int AS i 
-      FROM (
-        SELECT date::date
-        FROM GENERATE_SERIES(start_of_year, end_of_year,  '1 day'::INTERVAL) AS date
-        EXCEPT
-        SELECT date
-        FROM care_taker_full_timers_unavailable_dates
-        WHERE email = NEW.email
-      ) AS series
-      GROUP BY date
-    ) AS grouped
-    GROUP BY DATE_PART('day', date - i)
-  )
-
   /* Splits data into two cases, parition with at least 150 (and below 300) and another with atleast 300 */
   /* Date_part calculates FULL days between, so offset of -2 is need to include max and min */
   SELECT COUNT(one_fifty) , COUNT(three_hundred) INTO num_onefifty, num_threehundred
@@ -199,7 +179,25 @@ BEGIN
       WHEN calculate_duration(min::timestamp, max::timestamp) >= 148 THEN 1
       ELSE NULL
     END AS one_fifty
-    FROM grouped_available_dates
+    FROM (
+      SELECT MIN(date) AS min, MAX(date) max
+      FROM (
+        /* Create paritions of consecutive available dates */
+        /* Credits to Anon: Adapted from top answer to https://stackoverflow.com/questions/20402089/detect-consecutive-dates-ranges-using-sql */
+        SELECT date, (ROW_NUMBER() OVER (ORDER BY date))::int AS i 
+        FROM (
+          /* Generate available dates */
+          SELECT date::date
+          FROM GENERATE_SERIES(start_of_year, end_of_year,  '1 day'::INTERVAL) AS date
+          EXCEPT
+          SELECT date
+          FROM care_taker_full_timers_unavailable_dates
+          WHERE email = NEW.email
+        ) AS series
+        GROUP BY date
+      ) AS grouped
+      GROUP BY DATE_PART('day', date - i)
+    ) AS grouped_available_dates
   ) AS sub;
 
   IF num_onefifty < 2 AND num_threehundred < 1 
@@ -295,15 +293,15 @@ LANGUAGE 'plpgsql';
 CREATE TABLE bids (
   pet_name VARCHAR NOT NULL,
   pet_owner_email VARCHAR NOT NULL,
-  care_taker_email VARCHAR REFERENCES care_takers(email), /* NULL until bid is accepted by a care_taker*/
+  care_taker_email VARCHAR REFERENCES care_takers(email),
   is_accepted BOOLEAN NOT NULL DEFAULT false,
   start_date TIMESTAMPTZ NOT NULL,
   end_date TIMESTAMPTZ NOT NULL,
   transaction_date TIMESTAMPTZ,
-  payment_mode payment_enum, /* NULL until payment is made when bid accepted */
-  amount FLOAT, /* NULL until bid is accepted by a care_taker*/
+  payment_mode payment_enum,
+  amount FLOAT,
   review_date TIMESTAMPTZ,
-  transportation_mode delivery_enum, /* NULL until bid is accepted by a care_taker*/
+  transportation_mode delivery_enum,
   review VARCHAR,
   is_deleted BOOLEAN NOT NULL DEFAULT false,
   FOREIGN KEY (pet_name, pet_owner_email) REFERENCES pets (name, email) ON DELETE CASCADE,
