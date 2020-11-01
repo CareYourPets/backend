@@ -4,14 +4,23 @@ import pool from '../../src/Utils/DBUtils';
 import UserFixtures from '../Fixtures/UserFixtures';
 import UserService from '../../src/User/UserService';
 import GenderUtils from '../../src/Utils/GenderUtils';
+import AreaUtils from '../../src/Utils/AreaUtils';
 
 describe('Test UserCareTakerUpdate Service', () => {
   beforeEach('UserCareTakerUpdateService beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await UserFixtures.SeedCareTakers(1);
   });
 
   afterEach('UserCareTakerUpdateService afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
   });
 
@@ -20,6 +29,7 @@ describe('Test UserCareTakerUpdate Service', () => {
     const name = 'test';
     const gender = GenderUtils.MALE;
     const contact = 'test';
+    const area = AreaUtils.NORTH;
     const location = 'test';
     const bio = 'test';
 
@@ -28,6 +38,7 @@ describe('Test UserCareTakerUpdate Service', () => {
       name,
       gender,
       contact,
+      area,
       location,
       bio,
     });
@@ -40,6 +51,7 @@ describe('Test UserCareTakerUpdate Service', () => {
         name,
         gender,
         contact,
+        area,
         location,
         bio,
         is_deleted: false,

@@ -22,22 +22,17 @@ app.post(
   },
 );
 
-app.post(
-  '/category/fetch',
-  [body('category').exists()],
-  AuthRequired,
-  async (req, res) => {
-    try {
-      const response = await service.PetCategoryFetch({
-        ...req.user,
-        ...req.body,
-      });
-      return res.json(response);
-    } catch (error) {
-      return res.status(403).json({error});
-    }
-  },
-);
+app.post('/category/fetch', [body('category').exists()], async (req, res) => {
+  try {
+    const response = await service.PetCategoryFetch({
+      ...req.user,
+      ...req.body,
+    });
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
+});
 
 app.post(
   '/category/update',
@@ -123,6 +118,60 @@ app.post(
   async (req, res) => {
     try {
       const response = await service.PetDelete({...req.user, ...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post('/fetch', AuthRequired, async (req, res) => {
+  try {
+    const response = await service.PetFetch({...req.user});
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
+});
+
+app.post(
+  '/caretaker/fetchall',
+  [body('isByLocation').exists()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.FetchAllCareTakers({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/caretaker/fetch',
+  [body('email').isEmail()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.FetchCareTaker({...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
+  '/petowner/fetch',
+  [body('email').isEmail()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.FetchPetOwner({...req.body});
       return res.json(response);
     } catch (error) {
       return res.status(403).json({error});

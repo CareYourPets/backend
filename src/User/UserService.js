@@ -34,7 +34,7 @@ const UserInfo = async ({email, role}) => {
     throw new Error('Invalid Role');
   }
   const user = _.omit(users.rows[0], ['password']);
-  return user;
+  return {...user, role};
 };
 
 const UserLogin = async ({email, password, role}) => {
@@ -85,6 +85,7 @@ const UserPetOwnerUpdate = async ({
   name,
   gender,
   contact,
+  area,
   location,
   bio,
 }) => {
@@ -93,6 +94,7 @@ const UserPetOwnerUpdate = async ({
     name,
     gender,
     contact,
+    area,
     location,
     bio,
   ]);
@@ -104,6 +106,7 @@ const UserCareTakerUpdate = async ({
   name,
   gender,
   contact,
+  area,
   location,
   bio,
 }) => {
@@ -112,6 +115,7 @@ const UserCareTakerUpdate = async ({
     name,
     gender,
     contact,
+    area,
     location,
     bio,
   ]);
@@ -133,6 +137,11 @@ const UserAdministratorUpdate = async ({
     location,
   ]);
   return {status: 'ok'};
+};
+
+const UserCareTakerSkillFetch = async ({email}) => {
+  const {rows} = await pool.query(SQLQueries.SELECT_CARE_TAKER_SKILLS, [email]);
+  return rows;
 };
 
 const UserCareTakerSkillCreate = async ({email, category, price}) => {
@@ -178,6 +187,55 @@ const UserCareTakerTypeDelete = async ({email, type}) => {
   }
 };
 
+const UserCareTakerAvailabilityDateCreate = async ({email, date, type}) => {
+  if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
+    await pool.query(SQLQueries.CREATE_CARE_TAKER_UNAVAILABLE_DATE, [
+      email,
+      date,
+    ]);
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    await pool.query(SQLQueries.CREATE_CARE_TAKER_AVAILABLE_DATE, [
+      email,
+      date,
+    ]);
+  } else {
+    throw new Error('Invalid Type');
+  }
+};
+
+const UserCareTakerAvailabilityDatesInfo = async ({email, type}) => {
+  let dates = null;
+  if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
+    dates = await pool.query(
+      SQLQueries.SELECT_CARE_TAKER_FT_UNAVAILABLE_DATES,
+      [email],
+    );
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    dates = await pool.query(SQLQueries.SELECT_CARE_TAKER_PT_AVAILABLE_DATES, [
+      email,
+    ]);
+  } else {
+    throw new Error('Invalid Type');
+  }
+  return dates.rows;
+};
+
+const UserCareTakerAvailabilityDateDelete = async ({email, date, type}) => {
+  if (type === RoleUtils.CARE_TAKER_FULL_TIMER) {
+    await pool.query(SQLQueries.DELETE_CARE_TAKER_FT_UNAVAILABLE_DATE, [
+      email,
+      date,
+    ]);
+  } else if (type === RoleUtils.CARE_TAKER_PART_TIMER) {
+    await pool.query(SQLQueries.DELETE_CARE_TAKER_PT_AVAILABLE_DATE, [
+      email,
+      date,
+    ]);
+  } else {
+    throw new Error('Invalid Type');
+  }
+};
+
 export default {
   UserCreate,
   UserLogin,
@@ -187,9 +245,13 @@ export default {
   UserPetOwnerUpdate,
   UserCareTakerUpdate,
   UserAdministratorUpdate,
+  UserCareTakerSkillFetch,
   UserCareTakerSkillCreate,
   UserCareTakerSkillDelete,
   UserCareTakerSkillUpdate,
   UserCareTakerTypeCreate,
   UserCareTakerTypeDelete,
+  UserCareTakerAvailabilityDateCreate,
+  UserCareTakerAvailabilityDatesInfo,
+  UserCareTakerAvailabilityDateDelete,
 };

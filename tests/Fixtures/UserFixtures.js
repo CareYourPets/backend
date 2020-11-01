@@ -59,9 +59,8 @@ const SeedCareTakerSkills = async (i, email) => {
 const SeedCareTakerRole = async ({email, role}) => {
   if (role === RoleUtils.CARE_TAKER_PART_TIMER) {
     return pool.query(SQLQueries.CREATE_CARE_TAKER_PART_TIMER, [email]);
-  } 
-    return pool.query(SQLQueries.CREATE_CARE_TAKER_FULL_TIMER, [email]);
-  
+  }
+  return pool.query(SQLQueries.CREATE_CARE_TAKER_FULL_TIMER, [email]);
 };
 
 const SeedCareTakerFullTimers = async (i) => {

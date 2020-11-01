@@ -22,17 +22,41 @@ INSERT INTO pet_owners (
 	name,
 	gender,
   contact,
+  area,
   location,
   bio,
   is_deleted
 ) VALUES (
-  'pet-owner-01@gmail.com',
+  'test@example.com',
   '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Michael Scott',
   'MALE',
   '(+65)98765432',
-  'Pulau Tekong',
+  'NORTH-EAST',
+  'Hougang Ave 9, Blk 1, #02-1322, Singapore 123001',
   'I am a little kid lover.',
+  false
+);
+
+INSERT INTO care_takers (
+  email,
+	password,
+	name,
+	gender,
+  contact,
+  area,
+  location,
+  bio,
+  is_deleted
+) VALUES (
+  'test@example.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
+  'Dwight Schrute',
+  'MALE',
+  '(+65)98123456',
+  'NORTH-EAST',
+  'Hougang Ave 2, Blk 10, #05-14, Singapore 145010',
+  'Beets.',
   false
 );
 
@@ -60,14 +84,14 @@ INSERT INTO pets (
 ) VALUES (
   'jackie',
   'bulldog',
-  'pet-owner-01@gmail.com',
+  'test@example.com',
   NULL,
   'vegan',
   false
 ), (
   'tommy',
   'rabbit',
-  'pet-owner-01@gmail.com',
+  'test@example.com',
   'He is blind.',
   'cannibal',
   false

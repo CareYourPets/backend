@@ -5,7 +5,7 @@ import BidService from '../../src/Bid/BidService';
 import UserFixtures from '../Fixtures/UserFixtures';
 import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 
 describe('Test BidCreate Service', () => {
   beforeEach('BidCreateService beforeEach', async () => {
@@ -56,8 +56,8 @@ describe('Test BidCreate Service', () => {
     Assert.deepStrictEqual(bids[0].pet_owner_email, petOwnerEmail);
     Assert.deepStrictEqual(bids[0].care_taker_email, careTakerEmail);
     Assert.deepStrictEqual(
-      moment(bids[0].start_date).format(MOMENT_TIME_FORMAT),
-      moment(startDate).format(MOMENT_TIME_FORMAT),
+      moment(bids[0].start_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+      moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
     );
   });
 
@@ -102,5 +102,137 @@ describe('Test BidCreate Service', () => {
         }),
       Error,
     );
+  });
+
+  it('Service should accept bid if full timer has up to 5 pets', async () => {
+    await pool.query('DELETE FROM pets');
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petNames = ['pet0', 'pet1', 'pet2', 'pet3', 'pet4'];
+    const category = 'category0';
+    await PetFixtures.SeedPets(6, petOwnerEmail, category);
+    for (let i = 0; i < petNames.length; i++) {
+      const {startDate, endDate} = BidFixtures.CreateBidDates();
+      // eslint-disable-next-line no-await-in-loop
+      await BidService.BidCreate({
+        petName: petNames[i],
+        petOwnerEmail,
+        careTakerEmail,
+        startDate,
+        endDate,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      await BidService.BidUpdate({
+        isAccepted: true,
+        transactionDate: null,
+        paymentMode: null,
+        amount: null,
+        reviewDate: null,
+        transportationMode: null,
+        review: null,
+        petName: petNames[i],
+        petOwnerEmail,
+        careTakerEmail,
+        startDate,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      const {rows: bids} = await pool.query(`
+        SELECT * FROM bids
+      `);
+      Assert.deepStrictEqual(bids[i].pet_name, `pet${i}`);
+    }
+  });
+
+  it('Service should accept bid if full timer has more than 5 pets', async () => {
+    await pool.query('DELETE FROM pets');
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petNames = ['pet0', 'pet1', 'pet2', 'pet3', 'pet4'];
+    const category = 'category0';
+    await PetFixtures.SeedPets(6, petOwnerEmail, category);
+    for (let i = 0; i < petNames.length; i++) {
+      const {startDate, endDate} = BidFixtures.CreateBidDates();
+      // eslint-disable-next-line no-await-in-loop
+      await BidService.BidCreate({
+        petName: petNames[i],
+        petOwnerEmail,
+        careTakerEmail,
+        startDate,
+        endDate,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      await BidService.BidUpdate({
+        isAccepted: true,
+        transactionDate: null,
+        paymentMode: null,
+        amount: null,
+        reviewDate: null,
+        transportationMode: null,
+        review: null,
+        petName: petNames[i],
+        petOwnerEmail,
+        careTakerEmail,
+        startDate,
+      });
+    }
+    const {newStartDate, newEndDate} = BidFixtures.CreateBidDates();
+    await Assert.rejects(
+      () =>
+        BidService.BidCreate({
+          petName: 'pet5',
+          petOwnerEmail,
+          careTakerEmail,
+          startDate: newStartDate,
+          endDate: newEndDate,
+        }),
+      Error,
+    );
+  });
+
+  it('Service should accept bid if full timer has 5 overlapping pets and 1 other pet', async () => {
+    await pool.query('DELETE FROM pets');
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petNames = ['pet0', 'pet1', 'pet2', 'pet3', 'pet4'];
+    const category = 'category0';
+    await PetFixtures.SeedPets(6, petOwnerEmail, category);
+    for (let i = 0; i < petNames.length; i++) {
+      const {startDate, endDate} = BidFixtures.CreateBidDates();
+      // eslint-disable-next-line no-await-in-loop
+      await BidService.BidCreate({
+        petName: petNames[i],
+        petOwnerEmail,
+        careTakerEmail,
+        startDate,
+        endDate,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      await BidService.BidUpdate({
+        isAccepted: true,
+        transactionDate: null,
+        paymentMode: null,
+        amount: null,
+        reviewDate: null,
+        transportationMode: null,
+        review: null,
+        petName: petNames[i],
+        petOwnerEmail,
+        careTakerEmail,
+        startDate,
+      });
+    }
+    const newStartDate = moment().add(2, 'weeks').toISOString(true);
+    const newEndDate = moment().add(2, 'weeks').toISOString(true);
+    await BidService.BidCreate({
+      petName: 'pet5',
+      petOwnerEmail,
+      careTakerEmail,
+      startDate: newStartDate,
+      endDate: newEndDate,
+    });
+    const {rows: bids} = await pool.query(`
+        SELECT * FROM bids WHERE pet_name = 'pet5'
+      `);
+    await Assert.deepStrictEqual(bids[0].pet_name, 'pet5');
   });
 });

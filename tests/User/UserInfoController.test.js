@@ -4,17 +4,26 @@ import ChaiHttp from 'chai-http';
 import pool from '../../src/Utils/DBUtils';
 import UserFixtures from '../Fixtures/UserFixtures';
 import App from '../../src/App';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 Chai.use(ChaiHttp);
 
 describe('Test UserInfo Controller', () => {
   beforeEach('UserInfoController beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM psc_administrators');
   });
 
   afterEach('UserInfoController afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM psc_administrators');
@@ -33,9 +42,11 @@ describe('Test UserInfo Controller', () => {
         name: null,
         gender: null,
         contact: null,
+        area: null,
         location: null,
         bio: null,
         is_deleted: false,
+        role: RoleUtils.PET_OWNER,
       },
       res.body,
     );
@@ -54,9 +65,11 @@ describe('Test UserInfo Controller', () => {
         name: null,
         gender: null,
         contact: null,
+        area: null,
         location: null,
         bio: null,
         is_deleted: false,
+        role: RoleUtils.CARE_TAKER,
       },
       res.body,
     );
@@ -78,6 +91,7 @@ describe('Test UserInfo Controller', () => {
         location: null,
         is_approved: false,
         is_deleted: false,
+        role: RoleUtils.ADMINISTRATOR,
       },
       res.body,
     );

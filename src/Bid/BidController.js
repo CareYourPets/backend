@@ -61,17 +61,17 @@ app.post('/delete', AuthRequired, async (req, res) => {
 app.post(
   '/update',
   [
-    body('isAccepted').isBoolean(),
-    body('transactionDate').isISO8601(),
+    body('isAccepted').isBoolean(), // updated on the care taker side
+    body('transactionDate').exists(), // updated on the care taker side
     body('paymentMode').isIn([BID_PAYMENT_MODE.CASH, BID_PAYMENT_MODE.CREDIT]),
     body('amount').isFloat(),
-    body('reviewDate').isISO8601(),
+    body('reviewDate').exists(),
     body('transportationMode').isIn([
       PET_DELIVERY_MODE.CARE_TAKER_PICK_UP,
       PET_DELIVERY_MODE.PET_OWNER_DELIVER,
       PET_DELIVERY_MODE.TRANSFER_THROUGH_PCS,
     ]),
-    body('review').isString(),
+    body('review').exists(),
     // validate PK
     body('petName').isString(),
     body('petOwnerEmail').isEmail(),
