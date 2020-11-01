@@ -47,6 +47,7 @@ describe('Test UserInfo Service', () => {
         location: null,
         bio: null,
         is_deleted: false,
+        role,
       },
       userInfo,
     );
@@ -71,6 +72,7 @@ describe('Test UserInfo Service', () => {
         location: null,
         bio: null,
         is_deleted: false,
+        role,
       },
       userInfo,
     );
@@ -94,6 +96,7 @@ describe('Test UserInfo Service', () => {
         location: null,
         is_approved: false,
         is_deleted: false,
+        role,
       },
       userInfo,
     );

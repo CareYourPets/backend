@@ -34,7 +34,7 @@ const UserInfo = async ({email, role}) => {
     throw new Error('Invalid Role');
   }
   const user = _.omit(users.rows[0], ['password']);
-  return user;
+  return {...user, role};
 };
 
 const UserLogin = async ({email, password, role}) => {
