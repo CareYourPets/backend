@@ -81,13 +81,51 @@ CREATE TABLE care_taker_skills (
   PRIMARY KEY(email, category)
 );
 
+CREATE OR REPLACE FUNCTION care_taker_full_timer_existence_check(new_email VARCHAR)
+  RETURNS BOOLEAN AS
+$$
+BEGIN
+  IF (
+      SELECT count(*)
+      FROM care_taker_part_timers
+      WHERE email = new_email
+     ) > 0
+  THEN
+    RAISE EXCEPTION 'Caretaker is already part timer';
+    RETURN false;
+  END IF;
+  RETURN true;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION care_taker_part_timer_existence_check(new_email VARCHAR)
+  RETURNS BOOLEAN AS
+$$
+BEGIN
+  IF (
+      SELECT count(*)
+      FROM care_taker_full_timers
+      WHERE email = new_email
+     ) > 0
+  THEN
+    RAISE EXCEPTION 'Caretaker is already full timer';
+    RETURN false;
+  END IF;
+  RETURN true;
+END;
+$$
+LANGUAGE 'plpgsql';
+
 CREATE TABLE care_taker_full_timers (
   email VARCHAR REFERENCES care_takers(email),
+  CHECK(care_taker_full_timer_existence_check(email)),
   PRIMARY KEY(email)
 );
 
 CREATE TABLE care_taker_part_timers (
   email VARCHAR REFERENCES care_takers(email),
+  CHECK(care_taker_part_timer_existence_check(email)),
   PRIMARY KEY(email)
 );
 
@@ -165,26 +203,6 @@ BEGIN
   THEN 
     RAISE EXCEPTION 'No leave days left %', NEW.date;
   END IF;
-  /* Generate available dates */
-  /* Create paritions of consecutive available dates */
-  /* Credits to Anon: Adapted from top answer to https://stackoverflow.com/questions/20402089/detect-consecutive-dates-ranges-using-sql */
-  WITH grouped_available_dates AS (
-    SELECT MIN(date) AS min, MAX(date) max
-    FROM (
-      SELECT date, (ROW_NUMBER() OVER (ORDER BY date))::int AS i 
-      FROM (
-        SELECT date::date
-        FROM GENERATE_SERIES(start_of_year, end_of_year,  '1 day'::INTERVAL) AS date
-        EXCEPT
-        SELECT date
-        FROM care_taker_full_timers_unavailable_dates
-        WHERE email = NEW.email
-      ) AS series
-      GROUP BY date
-    ) AS grouped
-    GROUP BY DATE_PART('day', date - i)
-  )
-
   /* Splits data into two cases, parition with at least 150 (and below 300) and another with atleast 300 */
   /* Date_part calculates FULL days between, so offset of -2 is need to include max and min */
   SELECT COUNT(one_fifty) , COUNT(three_hundred) INTO num_onefifty, num_threehundred
@@ -199,7 +217,25 @@ BEGIN
       WHEN calculate_duration(min::timestamp, max::timestamp) >= 148 THEN 1
       ELSE NULL
     END AS one_fifty
-    FROM grouped_available_dates
+    FROM (
+      SELECT MIN(date) AS min, MAX(date) max
+      FROM (
+        /* Create paritions of consecutive available dates */
+        /* Credits to Anon: Adapted from top answer to https://stackoverflow.com/questions/20402089/detect-consecutive-dates-ranges-using-sql */
+        SELECT date, (ROW_NUMBER() OVER (ORDER BY date))::int AS i 
+        FROM (
+          /* Generate available dates */
+          SELECT date::date
+          FROM GENERATE_SERIES(start_of_year, end_of_year,  '1 day'::INTERVAL) AS date
+          EXCEPT
+          SELECT date
+          FROM care_taker_full_timers_unavailable_dates
+          WHERE email = NEW.email
+        ) AS series
+        GROUP BY date
+      ) AS grouped
+      GROUP BY DATE_PART('day', date - i)
+    ) AS grouped_available_dates
   ) AS sub;
 
   IF num_onefifty < 2 AND num_threehundred < 1 
@@ -230,52 +266,7 @@ CREATE TABLE care_taker_part_timers_available_dates (
   PRIMARY KEY(email, date)
 );
 
-CREATE OR REPLACE FUNCTION care_taker_full_timer_insert_trigger_funct()
-  RETURNS trigger AS
-$$
-BEGIN
-  IF (
-      SELECT count(*)
-      FROM care_taker_part_timers
-      WHERE email = NEW.email
-     ) > 0
-  THEN
-    RAISE EXCEPTION 'Caretaker is already part timer';
-  END IF;
-  RETURN NEW;
-END;
-$$
-LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE FUNCTION care_taker_part_timer_insert_trigger_funct()
-  RETURNS trigger AS
-$$
-BEGIN
-  IF (
-      SELECT count(*)
-      FROM care_taker_full_timers
-      WHERE email = NEW.email
-     ) > 0
-  THEN
-    RAISE EXCEPTION 'Caretaker is already full timer';
-  END IF;
-  RETURN NEW;
-END;
-$$
-LANGUAGE 'plpgsql';
-
-
-CREATE TRIGGER care_taker_full_timer_insert_trigger
-BEFORE INSERT
-ON care_taker_full_timers
-FOR EACH ROW
-EXECUTE PROCEDURE care_taker_full_timer_insert_trigger_funct();
-
-CREATE TRIGGER care_taker_part_timer_insert_trigger
-BEFORE INSERT
-ON care_taker_part_timers
-FOR EACH ROW
-EXECUTE PROCEDURE care_taker_part_timer_insert_trigger_funct();
 
 CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMPTZ, end_date TIMESTAMPTZ)
   RETURNS INT AS 
@@ -295,15 +286,15 @@ LANGUAGE 'plpgsql';
 CREATE TABLE bids (
   pet_name VARCHAR NOT NULL,
   pet_owner_email VARCHAR NOT NULL,
-  care_taker_email VARCHAR REFERENCES care_takers(email), /* NULL until bid is accepted by a care_taker*/
+  care_taker_email VARCHAR REFERENCES care_takers(email),
   is_accepted BOOLEAN NOT NULL DEFAULT false,
   start_date TIMESTAMPTZ NOT NULL,
   end_date TIMESTAMPTZ NOT NULL,
   transaction_date TIMESTAMPTZ,
-  payment_mode payment_enum, /* NULL until payment is made when bid accepted */
-  amount FLOAT, /* NULL until bid is accepted by a care_taker*/
+  payment_mode payment_enum,
+  amount FLOAT,
   review_date TIMESTAMPTZ,
-  transportation_mode delivery_enum, /* NULL until bid is accepted by a care_taker*/
+  transportation_mode delivery_enum,
   review VARCHAR,
   is_deleted BOOLEAN NOT NULL DEFAULT false,
   FOREIGN KEY (pet_name, pet_owner_email) REFERENCES pets (name, email) ON DELETE CASCADE,
