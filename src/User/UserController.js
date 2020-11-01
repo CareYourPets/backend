@@ -301,7 +301,7 @@ app.post(
   },
 );
 
-app.get(
+app.post(
   '/caretaker/availability/info',
   [
     body('type').isIn([
@@ -330,7 +330,7 @@ app.post(
       RoleUtils.CARE_TAKER_FULL_TIMER,
       RoleUtils.CARE_TAKER_PART_TIMER,
     ]),
-    body('date').isISO8601(),
+    body('date').isString(),
   ],
   AuthRequired,
   async (req, res) => {
