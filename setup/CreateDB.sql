@@ -81,13 +81,51 @@ CREATE TABLE care_taker_skills (
   PRIMARY KEY(email, category)
 );
 
+CREATE OR REPLACE FUNCTION care_taker_full_timer_existence_check(new_email VARCHAR)
+  RETURNS BOOLEAN AS
+$$
+BEGIN
+  IF (
+      SELECT count(*)
+      FROM care_taker_part_timers
+      WHERE email = new_email
+     ) > 0
+  THEN
+    RAISE EXCEPTION 'Caretaker is already part timer';
+    RETURN false;
+  END IF;
+  RETURN true;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION care_taker_part_timer_existence_check(new_email VARCHAR)
+  RETURNS BOOLEAN AS
+$$
+BEGIN
+  IF (
+      SELECT count(*)
+      FROM care_taker_full_timers
+      WHERE email = new_email
+     ) > 0
+  THEN
+    RAISE EXCEPTION 'Caretaker is already full timer';
+    RETURN false;
+  END IF;
+  RETURN true;
+END;
+$$
+LANGUAGE 'plpgsql';
+
 CREATE TABLE care_taker_full_timers (
   email VARCHAR REFERENCES care_takers(email),
+  CHECK(care_taker_full_timer_existence_check(email)),
   PRIMARY KEY(email)
 );
 
 CREATE TABLE care_taker_part_timers (
   email VARCHAR REFERENCES care_takers(email),
+  CHECK(care_taker_part_timer_existence_check(email)),
   PRIMARY KEY(email)
 );
 
@@ -228,52 +266,7 @@ CREATE TABLE care_taker_part_timers_available_dates (
   PRIMARY KEY(email, date)
 );
 
-CREATE OR REPLACE FUNCTION care_taker_full_timer_insert_trigger_funct()
-  RETURNS trigger AS
-$$
-BEGIN
-  IF (
-      SELECT count(*)
-      FROM care_taker_part_timers
-      WHERE email = NEW.email
-     ) > 0
-  THEN
-    RAISE EXCEPTION 'Caretaker is already part timer';
-  END IF;
-  RETURN NEW;
-END;
-$$
-LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE FUNCTION care_taker_part_timer_insert_trigger_funct()
-  RETURNS trigger AS
-$$
-BEGIN
-  IF (
-      SELECT count(*)
-      FROM care_taker_full_timers
-      WHERE email = NEW.email
-     ) > 0
-  THEN
-    RAISE EXCEPTION 'Caretaker is already full timer';
-  END IF;
-  RETURN NEW;
-END;
-$$
-LANGUAGE 'plpgsql';
-
-
-CREATE TRIGGER care_taker_full_timer_insert_trigger
-BEFORE INSERT
-ON care_taker_full_timers
-FOR EACH ROW
-EXECUTE PROCEDURE care_taker_full_timer_insert_trigger_funct();
-
-CREATE TRIGGER care_taker_part_timer_insert_trigger
-BEFORE INSERT
-ON care_taker_part_timers
-FOR EACH ROW
-EXECUTE PROCEDURE care_taker_part_timer_insert_trigger_funct();
 
 CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMPTZ, end_date TIMESTAMPTZ)
   RETURNS INT AS 
