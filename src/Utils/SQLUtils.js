@@ -151,8 +151,9 @@ const SQLQueries = {
   `,
   FETCH_CARE_TAKER: `
     SELECT CASE
-              WHEN ctf.email IS NULL THEN 'Part Timer'
-              WHEN ctp.email IS NULL THEN 'Full Timer'
+              WHEN ctf.email IS NOT NULL THEN 'CARE_TAKER_FULL_TIMER'
+              WHEN ctp.email IS NOT NULL THEN 'CARE_TAKER_PART_TIMER'
+              ELSE NULL
             END AS type, 
             ct.email, ct.name, ct.area, ct.location, ct.gender, ct.contact, ct.bio
     FROM care_takers ct
