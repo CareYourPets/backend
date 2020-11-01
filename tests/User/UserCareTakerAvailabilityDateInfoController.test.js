@@ -37,7 +37,7 @@ describe('TestUserCareTakerAvailabilityDateInfoController', () => {
     await DateFixtures.SeedUnavailableDate({email, date});
     await DateFixtures.SeedUnavailableDate({email, date: nextDate});
     const res = await Chai.request(App)
-      .get('/user/caretaker/availability/info')
+      .post('/user/caretaker/availability/info')
       .set('accessToken', accessToken)
       .send({
         type,
@@ -80,7 +80,7 @@ describe('TestUserCareTakerAvailabilityDateInfoController', () => {
     await DateFixtures.SeedAvailableDate({email, date});
     await DateFixtures.SeedAvailableDate({email, date: nextDate});
     const res = await Chai.request(App)
-      .get('/user/caretaker/availability/info')
+      .post('/user/caretaker/availability/info')
       .set('accessToken', accessToken)
       .send({
         type,
@@ -117,7 +117,7 @@ describe('TestUserCareTakerAvailabilityDateInfoController', () => {
   it('API should return 401 on missing access token', async () => {
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
     const res = await Chai.request(App)
-      .get('/user/caretaker/availability/info')
+      .post('/user/caretaker/availability/info')
       .send({
         type,
       });
