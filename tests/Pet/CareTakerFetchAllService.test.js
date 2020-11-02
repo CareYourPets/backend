@@ -1,4 +1,5 @@
 import Assert from 'assert';
+import _ from 'lodash';
 import pool from '../../src/Utils/DBUtils';
 import PetService from '../../src/Pet/PetService';
 import UserFixtures from '../Fixtures/UserFixtures';
@@ -12,6 +13,7 @@ describe('Test CareTakerFetchAllService', () => {
     await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_taker_skills');
     await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM pet_owners');
   });
 
@@ -20,6 +22,7 @@ describe('Test CareTakerFetchAllService', () => {
     await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_taker_skills');
     await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pet_categories');
     await pool.query('DELETE FROM pet_owners');
   });
 
@@ -27,6 +30,8 @@ describe('Test CareTakerFetchAllService', () => {
     const users = await UserFixtures.SeedCareTakers(2);
     const {email} = users[0];
     const isByLocation = false;
+    let skills = await UserFixtures.SeedCareTakerSkills(2, email);
+    skills = skills.map((skill) => _.omit(skill, ['email']));
 
     const name = 'test';
     const gender = GenderUtils.MALE;
@@ -57,6 +62,7 @@ describe('Test CareTakerFetchAllService', () => {
           gender,
           contact,
           bio,
+          skills,
         },
       ],
       results,
