@@ -135,7 +135,7 @@ describe('TestBidUpdateService', () => {
     );
   });
 
-  it('Service will reject update when rating is not within bounds', async () => {
+  it('Service will reject update when rating is below lower bound', async () => {
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
@@ -149,14 +149,57 @@ describe('TestBidUpdateService', () => {
       endDate,
     });
 
-    const isAccepted = null;
-    const transactionDate = moment().toISOString();
+    const isAccepted = false;
+    const transactionDate = null;
     const paymentMode = BID_PAYMENT_MODE.CASH;
     const amount = 100.0;
-    const reviewDate = moment().toISOString();
+    const reviewDate = null;
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
-    const review = 'Horrible';
+    const review = null;
     const rating = -1;
+
+    await Assert.rejects(
+      () =>
+        BidService.BidUpdate({
+          isAccepted,
+          transactionDate,
+          paymentMode,
+          amount,
+          reviewDate,
+          transportationMode,
+          review,
+          rating,
+          petName,
+          petOwnerEmail,
+          careTakerEmail,
+          startDate,
+        }),
+      Error,
+    );
+  });
+
+  it('Service will reject update when rating exceeds upper bound', async () => {
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+
+    await BidFixtures.SeedBids({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const isAccepted = false;
+    const transactionDate = null;
+    const paymentMode = BID_PAYMENT_MODE.CASH;
+    const amount = 100.0;
+    const reviewDate = null;
+    const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
+    const review = null;
+    const rating = 6;
 
     await Assert.rejects(
       () =>
