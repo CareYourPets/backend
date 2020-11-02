@@ -41,8 +41,8 @@ CREATE TABLE psc_administrators (
 	name VARCHAR,
 	gender gender_enum,
   contact VARCHAR,
+  area area_enum,
   location VARCHAR,
-  is_approved BOOLEAN NOT NULL DEFAULT false,
   is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 
@@ -76,7 +76,7 @@ CREATE TABLE pets (
 
 CREATE TABLE care_taker_skills (
   email VARCHAR REFERENCES care_takers(email),
-  category VARCHAR REFERENCES pet_categories(category),
+  category VARCHAR REFERENCES pet_categories(category) ON UPDATE CASCADE,
   price NUMERIC NOT NULL,
   PRIMARY KEY(email, category)
 );
@@ -335,7 +335,8 @@ $$
     SELECT AVG(rating)
     INTO avg_rating
     FROM bids
-    WHERE bids.care_taker_email = new_care_taker_email;
+    WHERE bids.care_taker_email = new_care_taker_email
+    AND is_accepted = TRUE;
     RETURN avg_rating;
   END;
 $$

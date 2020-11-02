@@ -49,9 +49,6 @@ const UserLogin = async ({email, password, role}) => {
     throw new Error('Invalid Role');
   }
   const user = users.rows[0];
-  if (role === RoleUtils.ADMINISTRATOR && user.is_approved === false) {
-    throw new Error('Unapproved');
-  }
   if (await IsPasswordVerified(password, user.password)) {
     return {accessToken: GenerateAccessToken({email, role})};
   }
@@ -65,15 +62,6 @@ const UserDelete = async ({email, role}) => {
     await pool.query(SQLQueries.DELETE_PET_OWNER, [email]);
   } else if (role === RoleUtils.ADMINISTRATOR) {
     await pool.query(SQLQueries.DELETE_ADMINISTRATOR, [email]);
-  } else {
-    throw new Error('Invalid Role');
-  }
-  return {status: 'ok'};
-};
-
-const UserApprove = async ({role, approvedEmail}) => {
-  if (role === RoleUtils.ADMINISTRATOR) {
-    await pool.query(SQLQueries.APPROVE_ADMINISTRATOR, [approvedEmail]);
   } else {
     throw new Error('Invalid Role');
   }
@@ -127,6 +115,7 @@ const UserAdministratorUpdate = async ({
   name,
   gender,
   contact,
+  area,
   location,
 }) => {
   await pool.query(SQLQueries.UPDATE_ADMINISTRATOR, [
@@ -134,6 +123,7 @@ const UserAdministratorUpdate = async ({
     name,
     gender,
     contact,
+    area,
     location,
   ]);
   return {status: 'ok'};
@@ -241,7 +231,6 @@ export default {
   UserLogin,
   UserInfo,
   UserDelete,
-  UserApprove,
   UserPetOwnerUpdate,
   UserCareTakerUpdate,
   UserAdministratorUpdate,

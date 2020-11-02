@@ -138,7 +138,7 @@ describe('Test BidCreate Service', () => {
         reviewDate: null,
         transportationMode: null,
         review: null,
-        rating: null,
+        rating: 0,
         petName: petNames[i],
         petOwnerEmail,
         careTakerEmail,
@@ -180,7 +180,7 @@ describe('Test BidCreate Service', () => {
         reviewDate: null,
         transportationMode: null,
         review: null,
-        rating: null,
+        rating: 0,
         petName: petNames[i],
         petOwnerEmail,
         careTakerEmail,
@@ -232,7 +232,7 @@ describe('Test BidCreate Service', () => {
         reviewDate: null,
         transportationMode: null,
         review: null,
-        rating: null,
+        rating: 0,
         petName: petNames[i],
         petOwnerEmail,
         careTakerEmail,
@@ -473,6 +473,7 @@ describe('Test BidCreate Service', () => {
       startDate: newStartDate,
       endDate: newEndDate,
     } = BidFixtures.CreateBidDates();
+
     await Assert.rejects(
       () =>
         BidService.BidCreate({
