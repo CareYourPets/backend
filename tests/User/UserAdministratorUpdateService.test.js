@@ -21,11 +21,13 @@ describe('Test UserAdministratorUpdate Service', () => {
     const gender = GenderUtils.MALE;
     const contact = 'test';
     const location = 'test';
+    const area = 'CENTRAL';
 
     await UserService.UserAdministratorUpdate({
       email,
       name,
       gender,
+      area,
       contact,
       location,
     });
@@ -38,8 +40,8 @@ describe('Test UserAdministratorUpdate Service', () => {
         name,
         gender,
         contact,
+        area,
         location,
-        is_approved: false,
         is_deleted: false,
       },
       _.omit(users[0], ['password']),

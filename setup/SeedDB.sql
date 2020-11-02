@@ -8,7 +8,7 @@ INSERT INTO psc_administrators (
   is_deleted
 ) VALUES (
   'nwjbrandon@gmail.com', 
-  '$2b$10$/IJdSgnkHJ4kOgEPxiLEuebNDJ4Jtig.KVG7OtvVd8l1qKANnneu2', 
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.', 
   'Brandon Ng',
   'MALE',
   '(+65)93221923',
