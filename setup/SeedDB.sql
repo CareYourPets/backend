@@ -7,7 +7,7 @@ INSERT INTO psc_administrators (
   location
 ) VALUES (
   'nwjbrandon@gmail.com', 
-  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.', 
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Brandon Ng',
   'MALE',
   '(+65)93221923',
@@ -22,8 +22,8 @@ INSERT INTO psc_administrators (
   contact,
   location
 ) VALUES (
-  'ambhinav@yahoo.com', 
-  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.', 
+  'ambhinav@yahoo.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Brandon Ng',
   'MALE',
   '(+65)93221923',
@@ -38,8 +38,8 @@ INSERT INTO psc_administrators (
   contact,
   location
 ) VALUES (
-  'amir97azhar@gmail.com', 
-  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.', 
+  'amir97azhar@gmail.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Amir Azhar',
   'MALE',
   '(+65)93221923',
@@ -54,8 +54,8 @@ INSERT INTO psc_administrators (
   contact,
   location
 ) VALUES (
-  'arunkumarr97@gmail.com', 
-  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.', 
+  'arunkumarr97@gmail.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Arun Kumar',
   'MALE',
   '(+65)93221923',
@@ -70,8 +70,8 @@ INSERT INTO psc_administrators (
   contact,
   location
 ) VALUES (
-  'dragontho@gmail.com', 
-  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.', 
+  'dragontho@gmail.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Paul Tho',
   'MALE',
   '(+65)93221923',

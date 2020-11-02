@@ -103,6 +103,7 @@ describe('Test BidDeleteConroller', () => {
         review_date: null,
         transportation_mode: null,
         review: null,
+        rating: 0,
         is_deleted: true,
       },
       bids[0],

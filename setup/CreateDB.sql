@@ -130,14 +130,14 @@ CREATE TABLE care_taker_part_timers (
 );
 
 CREATE OR REPLACE FUNCTION check_care_taker_pt_availability(email VARCHAR, date DATE)
-  RETURNS BOOLEAN AS 
+  RETURNS BOOLEAN AS
 $$
 DECLARE
   /* Must be within 2 years window of current_timestamp's year */
   upper_bound DATE = (date_trunc('year', current_timestamp::date) + interval '2 year' - interval '1 day')::date;
 BEGIN
   IF date NOT BETWEEN current_timestamp::date AND upper_bound
-  THEN 
+  THEN
     RETURN false;
   END IF;
   RETURN true;
@@ -146,14 +146,14 @@ $$
 LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE FUNCTION check_care_taker_availability(email VARCHAR, date DATE)
-  RETURNS BOOLEAN AS 
+  RETURNS BOOLEAN AS
 $$
 DECLARE
   start_of_year DATE = (date_trunc('year', NOW()::date))::date;
   end_of_year DATE = (date_trunc('year', NOW()::date) + interval '1 year' - interval '1 day')::date;
 BEGIN
   IF date NOT BETWEEN start_of_year AND end_of_year
-  THEN 
+  THEN
     RETURN false;
   ELSIF (
     SELECT count(*)
@@ -162,7 +162,7 @@ BEGIN
     AND is_accepted = true
     AND date BETWEEN start_date AND end_date
   ) > 0
-  THEN 
+  THEN
     RETURN false;
   ELSE
     RETURN true;
@@ -172,20 +172,20 @@ $$
 LANGUAGE 'plpgsql';
 
 CREATE TABLE care_taker_full_timers_unavailable_dates (
-  email VARCHAR REFERENCES care_taker_full_timers(email),
+  email VARCHAR REFERENCES care_taker_full_timers(email) ON DELETE CASCADE,
   date DATE NOT NULL,
   CHECK(check_care_taker_availability(email, date)),
   PRIMARY KEY(email, date)
 );
 
 CREATE TABLE care_taker_part_timers_available_dates (
-  email VARCHAR REFERENCES care_taker_part_timers(email),
+  email VARCHAR REFERENCES care_taker_part_timers(email) ON DELETE CASCADE,
   date DATE NOT NULL,
   CHECK(check_care_taker_pt_availability(email, date)),
   PRIMARY KEY(email, date)
 );
 
-CREATE OR REPLACE FUNCTION care_taker_full_timer_unavailable_dates_insert_trigger_funct()
+CREATE OR REPLACE FUNCTION care_taker_full_timers_unavailable_dates_insert_trigger_funct()
   RETURNS trigger AS
 $$
 DECLARE
@@ -200,7 +200,7 @@ BEGIN
     FROM care_taker_full_timers_unavailable_dates
     WHERE email = NEW.email
     ) > 65
-  THEN 
+  THEN
     RAISE EXCEPTION 'No leave days left %', NEW.date;
   END IF;
   /* Splits data into two cases, parition with at least 150 (and below 300) and another with atleast 300 */
@@ -222,7 +222,7 @@ BEGIN
       FROM (
         /* Create paritions of consecutive available dates */
         /* Credits to Anon: Adapted from top answer to https://stackoverflow.com/questions/20402089/detect-consecutive-dates-ranges-using-sql */
-        SELECT date, (ROW_NUMBER() OVER (ORDER BY date))::int AS i 
+        SELECT date, (ROW_NUMBER() OVER (ORDER BY date))::int AS i
         FROM (
           /* Generate available dates */
           SELECT date::date
@@ -238,7 +238,7 @@ BEGIN
     ) AS grouped_available_dates
   ) AS sub;
 
-  IF num_onefifty < 2 AND num_threehundred < 1 
+  IF num_onefifty < 2 AND num_threehundred < 1
   THEN
     RAISE EXCEPTION 'No leave days left %', NEW.date;
   END IF;
@@ -251,22 +251,7 @@ CREATE TRIGGER care_taker_full_timers_unavailable_dates_insert_trigger
 AFTER INSERT
 ON care_taker_full_timers_unavailable_dates
 FOR EACH ROW
-EXECUTE PROCEDURE care_taker_full_timer_unavailable_dates_insert_trigger_funct();
-
-CREATE TABLE care_taker_full_timers_unavailable_dates (
-  email VARCHAR REFERENCES care_taker_full_timers(email),
-  date DATE,
-  CHECK(check_care_taker_availability(email, date)),
-  PRIMARY KEY(email, date)
-);
-
-CREATE TABLE care_taker_part_timers_available_dates (
-  email VARCHAR REFERENCES care_taker_part_timers(email),
-  date DATE,
-  PRIMARY KEY(email, date)
-);
-
-
+EXECUTE PROCEDURE care_taker_full_timers_unavailable_dates_insert_trigger_funct();
 
 CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMPTZ, end_date TIMESTAMPTZ)
   RETURNS INT AS 
@@ -283,6 +268,80 @@ END;
 $$ 
 LANGUAGE 'plpgsql';
 
+CREATE OR REPLACE FUNCTION get_full_timer_number_of_pets(new_care_taker_email VARCHAR, new_start_date TIMESTAMPTZ, new_end_date TIMESTAMPTZ)
+  RETURNS INT AS
+$$
+DECLARE
+  num_of_pets INT = 0;
+  BEGIN
+    IF EXISTS(
+      SELECT 1
+      FROM care_taker_part_timers
+      WHERE email = new_care_taker_email
+    ) THEN
+        RETURN num_of_pets;
+    ELSE
+      SELECT COUNT(*)
+      INTO num_of_pets
+      FROM bids AS b
+      WHERE b.care_taker_email = new_care_taker_email
+      AND (
+        (new_start_date::date BETWEEN b.start_date::date AND b.end_date::date)
+        OR
+        (new_end_date::date BETWEEN b.start_date::date AND b.end_date::date)
+      )
+      AND is_accepted = TRUE;
+      RETURN num_of_pets;
+    END IF;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION get_part_timer_number_of_pets(new_care_taker_email VARCHAR, new_start_date TIMESTAMPTZ, new_end_date TIMESTAMPTZ)
+  RETURNS INT AS
+$$
+DECLARE
+  num_of_pets INT = 0;
+  BEGIN
+    IF EXISTS(
+      SELECT 1
+      FROM care_taker_full_timers
+      WHERE email = new_care_taker_email
+    ) THEN
+        RETURN num_of_pets;
+    ELSE
+      SELECT COUNT(*)
+      INTO num_of_pets
+      FROM bids AS b
+      WHERE b.care_taker_email = new_care_taker_email
+      AND (
+        (new_start_date::date BETWEEN b.start_date::date AND b.end_date::date)
+        OR
+        (new_end_date::date BETWEEN b.start_date::date AND b.end_date::date)
+      )
+      AND is_accepted = TRUE;
+      RETURN num_of_pets;
+    END IF;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION get_average_rating(new_care_taker_email VARCHAR)
+  RETURNS FLOAT AS
+$$
+  DECLARE
+  avg_rating FLOAT = 0.0;
+  BEGIN
+    SELECT AVG(rating)
+    INTO avg_rating
+    FROM bids
+    WHERE bids.care_taker_email = new_care_taker_email
+    AND is_accepted = TRUE;
+    RETURN avg_rating;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
 CREATE TABLE bids (
   pet_name VARCHAR NOT NULL,
   pet_owner_email VARCHAR NOT NULL,
@@ -296,8 +355,80 @@ CREATE TABLE bids (
   review_date TIMESTAMPTZ,
   transportation_mode delivery_enum,
   review VARCHAR,
+  rating INTEGER NOT NULL DEFAULT 0,
   is_deleted BOOLEAN NOT NULL DEFAULT false,
   FOREIGN KEY (pet_name, pet_owner_email) REFERENCES pets (name, email) ON DELETE CASCADE,
+  CHECK(rating BETWEEN 0 AND 5),
   CHECK(calculate_duration(start_date, end_date) >= 0),
+  CHECK(get_full_timer_number_of_pets(care_taker_email, start_date, end_date) < 5),
+  CHECK(
+      (get_part_timer_number_of_pets(care_taker_email, start_date, end_date) < 5
+      AND
+      get_average_rating(care_taker_email) >= 4)
+      OR
+      (get_part_timer_number_of_pets(care_taker_email, start_date, end_date) < 2
+      AND
+      get_average_rating(care_taker_email) < 4)
+    ),
   PRIMARY KEY (pet_name, pet_owner_email, care_taker_email, start_date)
 );
+
+CREATE OR REPLACE FUNCTION accept_as_full_timer_if_possible_trigger_funct()
+  RETURNS TRIGGER AS
+$$
+  BEGIN
+    IF EXISTS(
+      SELECT 1
+      FROM care_taker_full_timers
+      WHERE NEW.care_taker_email = care_taker_full_timers.email
+    ) AND EXISTS(
+      SELECT 1
+      FROM (care_taker_skills NATURAL JOIN pet_categories NATURAL JOIN pets) new_table
+      WHERE NEW.care_taker_email = new_table.email
+      AND NEW.pet_name = new_table.name
+    )
+    THEN
+      UPDATE bids
+      SET is_accepted = TRUE
+      WHERE care_taker_email = NEW.care_taker_email;
+    END IF;
+    RETURN NEW;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
+--CREATE OR REPLACE FUNCTION auto_calculate_amount_trigger_funct()
+--  RETURNS TRIGGER AS
+--$$
+--  DECLARE amount INT;
+--  BEGIN
+--    IF(
+--      SELECT is_accepted
+--      FROM bids
+--      WHERE care_taker_email = NEW.care_taker_email
+--    ) IS TRUE
+--    THEN
+--      SELECT base_price * (
+--        SELECT amount
+--
+--        )
+--      INTO amount
+--      FROM pets NATURAL JOIN pet_categories pet_info
+--      WHERE NEW.pet_name = pet_info.name
+--    END IF;
+--    RETURN NEW;
+--  END;
+--$$
+--LANGUAGE 'plpgsql';
+
+CREATE TRIGGER accept_as_full_timer_if_possible_trigger
+AFTER INSERT
+ON bids
+FOR EACH ROW
+EXECUTE PROCEDURE accept_as_full_timer_if_possible_trigger_funct();
+
+--CREATE TRIGGER auto_calculate_amount_trigger
+--AFTER UPDATE
+--ON bids
+--FOR EACH ROW
+--EXECUTE PROCEDURE auto_calculate_amount_trigger_funct();

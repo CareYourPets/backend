@@ -52,6 +52,7 @@ describe('Test BidUpdate Service', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     await BidService.BidUpdate({
       isAccepted,
@@ -61,6 +62,7 @@ describe('Test BidUpdate Service', () => {
       reviewDate,
       transportationMode,
       review,
+      rating,
       petName,
       petOwnerEmail,
       careTakerEmail,
@@ -86,6 +88,7 @@ describe('Test BidUpdate Service', () => {
     );
     Assert.deepStrictEqual(bids[0].transportation_mode, transportationMode);
     Assert.deepStrictEqual(bids[0].review, review);
+    Assert.deepStrictEqual(bids[0].rating, rating);
     Assert.deepStrictEqual(
       moment(bids[0].transaction_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
       moment(transactionDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
@@ -112,6 +115,7 @@ describe('Test BidUpdate Service', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     await Assert.rejects(
       () =>
@@ -122,6 +126,93 @@ describe('Test BidUpdate Service', () => {
           reviewDate,
           transportationMode,
           review,
+          rating,
+          petName,
+          petOwnerEmail,
+          careTakerEmail,
+          startDate,
+        }),
+      Error,
+    );
+  });
+
+  it('Service will reject update when rating is less than 0', async () => {
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+
+    await BidFixtures.SeedBids({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const isAccepted = true;
+    const transactionDate = moment().toISOString();
+    const paymentMode = BID_PAYMENT_MODE.CASH;
+    const amount = 100.0;
+    const reviewDate = moment().toISOString();
+    const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
+    const review = 'Horrible';
+    const rating = -1;
+
+    await Assert.rejects(
+      () =>
+        BidService.BidUpdate({
+          isAccepted,
+          transactionDate,
+          paymentMode,
+          amount,
+          reviewDate,
+          transportationMode,
+          review,
+          rating,
+          petName,
+          petOwnerEmail,
+          careTakerEmail,
+          startDate,
+        }),
+      Error,
+    );
+  });
+
+  it('Service will reject update when rating is more than 5', async () => {
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+
+    await BidFixtures.SeedBids({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const isAccepted = true;
+    const transactionDate = moment().toISOString();
+    const paymentMode = BID_PAYMENT_MODE.CASH;
+    const amount = 100.0;
+    const reviewDate = moment().toISOString();
+    const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
+    const review = 'Horrible';
+    const rating = 6;
+
+    await Assert.rejects(
+      () =>
+        BidService.BidUpdate({
+          isAccepted,
+          transactionDate,
+          paymentMode,
+          amount,
+          reviewDate,
+          transportationMode,
+          review,
+          rating,
           petName,
           petOwnerEmail,
           careTakerEmail,

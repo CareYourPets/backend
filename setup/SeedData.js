@@ -150,26 +150,22 @@ const main = async () => {
     await Promise.all(
       _.times(1000, async () => {
         await petOwnerPayload(client);
-        
       }),
     );
     await Promise.all(
       _.times(1000, async () => {
         await careTakerPayload(client);
-        
       }),
     );
     await Promise.all(
       _.times(10, async () => {
         await administratorPayload(client);
-        
       }),
     );
     await Promise.all(
       _.map(CATEGORIES, async (category, _) => {
         if (category === undefined) return;
         await categoryPayload(client, category);
-        
       }),
     );
     await client.query('COMMIT');

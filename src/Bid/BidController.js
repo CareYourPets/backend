@@ -72,6 +72,7 @@ app.post(
       PET_DELIVERY_MODE.TRANSFER_THROUGH_PCS,
     ]),
     body('review').exists(),
+    body('rating').exists(),
     // validate PK
     body('petName').isString(),
     body('petOwnerEmail').isEmail(),

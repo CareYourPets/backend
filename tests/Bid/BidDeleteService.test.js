@@ -36,7 +36,7 @@ describe('Test BidDeleteService', () => {
     const petName = 'pet0';
     const {startDate, endDate} = BidFixtures.CreateBidDates();
 
-    BidFixtures.SeedBids({
+    await BidFixtures.SeedBids({
       petName,
       petOwnerEmail,
       careTakerEmail,
@@ -84,6 +84,7 @@ describe('Test BidDeleteService', () => {
         review_date: null,
         transportation_mode: null,
         review: null,
+        rating: 0,
         is_deleted: true,
       },
       bids[0],
