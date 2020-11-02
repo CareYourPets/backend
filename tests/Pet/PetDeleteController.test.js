@@ -40,25 +40,26 @@ describe('Test PetDeleteController', () => {
       `SELECT * FROM pets WHERE email='${email}'`,
     );
     Assert.deepStrictEqual(
-      [
-        {
-          name: 'pet1',
-          email,
-          category,
-          needs: null,
-          diet: null,
-          is_deleted: false,
-        },
-        {
-          name: 'pet0',
-          email,
-          category,
-          needs: null,
-          diet: null,
-          is_deleted: true,
-        },
-      ],
-      pets,
+      {
+        name: 'pet1',
+        email,
+        category,
+        needs: null,
+        diet: null,
+        is_deleted: false,
+      },
+      pets[0],
+    );
+    Assert.deepStrictEqual(
+      {
+        name: 'pet0',
+        email,
+        category,
+        needs: null,
+        diet: null,
+        is_deleted: true,
+      },
+      pets[1],
     );
   });
 
