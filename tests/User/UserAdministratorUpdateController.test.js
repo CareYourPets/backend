@@ -25,6 +25,7 @@ describe('Test UserAdministratorUpdate Controller', () => {
     const gender = GenderUtils.MALE;
     const contact = 'test';
     const location = 'test';
+    const area = 'CENTRAL';
 
     await Chai.request(App)
       .post('/user/update/admin')
@@ -33,6 +34,7 @@ describe('Test UserAdministratorUpdate Controller', () => {
         name,
         gender,
         contact,
+        area,
         location,
       });
 
@@ -46,8 +48,8 @@ describe('Test UserAdministratorUpdate Controller', () => {
         name,
         gender,
         contact,
+        area,
         location,
-        is_approved: false,
         is_deleted: false,
       },
       _.omit(rows[0], ['password']),
