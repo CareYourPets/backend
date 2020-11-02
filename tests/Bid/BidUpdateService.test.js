@@ -8,7 +8,7 @@ import BidFixtures from '../Fixtures/BidFixtures';
 import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import {BID_PAYMENT_MODE, PET_DELIVERY_MODE} from '../../src/Utils/BidUtils';
 
-describe('Test BidUpdate Service', () => {
+describe('TestBidUpdateService', () => {
   beforeEach('BidUpdateService beforeEach', async () => {
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
