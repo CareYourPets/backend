@@ -88,6 +88,7 @@ describe('TestBidUpdateService', () => {
     );
     Assert.deepStrictEqual(bids[0].transportation_mode, transportationMode);
     Assert.deepStrictEqual(bids[0].review, review);
+    Assert.deepStrictEqual(bids[0].rating, rating);
     Assert.deepStrictEqual(
       moment(bids[0].transaction_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
       moment(transactionDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
@@ -135,7 +136,7 @@ describe('TestBidUpdateService', () => {
     );
   });
 
-  it('Service will reject update when rating is below lower bound', async () => {
+  it('Service will reject update when rating is less than 0', async () => {
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
@@ -149,13 +150,13 @@ describe('TestBidUpdateService', () => {
       endDate,
     });
 
-    const isAccepted = false;
-    const transactionDate = null;
+    const isAccepted = true;
+    const transactionDate = moment().toISOString();
     const paymentMode = BID_PAYMENT_MODE.CASH;
     const amount = 100.0;
-    const reviewDate = null;
+    const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
-    const review = null;
+    const review = 'Horrible';
     const rating = -1;
 
     await Assert.rejects(
@@ -178,7 +179,7 @@ describe('TestBidUpdateService', () => {
     );
   });
 
-  it('Service will reject update when rating exceeds upper bound', async () => {
+  it('Service will reject update when rating is more than 5', async () => {
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
@@ -192,13 +193,13 @@ describe('TestBidUpdateService', () => {
       endDate,
     });
 
-    const isAccepted = false;
-    const transactionDate = null;
+    const isAccepted = true;
+    const transactionDate = moment().toISOString();
     const paymentMode = BID_PAYMENT_MODE.CASH;
     const amount = 100.0;
-    const reviewDate = null;
+    const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
-    const review = null;
+    const review = 'Horrible';
     const rating = 6;
 
     await Assert.rejects(
