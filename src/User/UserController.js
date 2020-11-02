@@ -69,20 +69,6 @@ app.post('/delete', AuthRequired, async (req, res) => {
 });
 
 app.post(
-  '/approve',
-  [body('approvedEmail').isEmail()],
-  AuthRequired,
-  async (req, res) => {
-    try {
-      const response = await service.UserApprove({...req.user, ...req.body});
-      return res.json(response);
-    } catch (error) {
-      return res.status(403).json({error});
-    }
-  },
-);
-
-app.post(
   '/update/admin',
   [
     body('name').isString(),
