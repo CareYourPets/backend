@@ -151,8 +151,9 @@ const SQLQueries = {
   `,
   FETCH_CARE_TAKER: `
     SELECT CASE
-              WHEN ctf.email IS NULL THEN 'Part Timer'
-              WHEN ctp.email IS NULL THEN 'Full Timer'
+              WHEN ctf.email IS NOT NULL THEN 'CARE_TAKER_FULL_TIMER'
+              WHEN ctp.email IS NOT NULL THEN 'CARE_TAKER_PART_TIMER'
+              ELSE NULL
             END AS type, 
             ct.email, ct.name, ct.area, ct.location, ct.gender, ct.contact, ct.bio
     FROM care_takers ct
@@ -190,8 +191,9 @@ const SQLQueries = {
         amount=$4,
         review_date=$5,
         transportation_mode=$6,
-        review=$7
-    WHERE pet_name=$8 AND pet_owner_email=$9 AND care_taker_email=$10 AND start_date=$11;
+        review=$7,
+        rating=$8
+    WHERE pet_name=$9 AND pet_owner_email=$10 AND care_taker_email=$11 AND start_date=$12;
   `,
   DELETE_BID: `
     UPDATE bids SET is_deleted=true WHERE pet_name=$1 AND pet_owner_email=$2 AND care_taker_email=$3 AND start_date=$4;

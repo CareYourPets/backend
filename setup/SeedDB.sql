@@ -95,4 +95,32 @@ INSERT INTO pets (
   'He is blind.',
   'cannibal',
   false
+), (
+  'jimmy',
+  'rabbit',
+  'test@example.com',
+  'He is blind.',
+  'cannibal',
+  false
+), (
+  'tammy',
+  'rabbit',
+  'test@example.com',
+  'He is blind.',
+  'cannibal',
+  false
+), (
+  'bunny',
+  'rabbit',
+  'test@example.com',
+  'He is blind.',
+  'cannibal',
+  false
+), (
+  'nuggy',
+  'rabbit',
+  'test@example.com',
+  'He is blind.',
+  'cannibal',
+  false
 );

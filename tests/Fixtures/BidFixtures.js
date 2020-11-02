@@ -72,6 +72,7 @@ const SeedMultipleBids = async () => {
       review_date: null,
       transportation_mode: null,
       review: null,
+      rating: null,
     };
     bids.push(bidInfo);
   }
