@@ -60,6 +60,7 @@ describe('Test BidUpdate Controller', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     await Chai.request(App)
       .post('/bid/update')
@@ -72,6 +73,7 @@ describe('Test BidUpdate Controller', () => {
         reviewDate,
         transportationMode,
         review,
+        rating,
         petName,
         petOwnerEmail,
         careTakerEmail,
@@ -124,6 +126,7 @@ describe('Test BidUpdate Controller', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     const res = await Chai.request(App)
       .post('/bid/update')
@@ -134,6 +137,7 @@ describe('Test BidUpdate Controller', () => {
         reviewDate,
         transportationMode,
         review,
+        rating,
         petName,
         petOwnerEmail,
         careTakerEmail,
@@ -165,6 +169,7 @@ describe('Test BidUpdate Controller', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     const res = await Chai.request(App)
       .post('/bid/update')
@@ -176,6 +181,7 @@ describe('Test BidUpdate Controller', () => {
         reviewDate,
         transportationMode,
         review,
+        rating,
         petName,
         petOwnerEmail,
         careTakerEmail,
@@ -207,6 +213,7 @@ describe('Test BidUpdate Controller', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     const res = await Chai.request(App)
       .post('/bid/update')
@@ -218,6 +225,7 @@ describe('Test BidUpdate Controller', () => {
         reviewDate,
         transportationMode,
         review,
+        rating,
         petName,
         petOwnerEmail,
         careTakerEmail,
@@ -249,6 +257,7 @@ describe('Test BidUpdate Controller', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     const res = await Chai.request(App)
       .post('/bid/update')
@@ -260,6 +269,7 @@ describe('Test BidUpdate Controller', () => {
         reviewDate,
         transportationMode,
         review,
+        rating,
         petName,
         petOwnerEmail,
         careTakerEmail,
@@ -291,6 +301,7 @@ describe('Test BidUpdate Controller', () => {
     const amount = 100.0;
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     const res = await Chai.request(App)
       .post('/bid/update')
@@ -302,6 +313,7 @@ describe('Test BidUpdate Controller', () => {
         amount,
         transportationMode,
         review,
+        rating,
         petName,
         petOwnerEmail,
         careTakerEmail,
@@ -333,6 +345,7 @@ describe('Test BidUpdate Controller', () => {
     const amount = 100.0;
     const reviewDate = moment().toISOString();
     const review = 'Horrible';
+    const rating = 1;
 
     const res = await Chai.request(App)
       .post('/bid/update')
@@ -344,6 +357,7 @@ describe('Test BidUpdate Controller', () => {
         amount,
         reviewDate,
         review,
+        rating,
         petName,
         petOwnerEmail,
         careTakerEmail,
@@ -375,6 +389,7 @@ describe('Test BidUpdate Controller', () => {
     const amount = 100.0;
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
+    const rating = 1;
 
     const res = await Chai.request(App)
       .post('/bid/update')
@@ -386,6 +401,51 @@ describe('Test BidUpdate Controller', () => {
         amount,
         reviewDate,
         transportationMode,
+        rating,
+        petName,
+        petOwnerEmail,
+        careTakerEmail,
+        startDate,
+      });
+
+    Assert.deepStrictEqual(422, res.status);
+  });
+
+  it('API should return 422 for missing rating', async () => {
+    const users = await UserFixtures.SeedAdministrators(1);
+    const {accessToken} = users[0];
+    const careTakerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const petOwnerEmail = 'test0@example.com';
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+
+    await BidFixtures.SeedBids({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const isAccepted = true;
+    const transactionDate = moment().toISOString();
+    const paymentMode = BID_PAYMENT_MODE.CASH;
+    const amount = 100.0;
+    const reviewDate = moment().toISOString();
+    const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
+    const review = null;
+
+    const res = await Chai.request(App)
+      .post('/bid/update')
+      .set('accessToken', accessToken)
+      .send({
+        isAccepted,
+        transactionDate,
+        paymentMode,
+        amount,
+        reviewDate,
+        transportationMode,
+        review,
         petName,
         petOwnerEmail,
         careTakerEmail,
@@ -416,6 +476,7 @@ describe('Test BidUpdate Controller', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     const res = await Chai.request(App).post('/bid/update').send({
       isAccepted,
@@ -425,6 +486,7 @@ describe('Test BidUpdate Controller', () => {
       reviewDate,
       transportationMode,
       review,
+      rating,
       petName,
       petOwnerEmail,
       careTakerEmail,

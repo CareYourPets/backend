@@ -294,10 +294,12 @@ CREATE TABLE bids (
   payment_mode payment_enum,
   amount FLOAT,
   review_date TIMESTAMPTZ,
+  rating INT,
   transportation_mode delivery_enum,
   review VARCHAR,
   is_deleted BOOLEAN NOT NULL DEFAULT false,
   FOREIGN KEY (pet_name, pet_owner_email) REFERENCES pets (name, email) ON DELETE CASCADE,
+  CHECK(rating >= 0 AND rating <= 5),
   CHECK(calculate_duration(start_date, end_date) >= 0),
   PRIMARY KEY (pet_name, pet_owner_email, care_taker_email, start_date)
 );

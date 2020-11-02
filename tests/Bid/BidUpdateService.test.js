@@ -8,7 +8,7 @@ import BidFixtures from '../Fixtures/BidFixtures';
 import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import {BID_PAYMENT_MODE, PET_DELIVERY_MODE} from '../../src/Utils/BidUtils';
 
-describe('Test BidUpdate Service', () => {
+describe('TestBidUpdateService', () => {
   beforeEach('BidUpdateService beforeEach', async () => {
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
@@ -52,6 +52,7 @@ describe('Test BidUpdate Service', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     await BidService.BidUpdate({
       isAccepted,
@@ -61,6 +62,7 @@ describe('Test BidUpdate Service', () => {
       reviewDate,
       transportationMode,
       review,
+      rating,
       petName,
       petOwnerEmail,
       careTakerEmail,
@@ -112,6 +114,7 @@ describe('Test BidUpdate Service', () => {
     const reviewDate = moment().toISOString();
     const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
     const review = 'Horrible';
+    const rating = 1;
 
     await Assert.rejects(
       () =>
@@ -122,6 +125,50 @@ describe('Test BidUpdate Service', () => {
           reviewDate,
           transportationMode,
           review,
+          rating,
+          petName,
+          petOwnerEmail,
+          careTakerEmail,
+          startDate,
+        }),
+      Error,
+    );
+  });
+
+  it('Service will reject update when rating is not within bounds', async () => {
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+
+    await BidFixtures.SeedBids({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const isAccepted = null;
+    const transactionDate = moment().toISOString();
+    const paymentMode = BID_PAYMENT_MODE.CASH;
+    const amount = 100.0;
+    const reviewDate = moment().toISOString();
+    const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
+    const review = 'Horrible';
+    const rating = -1;
+
+    await Assert.rejects(
+      () =>
+        BidService.BidUpdate({
+          isAccepted,
+          transactionDate,
+          paymentMode,
+          amount,
+          reviewDate,
+          transportationMode,
+          review,
+          rating,
           petName,
           petOwnerEmail,
           careTakerEmail,
