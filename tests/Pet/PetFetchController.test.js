@@ -1,6 +1,7 @@
 import Assert from 'assert';
 import Chai from 'chai';
 import ChaiHttp from 'chai-http';
+import _ from 'lodash';
 import pool from '../../src/Utils/DBUtils';
 import App from '../../src/App';
 import UserFixtures from '../Fixtures/UserFixtures';
@@ -54,7 +55,7 @@ describe('Test PetFetch Controller', () => {
           is_deleted: false,
         },
       ],
-      res.body,
+      _.sortBy(res.body, 'name'),
     );
   });
 });

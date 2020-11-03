@@ -1,6 +1,7 @@
 import Assert from 'assert';
 import moment from 'moment';
 import Chai from 'chai';
+import _ from 'lodash';
 import ChaiHttp from 'chai-http';
 import pool from '../../src/Utils/DBUtils';
 import BidFixtures from '../Fixtures/BidFixtures';
@@ -49,8 +50,19 @@ describe('Test BidInfo Controller', () => {
       );
       bids[i].end_date = formattedEndDate;
     }
+    const petOwnerInfo = {
+      name: null,
+      gender: null,
+      contact: null,
+      area: null,
+      location: null,
+      bio: null,
+    };
+    const expected = data.bidData.map((data) =>
+      _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
+    );
 
-    Assert.deepStrictEqual(data.bidData, bids);
+    Assert.deepStrictEqual(expected, bids);
   });
 
   it('API should fetch all bids involving care taker', async () => {
@@ -73,8 +85,19 @@ describe('Test BidInfo Controller', () => {
       );
       bids[i].end_date = formattedEndDate;
     }
+    const careTakerInfo = {
+      name: null,
+      gender: null,
+      contact: null,
+      area: null,
+      location: null,
+      bio: null,
+    };
+    const expected = data.bidData.map((data) =>
+      _.omit({...data, ...careTakerInfo}, ['is_deleted']),
+    );
 
-    Assert.deepStrictEqual(data.bidData, bids);
+    Assert.deepStrictEqual(expected, bids);
   });
 
   it('API should fetch all bids for admin', async () => {

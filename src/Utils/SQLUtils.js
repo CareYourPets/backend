@@ -199,10 +199,60 @@ const SQLQueries = {
     SELECT * FROM bids WHERE is_deleted=false;
   `,
   SELECT_CARE_TAKER_BIDS: `
-    SELECT * FROM bids WHERE care_taker_email=$1 AND is_deleted=false;
+    SELECT
+      pet_name,
+      pet_owner_email,
+      care_taker_email,
+      is_accepted,
+      start_date,
+      end_date, 
+      transaction_date,
+      payment_mode, 
+      amount, 
+      review_date,
+      transportation_mode,
+      review,
+      rating, 
+      name,
+      gender,
+      contact, 
+      area, 
+      location, 
+      bio
+    FROM bids 
+    INNER JOIN pet_owners 
+      ON bids.care_taker_email=pet_owners.email 
+    WHERE 
+      care_taker_email=$1 AND 
+      bids.is_deleted=false;
   `,
   SELECT_PET_OWNER_BIDS: `
-    SELECT * FROM bids WHERE pet_owner_email=$1 AND is_deleted=false;
+    SELECT
+      pet_name,
+      pet_owner_email,
+      care_taker_email,
+      is_accepted,
+      start_date,
+      end_date, 
+      transaction_date,
+      payment_mode, 
+      amount, 
+      review_date,
+      transportation_mode,
+      review,
+      rating, 
+      name,
+      gender,
+      contact, 
+      area, 
+      location, 
+      bio
+    FROM bids 
+    INNER JOIN care_takers 
+      ON bids.care_taker_email=care_takers.email 
+    WHERE 
+      pet_owner_email=$1 AND 
+      bids.is_deleted=false;
   `,
   CREATE_CARE_TAKER_UNAVAILABLE_DATE: `
     INSERT INTO care_taker_full_timers_unavailable_dates (
