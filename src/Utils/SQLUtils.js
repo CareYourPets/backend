@@ -221,7 +221,7 @@ const SQLQueries = {
       bio
     FROM bids 
     INNER JOIN pet_owners 
-      ON bids.care_taker_email=pet_owners.email 
+      ON bids.pet_owner_email=pet_owners.email 
     WHERE 
       care_taker_email=$1 AND 
       bids.is_deleted=false;
@@ -279,6 +279,17 @@ const SQLQueries = {
   `,
   DELETE_CARE_TAKER_PT_AVAILABLE_DATE: `
     DELETE FROM care_taker_part_timers_available_dates WHERE email=$1 AND date=$2
+  `,
+  FETCH_CARE_TAKER_REVIEWS: `
+    SELECT email, name, review, rating 
+    FROM bids
+    INNER JOIN pet_owners
+      ON pet_owners.email=bids.pet_owner_email
+    WHERE
+      care_taker_email=$1 AND
+      is_accepted=true AND
+      review IS NOT NULL AND
+      rating IS NOT NULL;
   `,
 };
 
