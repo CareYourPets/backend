@@ -77,7 +77,7 @@ CREATE TABLE pets (
 CREATE TABLE care_taker_skills (
   email VARCHAR REFERENCES care_takers(email),
   category VARCHAR REFERENCES pet_categories(category) ON UPDATE CASCADE,
-  price NUMERIC NOT NULL,
+  price FLOAT NOT NULL,
   PRIMARY KEY(email, category)
 );
 
@@ -268,7 +268,12 @@ END;
 $$ 
 LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE FUNCTION get_full_timer_number_of_pets(new_care_taker_email VARCHAR, new_start_date TIMESTAMPTZ, new_end_date TIMESTAMPTZ)
+CREATE OR REPLACE FUNCTION get_full_timer_number_of_pets(
+                           new_pet_name VARCHAR,
+                           new_pet_owner_email VARCHAR,
+                           new_care_taker_email VARCHAR,
+                           new_start_date TIMESTAMPTZ,
+                           new_end_date TIMESTAMPTZ)
   RETURNS INT AS
 $$
 DECLARE
@@ -280,8 +285,19 @@ DECLARE
       WHERE email = new_care_taker_email
     ) THEN
         RETURN num_of_pets;
+    ELSIF EXISTS(
+      SELECT 1
+      FROM bids
+      WHERE pet_name = new_pet_name
+      AND pet_owner_email = new_pet_owner_email
+      AND care_taker_email = new_care_taker_email
+      AND start_date = new_start_date
+    ) THEN
+      SELECT -1 INTO num_of_pets;
     ELSE
-      SELECT COUNT(*)
+      SELECT 0 INTO num_of_pets;
+    END IF;
+      SELECT COUNT(*) + num_of_pets
       INTO num_of_pets
       FROM bids AS b
       WHERE b.care_taker_email = new_care_taker_email
@@ -292,12 +308,16 @@ DECLARE
       )
       AND is_accepted = TRUE;
       RETURN num_of_pets;
-    END IF;
   END;
 $$
 LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE FUNCTION get_part_timer_number_of_pets(new_care_taker_email VARCHAR, new_start_date TIMESTAMPTZ, new_end_date TIMESTAMPTZ)
+CREATE OR REPLACE FUNCTION get_part_timer_number_of_pets(
+                           new_pet_name VARCHAR,
+                           new_pet_owner_email VARCHAR,
+                           new_care_taker_email VARCHAR,
+                           new_start_date TIMESTAMPTZ,
+                           new_end_date TIMESTAMPTZ)
   RETURNS INT AS
 $$
 DECLARE
@@ -309,8 +329,19 @@ DECLARE
       WHERE email = new_care_taker_email
     ) THEN
         RETURN num_of_pets;
+    ELSIF EXISTS(
+      SELECT 1
+      FROM bids
+      WHERE pet_name = new_pet_name
+      AND pet_owner_email = new_pet_owner_email
+      AND care_taker_email = new_care_taker_email
+      AND start_date = new_start_date
+    ) THEN
+      SELECT -1 INTO num_of_pets;
     ELSE
-      SELECT COUNT(*)
+      SELECT 0 INTO num_of_pets;
+    END IF;
+      SELECT COUNT(*) + num_of_pets
       INTO num_of_pets
       FROM bids AS b
       WHERE b.care_taker_email = new_care_taker_email
@@ -321,7 +352,6 @@ DECLARE
       )
       AND is_accepted = TRUE;
       RETURN num_of_pets;
-    END IF;
   END;
 $$
 LANGUAGE 'plpgsql';
@@ -336,7 +366,7 @@ $$
     INTO avg_rating
     FROM bids
     WHERE bids.care_taker_email = new_care_taker_email
-    AND is_accepted = TRUE;
+    AND review IS NOT NULL;
     RETURN avg_rating;
   END;
 $$
@@ -360,13 +390,13 @@ CREATE TABLE bids (
   FOREIGN KEY (pet_name, pet_owner_email) REFERENCES pets (name, email) ON DELETE CASCADE,
   CHECK(rating BETWEEN 0 AND 5),
   CHECK(calculate_duration(start_date, end_date) >= 0),
-  CHECK(get_full_timer_number_of_pets(care_taker_email, start_date, end_date) < 5),
+  CHECK(get_full_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 5),
   CHECK(
-      (get_part_timer_number_of_pets(care_taker_email, start_date, end_date) < 5
+      (get_part_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 5
       AND
       get_average_rating(care_taker_email) >= 4)
       OR
-      (get_part_timer_number_of_pets(care_taker_email, start_date, end_date) < 2
+      (get_part_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 2
       AND
       get_average_rating(care_taker_email) < 4)
     ),
@@ -397,29 +427,82 @@ $$
 $$
 LANGUAGE 'plpgsql';
 
---CREATE OR REPLACE FUNCTION auto_calculate_amount_trigger_funct()
---  RETURNS TRIGGER AS
---$$
---  DECLARE amount INT;
---  BEGIN
---    IF(
---      SELECT is_accepted
---      FROM bids
---      WHERE care_taker_email = NEW.care_taker_email
---    ) IS TRUE
---    THEN
---      SELECT base_price * (
---        SELECT amount
---
---        )
---      INTO amount
---      FROM pets NATURAL JOIN pet_categories pet_info
---      WHERE NEW.pet_name = pet_info.name
---    END IF;
---    RETURN NEW;
---  END;
---$$
---LANGUAGE 'plpgsql';
+CREATE OR REPLACE FUNCTION auto_calculate_amount_trigger_funct()
+  RETURNS TRIGGER AS
+$$
+  DECLARE new_amount FLOAT;
+  DECLARE new_category VARCHAR;
+  BEGIN
+    -- Get category for new pet
+    SELECT pet_info.category
+    INTO new_category
+    FROM (pets NATURAL JOIN pet_categories) pet_info
+    WHERE NEW.pet_name = pet_info.name;
+    -- Get price from care_taker_skills
+    SELECT price
+    INTO new_amount
+    FROM care_taker_skills
+    WHERE NEW.care_taker_email = email
+    AND category = new_category;
+    IF (calculate_duration(NEW.start_date, NEW.end_date) = 0) THEN
+      UPDATE bids
+      SET amount = new_amount
+      WHERE pet_name = NEW.pet_name
+      AND pet_owner_email = NEW.pet_owner_email
+      AND care_taker_email = NEW.care_taker_email
+      AND start_date = NEW.start_date;
+    ELSE
+      UPDATE bids
+      SET amount = new_amount * calculate_duration(NEW.start_date, NEW.end_date)
+      WHERE pet_name = NEW.pet_name
+      AND pet_owner_email = NEW.pet_owner_email
+      AND care_taker_email = NEW.care_taker_email
+      AND start_date = NEW.start_date;
+    END IF;
+    RETURN NEW;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION update_care_taker_skill_price_trigger_funct()
+  RETURNS TRIGGER AS
+$$
+  DECLARE
+    base_price FLOAT;
+    avg_rating FLOAT;
+    new_category VARCHAR;
+    bonus_per_rating INT = 10;
+  BEGIN
+    IF EXISTS(
+      SELECT 1
+      FROM bids
+      WHERE NEW.review IS NOT NULL
+    ) THEN
+      -- Get base price from pet_categories and category of pet in bid
+      SELECT pet_info.base_price, pet_info.category
+      INTO base_price, new_category
+      FROM (pets NATURAL JOIN pet_categories) pet_info
+      WHERE NEW.pet_name = pet_info.name;
+      -- Get average rating from bids
+      SELECT AVG(rating)
+      INTO avg_rating
+      FROM bids
+      WHERE NEW.care_taker_email = care_taker_email;
+      -- Update entry in care_taker_skills
+      UPDATE care_taker_skills
+      SET price = base_price + bonus_per_rating * avg_rating
+      WHERE email = NEW.care_taker_email
+      AND category = new_category;
+    ELSE
+      SELECT pet_info.base_price
+      INTO base_price
+      FROM (pets NATURAL JOIN pet_categories) pet_info
+      WHERE NEW.pet_name = pet_info.name;
+    END IF;
+    RETURN NEW;
+  END;
+$$
+LANGUAGE 'plpgsql';
 
 CREATE TRIGGER accept_as_full_timer_if_possible_trigger
 AFTER INSERT
@@ -427,8 +510,14 @@ ON bids
 FOR EACH ROW
 EXECUTE PROCEDURE accept_as_full_timer_if_possible_trigger_funct();
 
---CREATE TRIGGER auto_calculate_amount_trigger
---AFTER UPDATE
---ON bids
---FOR EACH ROW
---EXECUTE PROCEDURE auto_calculate_amount_trigger_funct();
+CREATE TRIGGER update_care_taker_skill_price_trigger
+AFTER UPDATE
+ON bids
+FOR EACH ROW
+EXECUTE PROCEDURE update_care_taker_skill_price_trigger_funct();
+
+CREATE TRIGGER auto_calculate_amount_trigger
+AFTER INSERT
+ON bids
+FOR EACH ROW
+EXECUTE PROCEDURE auto_calculate_amount_trigger_funct();

@@ -19,7 +19,7 @@ describe('Test BidCreate Service', () => {
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
     await UserFixtures.SeedCareTakers(1);
-    await PetFixtures.SeedPetCategories(1);
+    await PetFixtures.SeedPetCategories(2);
     const email = 'test0@example.com';
     const category = 'category0';
     await PetFixtures.SeedPets(1, email, category);
@@ -134,7 +134,6 @@ describe('Test BidCreate Service', () => {
         isAccepted: true,
         transactionDate: null,
         paymentMode: null,
-        amount: null,
         reviewDate: null,
         transportationMode: null,
         review: null,
@@ -176,7 +175,6 @@ describe('Test BidCreate Service', () => {
         isAccepted: true,
         transactionDate: null,
         paymentMode: null,
-        amount: null,
         reviewDate: null,
         transportationMode: null,
         review: null,
@@ -228,7 +226,6 @@ describe('Test BidCreate Service', () => {
         isAccepted: true,
         transactionDate: null,
         paymentMode: null,
-        amount: null,
         reviewDate: null,
         transportationMode: null,
         review: null,
@@ -239,8 +236,8 @@ describe('Test BidCreate Service', () => {
         startDate,
       });
     }
-    const newStartDate = moment().add(2, 'weeks').toISOString(true);
-    const newEndDate = moment().add(2, 'weeks').toISOString(true);
+    const newStartDate = moment().add(3, 'weeks').toISOString(true);
+    const newEndDate = moment().add(3, 'weeks').toISOString(true);
     await BidService.BidCreate({
       petName: 'pet5',
       petOwnerEmail,
@@ -283,6 +280,37 @@ describe('Test BidCreate Service', () => {
 			`,
     );
     Assert.deepStrictEqual(bids[0].is_accepted, true);
+  });
+
+  it('Service should not automatically accept bid for full timers outside their skills', async () => {
+    await pool.query('DELETE FROM care_takers');
+    await UserFixtures.SeedCareTakerFullTimers(1);
+    await pool.query(`
+        INSERT INTO care_taker_skills(email, category, price)
+        VALUES('test0@example.com', 'category1', 10);
+    `);
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+    await BidService.BidCreate({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const {rows: bids} = await pool.query(
+      `SELECT * 
+			FROM bids 
+			WHERE pet_name='${petName}' 
+			AND pet_owner_email='${petOwnerEmail}'
+			AND care_taker_email='${careTakerEmail}'
+			AND start_date='${startDate}'
+			`,
+    );
+    Assert.deepStrictEqual(bids[0].is_accepted, false);
   });
 
   it('Service should not automatically accept bid for part timers', async () => {
@@ -340,10 +368,9 @@ describe('Test BidCreate Service', () => {
         isAccepted: true,
         transactionDate: null,
         paymentMode: null,
-        amount: null,
         reviewDate: null,
         transportationMode: null,
-        review: null,
+        review: 'asdf',
         rating: 5,
         petName: petNames[i],
         petOwnerEmail,
@@ -389,10 +416,9 @@ describe('Test BidCreate Service', () => {
         isAccepted: true,
         transactionDate: null,
         paymentMode: null,
-        amount: null,
         reviewDate: null,
         transportationMode: null,
-        review: null,
+        review: 'asdf',
         rating: 5,
         petName: petNames[i],
         petOwnerEmail,
@@ -415,10 +441,9 @@ describe('Test BidCreate Service', () => {
       isAccepted: true,
       transactionDate: null,
       paymentMode: null,
-      amount: null,
       reviewDate: null,
       transportationMode: null,
-      review: null,
+      review: 'asdf',
       rating: 5,
       petName: 'pet3',
       petOwnerEmail,
@@ -458,10 +483,9 @@ describe('Test BidCreate Service', () => {
         isAccepted: true,
         transactionDate: null,
         paymentMode: null,
-        amount: null,
         reviewDate: null,
         transportationMode: null,
-        review: null,
+        review: 'asdf',
         rating: 1,
         petName: petNames[i],
         petOwnerEmail,
@@ -485,5 +509,129 @@ describe('Test BidCreate Service', () => {
         }),
       Error,
     );
+  });
+
+  it('Service should automatically calculate an amount for the bid', async () => {
+    await pool.query('DELETE FROM care_takers');
+    await UserFixtures.SeedCareTakerFullTimers(1);
+    await pool.query(`
+        INSERT INTO care_taker_skills(email, category, price)
+        VALUES('test0@example.com', 'category0', 10);
+    `);
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const actualAmount = 70;
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+    await BidService.BidCreate({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const {rows: bids} = await pool.query(
+      `SELECT * 
+			FROM bids 
+			WHERE pet_name='${petName}' 
+			AND pet_owner_email='${petOwnerEmail}'
+			AND care_taker_email='${careTakerEmail}'
+			AND start_date='${startDate}'
+			`,
+    );
+    Assert.deepStrictEqual(bids[0].amount, actualAmount);
+  });
+
+  it('Service should automatically calculate the correct amount for the correct bid', async () => {
+    await pool.query('DELETE FROM care_takers');
+    await pool.query('DELETE FROM pets');
+    await UserFixtures.SeedCareTakerFullTimers(1);
+    await pool.query(`
+        INSERT INTO care_taker_skills(email, category, price)
+        VALUES('test0@example.com', 'category0', 10);
+    `);
+    await pool.query(`
+        INSERT INTO care_taker_skills(email, category, price)
+        VALUES('test0@example.com', 'category1', 20);
+    `);
+    await pool.query(`
+        INSERT INTO pets(name, category, email, needs, diet)
+        VALUES('pet0', 'category0', 'test0@example.com', null, null);
+    `);
+    await pool.query(`
+        INSERT INTO pets(name, category, email, needs, diet)
+        VALUES('pet1', 'category1', 'test0@example.com', null, null);
+    `);
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const petName1 = 'pet1';
+    const actualAmountCatZero = 70;
+    const actualAmountCatOne = 140;
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+    await BidService.BidCreate({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    await BidService.BidCreate({
+      petName: petName1,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const {rows: catZeroBids} = await pool.query(
+      `SELECT * 
+			FROM bids 
+			WHERE pet_name='${petName}' 
+			`,
+    );
+    const {rows: catOneBids} = await pool.query(
+      `SELECT * 
+			FROM bids 
+			WHERE pet_name='${petName1}' 
+			`,
+    );
+    Assert.deepStrictEqual(catZeroBids[0].amount, actualAmountCatZero);
+    Assert.deepStrictEqual(catOneBids[0].amount, actualAmountCatOne);
+  });
+
+  it('Service should automatically calculate an amount for a bid of 0 days', async () => {
+    await pool.query('DELETE FROM care_takers');
+    await UserFixtures.SeedCareTakerFullTimers(1);
+    await pool.query(`
+        INSERT INTO care_taker_skills(email, category, price)
+        VALUES('test0@example.com', 'category0', 10);
+    `);
+    const careTakerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const actualAmount = 10;
+    const startDate = moment().toISOString(true);
+    const endDate = moment().toISOString(true);
+    await BidService.BidCreate({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const {rows: bids} = await pool.query(
+      `SELECT * 
+			FROM bids 
+			WHERE pet_name='${petName}' 
+			AND pet_owner_email='${petOwnerEmail}'
+			AND care_taker_email='${careTakerEmail}'
+			AND start_date='${startDate}'
+			`,
+    );
+    Assert.deepStrictEqual(bids[0].amount, actualAmount);
   });
 });

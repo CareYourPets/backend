@@ -22,7 +22,7 @@ describe('Test UserCareTakerSkillCreateService', () => {
   it('Service should create care taker skill', async () => {
     const email = 'test0@example.com';
     const category = 'category0';
-    const price = '1.1';
+    const price = 1.1;
 
     await UserService.UserCareTakerSkillCreate({email, category, price});
     const {rows: skills} = await pool.query(
@@ -34,7 +34,7 @@ describe('Test UserCareTakerSkillCreateService', () => {
   it('Service should reject on duplicate care taker skill', async () => {
     const email = 'test0@example.com';
     const category = 'category0';
-    const price = '1.1';
+    const price = 1.1;
 
     await UserService.UserCareTakerSkillCreate({email, category, price});
 
