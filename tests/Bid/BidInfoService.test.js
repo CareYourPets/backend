@@ -1,5 +1,6 @@
 import Assert from 'assert';
 import moment from 'moment';
+import _ from 'lodash';
 import pool from '../../src/Utils/DBUtils';
 import BidService from '../../src/Bid/BidService';
 import BidFixtures from '../Fixtures/BidFixtures';
@@ -44,7 +45,19 @@ describe('Test BidInfo Service', () => {
       bids[i].end_date = formattedEndDate;
     }
 
-    Assert.deepStrictEqual(data.bidData, bids);
+    const petOwnerInfo = {
+      name: null,
+      gender: null,
+      contact: null,
+      area: null,
+      location: null,
+      bio: null,
+    };
+    const expected = data.bidData.map((data) =>
+      _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
+    );
+
+    Assert.deepStrictEqual(expected, bids);
   });
 
   it('Service should fetch all bids involving care taker', async () => {
@@ -66,7 +79,19 @@ describe('Test BidInfo Service', () => {
       bids[i].end_date = formattedEndDate;
     }
 
-    Assert.deepStrictEqual(data.bidData, bids);
+    const careTakerInfo = {
+      name: null,
+      gender: null,
+      contact: null,
+      area: null,
+      location: null,
+      bio: null,
+    };
+    const expected = data.bidData.map((data) =>
+      _.omit({...data, ...careTakerInfo}, ['is_deleted']),
+    );
+
+    Assert.deepStrictEqual(expected, bids);
   });
 
   it('Service should fetch all bids for admin', async () => {

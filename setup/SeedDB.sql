@@ -88,14 +88,14 @@ INSERT INTO pet_owners (
   location,
   bio
 ) VALUES (
-  'test@example.com',
+  'petowner@example.com',
   '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
-  'Michael Scott',
+  'Pet Owner',
   'MALE',
   '(+65)98765432',
   'NORTH-EAST',
   'Hougang Ave 9, Blk 1, #02-1322, Singapore 123001',
-  'I am a little kid lover.'
+  'I am a pet owner.'
 );
 
 INSERT INTO care_takers (
@@ -108,14 +108,14 @@ INSERT INTO care_takers (
   location,
   bio
 ) VALUES (
-  'test@example.com',
+  'caretaker@example.com',
   '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
-  'Dwight Schrute',
+  'Care Taker',
   'MALE',
   '(+65)98123456',
   'NORTH-EAST',
   'Hougang Ave 2, Blk 10, #05-14, Singapore 145010',
-  'Beets.'
+  'I am a care taker.'
 );
 
 INSERT INTO care_takers (
@@ -128,14 +128,14 @@ INSERT INTO care_takers (
   location,
   bio
 ) VALUES (
-  'test2@example.com',
+  'caretaker2@example.com',
   '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
-  'Dwight Schrute',
+  'Care Taker 2',
   'MALE',
   '(+65)98123456',
-  'NORTH-EAST',
+  'NORTH',
   'Hougang Ave 2, Blk 10, #05-14, Singapore 145010',
-  'Beets.'
+  'I am a care taker 2.'
 );
 
 INSERT INTO pet_categories (
@@ -161,13 +161,13 @@ INSERT INTO pets (
 ) VALUES (
   'jackie',
   'bulldog',
-  'test@example.com',
+  'petowner@example.com',
   NULL,
   'vegan'
 ), (
   'tommy',
   'rabbit',
-  'test@example.com',
+  'petowner@example.com',
   'He is blind.',
   'cannibal'
 );
