@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import pool from '../Utils/DBUtils';
 import SQLQueries from '../Utils/SQLUtils';
 
@@ -72,7 +73,22 @@ const FetchAllCareTakers = async ({email, isByLocation}) => {
     const results = await pool.query(SQLQueries.FETCH_ALL_CARE_TAKERS);
     careTakers = results.rows;
   }
-  return careTakers;
+  // include each care taker's skills
+  const result = [];
+
+  /* eslint-disable no-await-in-loop */
+  /* eslint-disable no-restricted-syntax */
+  for (const ct of careTakers) {
+    let skills = await pool.query(SQLQueries.FETCH_CARE_TAKER_SKILLS, [
+      ct.email,
+    ]);
+    skills = skills.rows.map((skill) => _.omit(skill, ['email']));
+    result.push({
+      ...ct,
+      skills,
+    });
+  }
+  return result;
 };
 
 const FetchCareTaker = async ({email}) => {
@@ -87,6 +103,13 @@ const FetchPetOwner = async ({email}) => {
   return [petowner.rows, pets.rows];
 };
 
+const FetchCareTakerReviews = async ({careTakerEmail}) => {
+  const {rows} = await pool.query(SQLQueries.FETCH_CARE_TAKER_REVIEWS, [
+    careTakerEmail,
+  ]);
+  return rows;
+};
+
 export default {
   PetCategoryCreate,
   PetCategoryFetch,
@@ -99,4 +122,5 @@ export default {
   FetchAllCareTakers,
   FetchCareTaker,
   FetchPetOwner,
+  FetchCareTakerReviews,
 };

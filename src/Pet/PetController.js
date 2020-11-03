@@ -179,6 +179,20 @@ app.post(
   },
 );
 
+app.post(
+  '/caretaker/reviews/fetch',
+  [body('careTakerEmail').isEmail()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.FetchCareTakerReviews({...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
 export default {
   app,
 };
