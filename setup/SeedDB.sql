@@ -133,7 +133,7 @@ INSERT INTO care_takers (
   'Care Taker 2',
   'MALE',
   '(+65)98123456',
-  'NORTH-EAST',
+  'NORTH',
   'Hougang Ave 2, Blk 10, #05-14, Singapore 145010',
   'I am a care taker 2.'
 );

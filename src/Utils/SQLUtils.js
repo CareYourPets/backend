@@ -118,33 +118,93 @@ const SQLQueries = {
     SELECT * FROM pets WHERE email=$1 AND is_deleted=false;
   `,
   FETCH_ALL_CARE_TAKERS: `
-    SELECT email, name, area, location, gender, contact, bio
-    FROM care_takers
-    WHERE 
-      is_deleted = false AND
-      name IS NOT NULL AND
-      area IS NOT NULL AND
-      location IS NOT NULL AND
-      gender IS NOT NULL AND
-      contact IS NOT NULL AND
-      bio IS NOT NULL 
+    SELECT 
+      subquery.email AS email,
+      type,
+      subquery.name AS name,
+      subquery.area AS area,
+      subquery.location AS location, 
+      subquery.gender AS gender,
+      subquery.contact AS contact, 
+      subquery.bio AS bio
+    FROM 
+    (
+      SELECT 
+        care_takers.email AS email, 
+        CASE
+        WHEN care_taker_full_timers.email IS NOT NULL THEN 'CARE_TAKER_FULL_TIMER'
+        WHEN care_taker_part_timers.email IS NOT NULL THEN 'CARE_TAKER_PART_TIMER'
+        ELSE NULL
+        END AS type,
+        name, 
+        area, 
+        location, 
+        gender, 
+        contact, 
+        bio
+      FROM care_takers
+      LEFT JOIN care_taker_full_timers
+        ON care_taker_full_timers.email=care_takers.email
+      LEFT JOIN care_taker_part_timers
+        ON care_taker_part_timers.email=care_takers.email
+      WHERE 
+        is_deleted = false AND
+        name IS NOT NULL AND
+        area IS NOT NULL AND
+        location IS NOT NULL AND
+        gender IS NOT NULL AND
+        contact IS NOT NULL AND
+        bio IS NOT NULL 
+    ) AS subquery
+    WHERE
+      type IS NOT NULL
     ORDER BY email ASC, name ASC;
   `,
   FETCH_ALL_CARE_TAKERS_BY_LOCATION: `
-    SELECT c1.email, c1.name, c1.area, c1.location, c1.gender, c1.contact, c1.bio
-    FROM care_takers c1
-    INNER JOIN pet_owners p1 ON p1.area = c1.area
+    SELECT 
+      subquery.email AS email,
+      type,
+      subquery.name AS name,
+      subquery.area AS area,
+      subquery.location AS location, 
+      subquery.gender AS gender,
+      subquery.contact AS contact, 
+      subquery.bio AS bio
+    FROM 
+    (
+      SELECT 
+        care_takers.email AS email, 
+        CASE
+        WHEN care_taker_full_timers.email IS NOT NULL THEN 'CARE_TAKER_FULL_TIMER'
+        WHEN care_taker_part_timers.email IS NOT NULL THEN 'CARE_TAKER_PART_TIMER'
+        ELSE NULL
+        END AS type,
+        name, 
+        area, 
+        location, 
+        gender, 
+        contact, 
+        bio
+      FROM care_takers
+      LEFT JOIN care_taker_full_timers
+        ON care_taker_full_timers.email=care_takers.email
+      LEFT JOIN care_taker_part_timers
+        ON care_taker_part_timers.email=care_takers.email
+      WHERE 
+        is_deleted = false AND
+        name IS NOT NULL AND
+        area IS NOT NULL AND
+        location IS NOT NULL AND
+        gender IS NOT NULL AND
+        contact IS NOT NULL AND
+        bio IS NOT NULL 
+    ) AS subquery
+    INNER JOIN pet_owners 
+      ON pet_owners.area=subquery.area
     WHERE 
-      c1.is_deleted = false AND 
-      p1.is_deleted = false AND 
-      p1.email=$1 AND
-      c1.name IS NOT NULL AND
-      c1.area IS NOT NULL AND
-      c1.location IS NOT NULL AND
-      c1.gender IS NOT NULL AND
-      c1.contact IS NOT NULL AND
-      c1.bio IS NOT NULL 
-      ORDER BY email;
+      type IS NOT NULL AND
+      pet_owners.email=$1
+    ORDER BY subquery.email ASC, subquery.name ASC;
   `,
   FETCH_CARE_TAKER: `
     SELECT CASE
