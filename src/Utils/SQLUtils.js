@@ -245,12 +245,11 @@ const SQLQueries = {
     SET is_accepted=$1,
         transaction_date=$2,
         payment_mode=$3,
-        amount=$4,
-        review_date=$5,
-        transportation_mode=$6,
-        review=$7,
-        rating=$8
-    WHERE pet_name=$9 AND pet_owner_email=$10 AND care_taker_email=$11 AND start_date=$12;
+        review_date=$4,
+        transportation_mode=$5,
+        review=$6,
+        rating=$7
+    WHERE pet_name=$8 AND pet_owner_email=$9 AND care_taker_email=$10 AND start_date=$11;
   `,
   DELETE_BID: `
     UPDATE bids SET is_deleted=true WHERE pet_name=$1 AND pet_owner_email=$2 AND care_taker_email=$3 AND start_date=$4;

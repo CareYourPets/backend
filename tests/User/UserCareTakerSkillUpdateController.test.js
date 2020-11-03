@@ -25,7 +25,7 @@ describe('Test UserCareTakerSkillUpdateController', () => {
     const {email, accessToken} = users[0];
     await UserFixtures.SeedCareTakerSkills(1, email);
     const category = 'category0';
-    const price = '2';
+    const price = 2;
 
     await Chai.request(App)
       .post('/user/caretaker/skill/update')
@@ -46,7 +46,7 @@ describe('Test UserCareTakerSkillUpdateController', () => {
     const {email} = users[0];
     await UserFixtures.SeedCareTakerSkills(1, email);
     const category = 'category0';
-    const price = '2';
+    const price = 2;
 
     const res = await Chai.request(App)
       .post('/user/caretaker/skill/update')
@@ -62,7 +62,7 @@ describe('Test UserCareTakerSkillUpdateController', () => {
     const users = await UserFixtures.SeedCareTakers(1);
     const {email, accessToken} = users[0];
     await UserFixtures.SeedCareTakerSkills(1, email);
-    const price = '2';
+    const price = 2;
 
     const res = await Chai.request(App)
       .post('/user/caretaker/skill/update')

@@ -14,8 +14,12 @@ DROP FUNCTION check_care_taker_pt_availability CASCADE;
 DROP FUNCTION get_full_timer_number_of_pets CASCADE;
 DROP FUNCTION get_part_timer_number_of_pets CASCADE;
 DROP FUNCTION get_average_rating CASCADE;
-DROP TRIGGER accept_as_full_timer_if_possible_trigger CASCADE;
+DROP TRIGGER accept_as_full_timer_if_possible_trigger ON bids CASCADE;
 DROP FUNCTION accept_as_full_timer_if_possible_trigger_funct CASCADE;
+DROP TRIGGER auto_calculate_amount_trigger ON bids CASCADE;
+DROP FUNCTION auto_calculate_amount_trigger_funct CASCADE;
+DROP TRIGGER update_care_taker_skill_price_trigger ON bids CASCADE;
+DROP FUNCTION update_care_taker_skill_price_trigger_funct CASCADE;
 DROP FUNCTION check_care_taker_pt_availability CASCADE;
 
 DROP TABLE pet_owners CASCADE;

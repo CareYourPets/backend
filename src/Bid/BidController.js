@@ -64,7 +64,6 @@ app.post(
     body('isAccepted').isBoolean(), // updated on the care taker side
     body('transactionDate').exists(), // updated on the care taker side
     body('paymentMode').isIn([BID_PAYMENT_MODE.CASH, BID_PAYMENT_MODE.CREDIT]),
-    body('amount').isFloat(),
     body('reviewDate').exists(),
     body('transportationMode').isIn([
       PET_DELIVERY_MODE.CARE_TAKER_PICK_UP,
