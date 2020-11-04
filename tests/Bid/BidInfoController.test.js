@@ -66,6 +66,8 @@ describe('Test BidInfo Controller', () => {
       _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
     );
 
+    bids.sort((a, b) => a.pet_name - b.pet_name);
+
     Assert.deepStrictEqual(expected, bids);
   });
 
@@ -101,6 +103,8 @@ describe('Test BidInfo Controller', () => {
       _.omit({...data, ...careTakerInfo}, ['is_deleted']),
     );
 
+    // bids.sort((a, b) => a.pet_name - b.pet_name);
+
     Assert.deepStrictEqual(expected, bids);
   });
 
@@ -125,7 +129,7 @@ describe('Test BidInfo Controller', () => {
       bids[i].end_date = formattedEndDate;
     }
 
-    data.bidData.sort((a, b) => a.pet_name > b.pet_name);
+    // bids.sort((a, b) => a.pet_name - b.pet_name);
 
     Assert.deepStrictEqual(data.bidData, bids);
   });

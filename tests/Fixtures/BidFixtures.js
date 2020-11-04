@@ -77,6 +77,10 @@ const SeedMultipleBids = async () => {
     bids.push(bidInfo);
   }
   /* eslint-enable no-await-in-loop */
+  /* eslint-disable no-nested-ternary */
+  bids.sort((a, b) =>
+    a.pet_name > b.pet_name ? 1 : b.pet_name > a.pet_name ? -1 : 0,
+  );
   return {
     bidData: bids,
     users: [petOwners[0], careTakers[0]],

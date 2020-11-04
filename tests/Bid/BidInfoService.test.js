@@ -61,7 +61,7 @@ describe('Test BidInfo Service', () => {
       _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
     );
 
-    data.bidData.sort((a, b) => a.pet_name > b.pet_name);
+    bids.sort((a, b) => a.pet_name - b.pet_name);
 
     Assert.deepStrictEqual(expected, bids);
   });
@@ -97,6 +97,8 @@ describe('Test BidInfo Service', () => {
       _.omit({...data, ...careTakerInfo}, ['is_deleted']),
     );
 
+    // bids.sort((a, b) => a.pet_name - b.pet_name);
+
     Assert.deepStrictEqual(expected, bids);
   });
 
@@ -118,6 +120,8 @@ describe('Test BidInfo Service', () => {
       );
       bids[i].end_date = formattedEndDate;
     }
+
+    // bids.sort((a, b) => a.pet_name - b.pet_name);
 
     Assert.deepStrictEqual(data.bidData, bids);
   });
