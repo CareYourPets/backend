@@ -152,6 +152,36 @@ END;
 $$ 
 LANGUAGE 'plpgsql';
 
+CREATE OR REPLACE FUNCTION calculate_ft_salary (care_taker_id VARCHAR, dateFormat VARCHAR)
+  RETURNS FLOAT AS
+$$
+DECLARE 
+  pet_days INT = 0;
+  current_days INT = 60;
+  salary FLOAT = 3000;
+  care_period INT = 0;
+  temp_row RECORD;
+BEGIN
+  FOR temp_row in 
+    SELECT * FROM bids 
+    WHERE care_taker_id = bids.care_taker_email
+    AND TO_CHAR(bids.transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE dateFormat
+    ORDER BY bids.end_date, bids.start_date
+  LOOP
+  if pet_days > 60
+    then current_days := pet_days;
+  end if;
+  care_period := calculate_duration(temp_row.start_date, temp_row.end_date);
+  pet_days := pet_days + care_period;
+  if pet_days > 60
+    then salary := salary + 0.8 * (temp_row.amount / care_period) * (pet_days - current_days);
+  end if;
+  END LOOP;
+  RETURN salary;
+END;
+$$
+LANGUAGE 'plpgsql';
+
 CREATE TABLE bids (
   pet_name VARCHAR NOT NULL,
   pet_owner_email VARCHAR NOT NULL,
