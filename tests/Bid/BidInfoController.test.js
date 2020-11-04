@@ -66,7 +66,10 @@ describe('Test BidInfo Controller', () => {
       _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
     );
 
-    bids.sort((a, b) => a.pet_name - b.pet_name);
+    /* eslint-disable no-nested-ternary */
+    bids.sort((a, b) =>
+      a.pet_name > b.pet_name ? 1 : b.pet_name > a.pet_name ? -1 : 0,
+    );
 
     Assert.deepStrictEqual(expected, bids);
   });
