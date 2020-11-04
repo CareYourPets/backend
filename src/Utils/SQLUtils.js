@@ -350,6 +350,65 @@ const SQLQueries = {
       review IS NOT NULL AND
       rating IS NOT NULL;
   `,
+  FETCH_CARE_TAKER_PET_DAYS: `
+    SELECT SUM(calculate_duration(start_date, end_date) + 1)
+    FROM bids
+    WHERE care_taker_email=$1 AND is_accepted=true AND
+          TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;
+  `,
+  FETCH_CARE_TAKER_PART_TIMER_MONTHLY_PAYMENT: `
+    SELECT COALESCE(0.75 * SUM(COALESCE(amount,0)), 0) AS sum
+    FROM bids
+    WHERE care_taker_email=$1 AND is_accepted=true AND
+          TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;
+  `,
+  FETCH_CARE_TAKER_FULL_TIMER_MONTHLY_PAYMENT: `
+    SELECT calculate_ft_salary($1, $2);
+  `,
+  FETCH_CARE_TAKER_MONTHLY_RAW_PAYMENT: `
+    SELECT SUM(amount)
+    FROM bids
+    WHERE care_taker_email=$1 AND is_accepted=true AND
+          TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;
+  `,
+  FETCH_TOTAL_CARE_TAKERS_SALARY: `
+    WITH ptt AS (
+      SELECT 0.75 * SUM(amount) AS total
+      FROM bids INNER JOIN care_taker_part_timers ctp ON bids.care_taker_email = ctp.email
+      WHERE is_accepted=true AND TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1
+    ), ctt AS (
+      SELECT SUM(calculate_ft_salary(ct.email, $1)) AS total
+      FROM care_takers ct
+      INNER JOIN care_taker_full_timers ctf ON ctf.email=ct.email
+    )
+      SELECT COALESCE(ctt.total,0) + COALESCE(ptt.total,0) AS total
+      FROM ctt, ptt;
+  `,
+  FETCH_CARE_TAKER_ROLE: `
+    SELECT CASE 
+            WHEN ctf.email=$1 THEN 1
+            WHEN ctp.email=$1 THEN 2
+            ELSE 0
+           END as type
+    FROM care_takers ct
+    LEFT JOIN care_taker_full_timers ctf ON ctf.email=ct.email
+    LEFT JOIN care_taker_part_timers ctp ON ctp.email=ct.email
+    WHERE ct.email=$1;
+  `,
+  FETCH_MONTHLY_TOTAL_NUMBER_OF_UNIQUE_PET: `
+    SELECT COUNT(DISTINCT(pet_name, pet_owner_email))
+    FROM bids
+    WHERE is_accepted=true AND
+    (TO_CHAR(start_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1 OR 
+     TO_CHAR(end_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1);
+  `,
+  FETCH_MONTH_WITH_HIGHEST_JOBS: `
+    SELECT substring(TO_CHAR(bids.transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ'), 1, 7) AS time, COUNT(*) AS total 
+    FROM bids 
+    GROUP BY substring(TO_CHAR(bids.transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ'), 1, 7)
+    ORDER BY total DESC, time DESC
+    LIMIT 1;
+  `,
 };
 
 export default SQLQueries;
