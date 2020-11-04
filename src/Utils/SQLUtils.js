@@ -351,7 +351,7 @@ const SQLQueries = {
       rating IS NOT NULL;
   `,
   FETCH_CARE_TAKER_PET_DAYS: `
-    SELECT SUM(calculate_duration(start_date, end_date) + 1)
+    SELECT SUM(calculate_duration(start_date, end_date))
     FROM bids
     WHERE care_taker_email=$1 AND is_accepted=true AND
           TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;

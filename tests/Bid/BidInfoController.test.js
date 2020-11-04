@@ -13,6 +13,8 @@ Chai.use(ChaiHttp);
 
 describe('Test BidInfo Controller', () => {
   beforeEach('BidInfoController beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM bids');
@@ -22,6 +24,8 @@ describe('Test BidInfo Controller', () => {
   });
 
   afterEach('BidInfoController afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
@@ -62,6 +66,11 @@ describe('Test BidInfo Controller', () => {
       _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
     );
 
+    /* eslint-disable no-nested-ternary */
+    bids.sort((a, b) =>
+      a.pet_name > b.pet_name ? 1 : b.pet_name > a.pet_name ? -1 : 0,
+    );
+
     Assert.deepStrictEqual(expected, bids);
   });
 
@@ -97,6 +106,8 @@ describe('Test BidInfo Controller', () => {
       _.omit({...data, ...careTakerInfo}, ['is_deleted']),
     );
 
+    // bids.sort((a, b) => a.pet_name - b.pet_name);
+
     Assert.deepStrictEqual(expected, bids);
   });
 
@@ -120,6 +131,8 @@ describe('Test BidInfo Controller', () => {
       );
       bids[i].end_date = formattedEndDate;
     }
+
+    // bids.sort((a, b) => a.pet_name - b.pet_name);
 
     Assert.deepStrictEqual(data.bidData, bids);
   });

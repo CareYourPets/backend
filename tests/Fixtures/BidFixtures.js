@@ -40,7 +40,7 @@ const CreateInvalidBidDates = () => {
 };
 
 const SeedMultipleBids = async () => {
-  const careTakers = await UserFixtures.SeedCareTakers(1);
+  const careTakers = await UserFixtures.SeedCareTakerFullTimers(1);
   const petOwners = await UserFixtures.SeedPetOwners(1);
   const petCategories = await PetFixtures.SeedPetCategories(1);
   // pet owner A's pets
@@ -77,6 +77,10 @@ const SeedMultipleBids = async () => {
     bids.push(bidInfo);
   }
   /* eslint-enable no-await-in-loop */
+  /* eslint-disable no-nested-ternary */
+  bids.sort((a, b) =>
+    a.pet_name > b.pet_name ? 1 : b.pet_name > a.pet_name ? -1 : 0,
+  );
   return {
     bidData: bids,
     users: [petOwners[0], careTakers[0]],

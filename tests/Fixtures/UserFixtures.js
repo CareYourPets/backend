@@ -100,4 +100,5 @@ export default {
   SeedCareTakerSkills,
   SeedCareTakerFullTimers,
   SeedCareTakerPartTimers,
+  SeedCareTakerRole,
 };

@@ -24,7 +24,7 @@ describe('Test BidDeleteConroller', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
-    await UserFixtures.SeedCareTakers(1);
+    await UserFixtures.SeedCareTakerFullTimers(1);
     await PetFixtures.SeedPetCategories(1);
     const email = 'test0@example.com';
     const category = 'category0';
