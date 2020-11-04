@@ -6,6 +6,10 @@ import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('Test UserInfo Service', () => {
   beforeEach('UserInfoService beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM psc_administrators');
@@ -15,6 +19,10 @@ describe('Test UserInfo Service', () => {
   });
 
   afterEach('UserInfoService afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM psc_administrators');
@@ -39,6 +47,7 @@ describe('Test UserInfo Service', () => {
         location: null,
         bio: null,
         is_deleted: false,
+        role,
       },
       userInfo,
     );
@@ -63,6 +72,7 @@ describe('Test UserInfo Service', () => {
         location: null,
         bio: null,
         is_deleted: false,
+        role,
       },
       userInfo,
     );
@@ -83,9 +93,10 @@ describe('Test UserInfo Service', () => {
         name: null,
         gender: null,
         contact: null,
+        area: null,
         location: null,
-        is_approved: false,
         is_deleted: false,
+        role,
       },
       userInfo,
     );

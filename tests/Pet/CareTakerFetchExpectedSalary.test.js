@@ -29,7 +29,7 @@ describe('Test CareTakerFetchExpSalary Controller', () => {
   });
 
   it('API should fetch total monthly salary', async () => {
-    const {users} = await BidFixtures.SeedMultipleBidsWithTransactionDate(0);
+    const {users} = await BidFixtures.SeedMultipleBidsWithTransactionDate();
     const {accessToken} = users[1];
 
     const res = await Chai.request(App)

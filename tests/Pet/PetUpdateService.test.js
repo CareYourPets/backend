@@ -1,4 +1,5 @@
 import Assert from 'assert';
+import _ from 'lodash';
 import pool from '../../src/Utils/DBUtils';
 import PetService from '../../src/Pet/PetService';
 import PetFixtures from '../Fixtures/PetFixtures';
@@ -61,7 +62,7 @@ describe('Test PetUpdateService', () => {
           is_deleted: false,
         },
       ],
-      pets,
+      _.sortBy(pets, 'name'),
     );
   });
 });

@@ -1,17 +1,18 @@
 import Assert from 'assert';
 import moment from 'moment';
 import pool from '../../src/Utils/DBUtils';
-import PetFixtures from '../Fixtures/PetFixtures';
-import UserFixtures from '../Fixtures/UserFixtures';
-import BidFixtures from '../Fixtures/BidFixtures';
 import BidService from '../../src/Bid/BidService';
-import DateTimeUtils from '../../src/Utils/DateTimeUtils';
+import UserFixtures from '../Fixtures/UserFixtures';
+import PetFixtures from '../Fixtures/PetFixtures';
+import BidFixtures from '../Fixtures/BidFixtures';
+import {BID_PAYMENT_MODE, PET_DELIVERY_MODE} from '../../src/Utils/BidUtils';
+import PetService from '../../src/Pet/PetService';
 
-describe('Test BidDeleteService', () => {
-  beforeEach('BidDeleteService beforeEach', async () => {
-    await pool.query('DELETE FROM bids');
+describe('FetchCareTakerReviewsService', () => {
+  beforeEach('FetchCareTakerReviewsService beforeEach', async () => {
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
+    await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
@@ -22,7 +23,7 @@ describe('Test BidDeleteService', () => {
     await PetFixtures.SeedPets(1, email, category);
   });
 
-  afterEach('BidDeleteService afterEach', async () => {
+  afterEach('FetchCareTakerReviewsService afterEach', async () => {
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
@@ -30,7 +31,8 @@ describe('Test BidDeleteService', () => {
     await pool.query('DELETE FROM pet_categories');
   });
 
-  it('Service should delete bid', async () => {
+  it('Service should update bid', async () => {
+    // Setting up test case
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
@@ -44,14 +46,31 @@ describe('Test BidDeleteService', () => {
       endDate,
     });
 
-    await BidService.BidDelete({
+    const isAccepted = true;
+    const transactionDate = moment().toISOString();
+    const paymentMode = BID_PAYMENT_MODE.CASH;
+    const amount = 100.0;
+    const reviewDate = moment().toISOString();
+    const transportationMode = PET_DELIVERY_MODE.CARE_TAKER_PICK_UP;
+    const review = 'Horrible';
+    const rating = 1;
+
+    await BidService.BidUpdate({
+      isAccepted,
+      transactionDate,
+      paymentMode,
+      amount,
+      reviewDate,
+      transportationMode,
+      review,
+      rating,
       petName,
       petOwnerEmail,
       careTakerEmail,
       startDate,
     });
 
-    const {rows: bids} = await pool.query(
+    await pool.query(
       `SELECT * 
         FROM bids 
         WHERE pet_name='${petName}' 
@@ -61,33 +80,18 @@ describe('Test BidDeleteService', () => {
        `,
     );
 
-    const formattedStartDate = moment(bids[0].start_date).format(
-      DateTimeUtils.MOMENT_TIME_FORMAT,
-    );
-    bids[0].start_date = formattedStartDate;
-    const formattedEndDate = moment(bids[0].end_date).format(
-      DateTimeUtils.MOMENT_TIME_FORMAT,
-    );
-    bids[0].end_date = formattedEndDate;
-
+    // Testing service
+    const reviews = await PetService.FetchCareTakerReviews({careTakerEmail});
     Assert.deepStrictEqual(
-      {
-        pet_name: petName,
-        pet_owner_email: petOwnerEmail,
-        care_taker_email: careTakerEmail,
-        is_accepted: false,
-        start_date: moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
-        end_date: moment(endDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
-        transaction_date: null,
-        payment_mode: null,
-        amount: null,
-        review_date: null,
-        transportation_mode: null,
-        review: null,
-        rating: 0,
-        is_deleted: true,
-      },
-      bids[0],
+      [
+        {
+          email: 'test0@example.com',
+          name: null,
+          review: 'Horrible',
+          rating: 1,
+        },
+      ],
+      reviews,
     );
   });
 });

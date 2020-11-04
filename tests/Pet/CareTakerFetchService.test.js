@@ -29,7 +29,7 @@ describe('Test CareTakerFetchService', () => {
       [
         [
           {
-            type: 'Full Timer',
+            type: 'CARE_TAKER_FULL_TIMER',
             email: 'test0@example.com',
             name: null,
             area: null,
@@ -55,7 +55,7 @@ describe('Test CareTakerFetchService', () => {
       [
         [
           {
-            type: 'Full Timer',
+            type: 'CARE_TAKER_FULL_TIMER',
             email: 'test0@example.com',
             name: null,
             area: null,
@@ -68,11 +68,11 @@ describe('Test CareTakerFetchService', () => {
         [
           {
             category: 'category0',
-            price: '0',
+            price: 0,
           },
           {
             category: 'category1',
-            price: '1',
+            price: 1,
           },
         ],
       ],

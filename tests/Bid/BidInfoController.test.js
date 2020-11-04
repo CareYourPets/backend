@@ -1,12 +1,13 @@
 import Assert from 'assert';
 import moment from 'moment';
 import Chai from 'chai';
+import _ from 'lodash';
 import ChaiHttp from 'chai-http';
 import pool from '../../src/Utils/DBUtils';
 import BidFixtures from '../Fixtures/BidFixtures';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
 import App from '../../src/App';
 import UserFixtures from '../Fixtures/UserFixtures';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 
 Chai.use(ChaiHttp);
 
@@ -41,16 +42,27 @@ describe('Test BidInfo Controller', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }
+    const petOwnerInfo = {
+      name: null,
+      gender: null,
+      contact: null,
+      area: null,
+      location: null,
+      bio: null,
+    };
+    const expected = data.bidData.map((data) =>
+      _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
+    );
 
-    Assert.deepStrictEqual(data.bidData, bids);
+    Assert.deepStrictEqual(expected, bids);
   });
 
   it('API should fetch all bids involving care taker', async () => {
@@ -65,16 +77,27 @@ describe('Test BidInfo Controller', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }
+    const careTakerInfo = {
+      name: null,
+      gender: null,
+      contact: null,
+      area: null,
+      location: null,
+      bio: null,
+    };
+    const expected = data.bidData.map((data) =>
+      _.omit({...data, ...careTakerInfo}, ['is_deleted']),
+    );
 
-    Assert.deepStrictEqual(data.bidData, bids);
+    Assert.deepStrictEqual(expected, bids);
   });
 
   it('API should fetch all bids for admin', async () => {
@@ -89,11 +112,11 @@ describe('Test BidInfo Controller', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }

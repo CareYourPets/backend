@@ -40,7 +40,7 @@ describe('Test CareTakerFetch Controller', () => {
       [
         [
           {
-            type: 'Full Timer',
+            type: 'CARE_TAKER_FULL_TIMER',
             email: 'test0@example.com',
             name: null,
             area: null,
@@ -72,7 +72,7 @@ describe('Test CareTakerFetch Controller', () => {
       [
         [
           {
-            type: 'Part Timer',
+            type: 'CARE_TAKER_PART_TIMER',
             email: 'test0@example.com',
             name: null,
             area: null,
@@ -105,7 +105,7 @@ describe('Test CareTakerFetch Controller', () => {
       [
         [
           {
-            type: 'Full Timer',
+            type: 'CARE_TAKER_FULL_TIMER',
             email,
             name: null,
             area: null,
@@ -118,7 +118,7 @@ describe('Test CareTakerFetch Controller', () => {
         [
           {
             category: 'category0',
-            price: '0',
+            price: 0,
           },
         ],
       ],

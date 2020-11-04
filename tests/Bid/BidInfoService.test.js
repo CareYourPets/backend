@@ -1,10 +1,11 @@
 import Assert from 'assert';
 import moment from 'moment';
+import _ from 'lodash';
 import pool from '../../src/Utils/DBUtils';
 import BidService from '../../src/Bid/BidService';
 import BidFixtures from '../Fixtures/BidFixtures';
 import UserFixtures from '../Fixtures/UserFixtures';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 
 describe('Test BidInfo Service', () => {
   beforeEach('BidInfoService beforeEach', async () => {
@@ -35,16 +36,28 @@ describe('Test BidInfo Service', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }
 
-    Assert.deepStrictEqual(data.bidData, bids);
+    const petOwnerInfo = {
+      name: null,
+      gender: null,
+      contact: null,
+      area: null,
+      location: null,
+      bio: null,
+    };
+    const expected = data.bidData.map((data) =>
+      _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
+    );
+
+    Assert.deepStrictEqual(expected, bids);
   });
 
   it('Service should fetch all bids involving care taker', async () => {
@@ -57,16 +70,28 @@ describe('Test BidInfo Service', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }
 
-    Assert.deepStrictEqual(data.bidData, bids);
+    const careTakerInfo = {
+      name: null,
+      gender: null,
+      contact: null,
+      area: null,
+      location: null,
+      bio: null,
+    };
+    const expected = data.bidData.map((data) =>
+      _.omit({...data, ...careTakerInfo}, ['is_deleted']),
+    );
+
+    Assert.deepStrictEqual(expected, bids);
   });
 
   it('Service should fetch all bids for admin', async () => {
@@ -79,11 +104,11 @@ describe('Test BidInfo Service', () => {
 
     for (let i = 0; i < bids.length; i++) {
       const formattedStartDate = moment(bids[i].start_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].start_date = formattedStartDate;
       const formattedEndDate = moment(bids[i].end_date).format(
-        MOMENT_TIME_FORMAT,
+        DateTimeUtils.MOMENT_TIME_FORMAT,
       );
       bids[i].end_date = formattedEndDate;
     }

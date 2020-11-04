@@ -30,7 +30,7 @@ describe('Test AdminFetchTotalPetMonthly Controller', () => {
   });
 
   it('API should fetch total pets', async () => {
-    await BidFixtures.SeedMultipleBidsWithTransactionDate(50);
+    await BidFixtures.SeedMultipleBidsWithTransactionDate();
     const users = await UserFixtures.SeedAdministrators(1);
     const {accessToken} = users[0];
     const month = 11;

@@ -9,9 +9,9 @@ Chai.use(ChaiHttp);
 
 describe('Test CareTakerFetchAll Controller', () => {
   beforeEach('CareTakerFetchAllController beforeEach', async () => {
-    // await pool.query('DELETE FROM care_taker_full_timers');
-    // await pool.query('DELETE FROM care_taker_part_timers');
-    // await pool.query('DELETE FROM care_taker_skills');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
+    await pool.query('DELETE FROM care_taker_skills');
     await pool.query('DELETE FROM care_takers');
   });
 
@@ -36,29 +36,7 @@ describe('Test CareTakerFetchAll Controller', () => {
         isByLocation,
       });
 
-    Assert.deepStrictEqual(
-      [
-        {
-          email: 'test0@example.com',
-          name: null,
-          area: null,
-          location: null,
-          gender: null,
-          contact: null,
-          bio: null,
-        },
-        {
-          email: 'test1@example.com',
-          name: null,
-          area: null,
-          location: null,
-          gender: null,
-          contact: null,
-          bio: null,
-        },
-      ],
-      res.body,
-    );
+    Assert.deepStrictEqual([], res.body);
   });
 
   it('API should fetch care takers by location', async () => {

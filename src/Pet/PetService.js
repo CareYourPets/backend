@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import pool from '../Utils/DBUtils';
 import SQLQueries from '../Utils/SQLUtils';
 
@@ -72,7 +73,22 @@ const FetchAllCareTakers = async ({email, isByLocation}) => {
     const results = await pool.query(SQLQueries.FETCH_ALL_CARE_TAKERS);
     careTakers = results.rows;
   }
-  return careTakers;
+  // include each care taker's skills
+  const result = [];
+
+  /* eslint-disable no-await-in-loop */
+  /* eslint-disable no-restricted-syntax */
+  for (const ct of careTakers) {
+    let skills = await pool.query(SQLQueries.FETCH_CARE_TAKER_SKILLS, [
+      ct.email,
+    ]);
+    skills = skills.rows.map((skill) => _.omit(skill, ['email']));
+    result.push({
+      ...ct,
+      skills,
+    });
+  }
+  return result;
 };
 
 const FetchCareTaker = async ({email}) => {
@@ -88,9 +104,9 @@ const FetchPetOwner = async ({email}) => {
 };
 
 const FetchCareTakerSalary = async ({email, month, year}) => {
-  const paddedMonth = `000${  month.toString()}`;
+  const paddedMonth = `000${month.toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
-  const dateFormat = `${year.toString()  }-${  newMonth  }-%`;
+  const dateFormat = `${year.toString()}-${newMonth}-%`;
   const caretakerType = await pool.query(SQLQueries.FETCH_CARE_TAKER_ROLE, [
     email,
   ]);
@@ -121,9 +137,9 @@ const FetchExpectedSalary = async ({email}) => {
     0,
   ).getDate();
 
-  const paddedMonth = `000${  now.getMonth().toString()}`;
+  const paddedMonth = `000${now.getMonth().toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
-  const dateFormat = `${now.getFullYear().toString()  }-${  newMonth  }-%`;
+  const dateFormat = `${now.getFullYear().toString()}-${newMonth}-%`;
   const caretakerType = await pool.query(SQLQueries.FETCH_CARE_TAKER_ROLE, [
     email,
   ]);
@@ -160,9 +176,9 @@ const FetchExpectedSalary = async ({email}) => {
 };
 
 const FetchTotalCareTakerSalary = async ({month, year}) => {
-  const paddedMonth = `000${  month.toString()}`;
+  const paddedMonth = `000${month.toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
-  const dateFormat = `${year.toString()  }-${  newMonth  }-%`;
+  const dateFormat = `${year.toString()}-${newMonth}-%`;
   const totalAmount = await pool.query(
     SQLQueries.FETCH_TOTAL_CARE_TAKERS_SALARY,
     [dateFormat],
@@ -171,9 +187,9 @@ const FetchTotalCareTakerSalary = async ({month, year}) => {
 };
 
 const FetchMonthlyTotalPet = async ({month, year}) => {
-  const paddedMonth = `000${  month.toString()}`;
+  const paddedMonth = `000${month.toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
-  const dateFormat = `${year.toString()  }-${  newMonth  }-%`;
+  const dateFormat = `${year.toString()}-${newMonth}-%`;
   const totalPets = await pool.query(
     SQLQueries.FETCH_MONTHLY_TOTAL_NUMBER_OF_UNIQUE_PET,
     [dateFormat],
@@ -182,9 +198,9 @@ const FetchMonthlyTotalPet = async ({month, year}) => {
 };
 
 const FetchMonthlyTotalPetDays = async ({email, month, year}) => {
-  const paddedMonth = `000${  month.toString()}`;
+  const paddedMonth = `000${month.toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
-  const dateFormat = `${year.toString()  }-${  newMonth  }-%`;
+  const dateFormat = `${year.toString()}-${newMonth}-%`;
   const totalPetDays = await pool.query(SQLQueries.FETCH_CARE_TAKER_PET_DAYS, [
     email,
     dateFormat,
@@ -195,6 +211,13 @@ const FetchMonthlyTotalPetDays = async ({email, month, year}) => {
 const FetchMonthWithHighestJobs = async () => {
   const month = await pool.query(SQLQueries.FETCH_MONTH_WITH_HIGHEST_JOBS);
   return month.rows;
+};
+
+const FetchCareTakerReviews = async ({careTakerEmail}) => {
+  const {rows} = await pool.query(SQLQueries.FETCH_CARE_TAKER_REVIEWS, [
+    careTakerEmail,
+  ]);
+  return rows;
 };
 
 export default {
@@ -215,4 +238,5 @@ export default {
   FetchMonthWithHighestJobs,
   FetchMonthlyTotalPetDays,
   FetchExpectedSalary,
+  FetchCareTakerReviews,
 };

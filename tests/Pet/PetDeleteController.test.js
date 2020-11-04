@@ -36,29 +36,33 @@ describe('Test PetDeleteController', () => {
         name,
       });
 
-    const {rows: pets} = await pool.query(
-      `SELECT * FROM pets WHERE email='${email}'`,
+    const {rows: deletedPets} = await pool.query(
+      `SELECT * FROM pets WHERE email='${email}' AND name='pet0'`,
+    );
+    const {rows: nonDeletedPets} = await pool.query(
+      `SELECT * FROM pets WHERE email='${email}' AND name='pet1'`,
     );
     Assert.deepStrictEqual(
-      [
-        {
-          name: 'pet1',
-          email,
-          category,
-          needs: null,
-          diet: null,
-          is_deleted: false,
-        },
-        {
-          name: 'pet0',
-          email,
-          category,
-          needs: null,
-          diet: null,
-          is_deleted: true,
-        },
-      ],
-      pets,
+      {
+        name: 'pet0',
+        email,
+        category,
+        needs: null,
+        diet: null,
+        is_deleted: true,
+      },
+      deletedPets[0],
+    );
+    Assert.deepStrictEqual(
+      {
+        name: 'pet1',
+        email,
+        category,
+        needs: null,
+        diet: null,
+        is_deleted: false,
+      },
+      nonDeletedPets[0],
     );
   });
 

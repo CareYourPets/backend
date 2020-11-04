@@ -8,6 +8,10 @@ import {DecodeAccessToken} from '../../src/Utils/AuthUtils';
 
 describe('Test UserLogin Service', () => {
   beforeEach('UserLoginService beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM psc_administrators');
@@ -17,6 +21,10 @@ describe('Test UserLogin Service', () => {
   });
 
   afterEach('UserLoginService afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM psc_administrators');
@@ -64,9 +72,7 @@ describe('Test UserLogin Service', () => {
     const email = 'test0@example.com';
     const password = 'password';
     const role = RoleUtils.ADMINISTRATOR;
-    await pool.query(
-      `UPDATE psc_administrators SET is_approved=true WHERE email='${email}';`,
-    );
+
     const {accessToken} = await UserService.UserLogin({
       email,
       password,
@@ -79,23 +85,6 @@ describe('Test UserLogin Service', () => {
         role,
       },
       _.omit(decodedToken, ['iat']),
-    );
-  });
-
-  it('Service should reject unapproved administrator', async () => {
-    const email = 'test0@example.com';
-    const password = 'password';
-    const role = RoleUtils.ADMINISTRATOR;
-
-    await Assert.rejects(
-      () =>
-        UserService.UserLogin({
-          email,
-          password,
-          role,
-        }),
-
-      Error,
     );
   });
 });

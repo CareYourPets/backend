@@ -22,7 +22,7 @@ describe('Test PetUpdateService', () => {
     await pool.query('DELETE FROM pet_owners');
   });
 
-  it('Service should update pet category', async () => {
+  it('Service should update pet category in pets', async () => {
     const currentCategory = 'category0';
     const category = 'category1';
     const basePrice = 1.0;

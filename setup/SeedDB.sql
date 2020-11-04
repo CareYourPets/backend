@@ -4,16 +4,78 @@ INSERT INTO psc_administrators (
 	name,
 	gender,
   contact,
-  location,
-  is_deleted
+  location
 ) VALUES (
   'nwjbrandon@gmail.com', 
-  '$2b$10$/IJdSgnkHJ4kOgEPxiLEuebNDJ4Jtig.KVG7OtvVd8l1qKANnneu2', 
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
   'Brandon Ng',
   'MALE',
   '(+65)93221923',
-  '32-B Haw Par Village',
-  false
+  '32-B Haw Par Village'
+);
+
+INSERT INTO psc_administrators (
+	email,
+	password,
+	name,
+	gender,
+  contact,
+  location
+) VALUES (
+  'ambhinav@yahoo.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
+  'Brandon Ng',
+  'MALE',
+  '(+65)93221923',
+  '32-B Haw Par Village'
+);
+
+INSERT INTO psc_administrators (
+	email,
+	password,
+	name,
+	gender,
+  contact,
+  location
+) VALUES (
+  'amir97azhar@gmail.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
+  'Amir Azhar',
+  'MALE',
+  '(+65)93221923',
+  '32-B Haw Par Village'
+);
+
+INSERT INTO psc_administrators (
+	email,
+	password,
+	name,
+	gender,
+  contact,
+  location
+) VALUES (
+  'arunkumarr97@gmail.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
+  'Arun Kumar',
+  'MALE',
+  '(+65)93221923',
+  '32-B Haw Par Village'
+);
+
+INSERT INTO psc_administrators (
+	email,
+	password,
+	name,
+	gender,
+  contact,
+  location
+) VALUES (
+  'dragontho@gmail.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
+  'Paul Tho',
+  'MALE',
+  '(+65)93221923',
+  '32-B Haw Par Village'
 );
 
 INSERT INTO pet_owners (
@@ -24,18 +86,16 @@ INSERT INTO pet_owners (
   contact,
   area,
   location,
-  bio,
-  is_deleted
+  bio
 ) VALUES (
-  'pet-owner-01@gmail.com',
+  'petowner@example.com',
   '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
-  'Michael Scott',
+  'Pet Owner',
   'MALE',
   '(+65)98765432',
   'NORTH-EAST',
   'Hougang Ave 9, Blk 1, #02-1322, Singapore 123001',
-  'I am a little kid lover.',
-  false
+  'I am a pet owner.'
 );
 
 INSERT INTO care_takers (
@@ -46,18 +106,36 @@ INSERT INTO care_takers (
   contact,
   area,
   location,
-  bio,
-  is_deleted
+  bio
 ) VALUES (
-  'care-taker-01@gmail.com',
+  'caretaker@example.com',
   '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
-  'Dwight Schrute',
+  'Care Taker',
   'MALE',
   '(+65)98123456',
   'NORTH-EAST',
   'Hougang Ave 2, Blk 10, #05-14, Singapore 145010',
-  'Beets.',
-  false
+  'I am a care taker.'
+);
+
+INSERT INTO care_takers (
+  email,
+	password,
+	name,
+	gender,
+  contact,
+  area,
+  location,
+  bio
+) VALUES (
+  'caretaker2@example.com',
+  '$2b$10$OAOoB9h1ZVnakibXe9PFV.E.i1o3nF4j9STVugRvPdIFKWZWimr3.',
+  'Care Taker 2',
+  'MALE',
+  '(+65)98123456',
+  'NORTH',
+  'Hougang Ave 2, Blk 10, #05-14, Singapore 145010',
+  'I am a care taker 2.'
 );
 
 INSERT INTO pet_categories (
@@ -79,20 +157,17 @@ INSERT INTO pets (
   category,
   email,
   needs,
-  diet,
-  is_deleted
+  diet
 ) VALUES (
   'jackie',
   'bulldog',
-  'pet-owner-01@gmail.com',
+  'petowner@example.com',
   NULL,
-  'vegan',
-  false
+  'vegan'
 ), (
   'tommy',
   'rabbit',
-  'pet-owner-01@gmail.com',
+  'petowner@example.com',
   'He is blind.',
-  'cannibal',
-  false
+  'cannibal'
 );

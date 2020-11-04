@@ -1,5 +1,5 @@
 import moment from 'moment';
-import MOMENT_TIME_FORMAT from '../../src/Utils/DateTimeUtils';
+import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import pool from '../../src/Utils/DBUtils';
 import SQLQueries from '../../src/Utils/SQLUtils';
 import PetFixtures from './PetFixtures';
@@ -23,7 +23,7 @@ const SeedBids = async ({
     pet_name: petName,
     pet_owner_email: petOwnerEmail,
     care_taker_email: careTakerEmail,
-    start_date: moment(startDate).format(MOMENT_TIME_FORMAT),
+    start_date: moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
   };
 };
 
@@ -63,7 +63,7 @@ const SeedMultipleBids = async () => {
     });
     const bidInfo = {
       ...bid,
-      end_date: moment(endDate).format(MOMENT_TIME_FORMAT),
+      end_date: moment(endDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
       is_deleted: false,
       is_accepted: false,
       transaction_date: null,
@@ -72,6 +72,7 @@ const SeedMultipleBids = async () => {
       review_date: null,
       transportation_mode: null,
       review: null,
+      rating: 0,
     };
     bids.push(bidInfo);
   }
@@ -88,7 +89,6 @@ const SeedBidsWithTransactionDate = async ({
   careTakerEmail,
   startDate,
   endDate,
-  amount,
 }) => {
   await pool.query(SQLQueries.CREATE_BID, [
     petName,
@@ -101,10 +101,10 @@ const SeedBidsWithTransactionDate = async ({
     true,
     startDate,
     null,
-    amount,
     null,
     null,
     null,
+    5,
     petName,
     petOwnerEmail,
     careTakerEmail,
@@ -114,11 +114,11 @@ const SeedBidsWithTransactionDate = async ({
     pet_name: petName,
     pet_owner_email: petOwnerEmail,
     care_taker_email: careTakerEmail,
-    start_date: moment(startDate).format(MOMENT_TIME_FORMAT),
+    start_date: moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
   };
 };
 
-const SeedMultipleBidsWithTransactionDate = async (amount) => {
+const SeedMultipleBidsWithTransactionDate = async () => {
   const careTakers = await UserFixtures.SeedCareTakerFullTimers(1);
   const petOwners = await UserFixtures.SeedPetOwners(1);
   const petCategories = await PetFixtures.SeedPetCategories(1);
@@ -139,11 +139,10 @@ const SeedMultipleBidsWithTransactionDate = async (amount) => {
       careTakerEmail: careTakers[0].email,
       startDate,
       endDate,
-      amount,
     });
     const bidInfo = {
       ...bid,
-      end_date: moment(endDate).format(MOMENT_TIME_FORMAT),
+      end_date: moment(endDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
       is_deleted: false,
       is_accepted: true,
       transaction_date: startDate,
@@ -151,7 +150,7 @@ const SeedMultipleBidsWithTransactionDate = async (amount) => {
       amount: null,
       review_date: null,
       transportation_mode: null,
-      review: null,
+      review: 5,
     };
     bids.push(bidInfo);
   }

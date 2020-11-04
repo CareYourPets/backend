@@ -31,12 +31,12 @@ describe('Test AdminFetchHighestJobMonth Controller', () => {
   });
 
   it('API should fetch total pet days', async () => {
-    await BidFixtures.SeedMultipleBidsWithTransactionDate(50);
+    await BidFixtures.SeedMultipleBidsWithTransactionDate();
     const users = await UserFixtures.SeedAdministrators(1);
     const {accessToken} = users[0];
     const month = moment().month() + 1;
     const year = moment().year();
-    const time = `${year.toString()  }-${  month.toString()}`;
+    const time = `${year.toString()}-${month.toString()}`;
 
     const res = await Chai.request(App)
       .get('/pet/admin/month/fetchjobs')

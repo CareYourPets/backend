@@ -31,7 +31,7 @@ describe('Test AdminFetchTotalSalary Controller', () => {
   });
 
   it('API should fetch total monthly salary', async () => {
-    await BidFixtures.SeedMultipleBidsWithTransactionDate(5000);
+    await BidFixtures.SeedMultipleBidsWithTransactionDate();
     const users = await UserFixtures.SeedAdministrators(1);
     const {accessToken} = users[0];
     const month = moment().month() + 1;
