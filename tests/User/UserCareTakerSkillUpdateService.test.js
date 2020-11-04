@@ -20,7 +20,7 @@ describe('Test UserCareTakerSkillUpdateService', () => {
     const users = await UserFixtures.SeedCareTakers(1);
     const {email} = users[0];
     const careTakerSkills = await UserFixtures.SeedCareTakerSkills(1, email);
-    const price = '2';
+    const price = 2;
     await UserService.UserCareTakerSkillUpdate({
       email: careTakerSkills[0].email,
       category: careTakerSkills[0].category,

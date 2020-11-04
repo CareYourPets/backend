@@ -51,7 +51,7 @@ const SeedCareTakerSkills = async (i, email) => {
   await PetFixtures.SeedPetCategories(i);
   return Promise.all(
     _.times(i, (idx) =>
-      SeedSkills({email, category: `category${idx}`, price: `${idx}`}),
+      SeedSkills({email, category: `category${idx}`, price: idx}),
     ),
   );
 };

@@ -68,11 +68,11 @@ describe('Test CareTakerFetchService', () => {
         [
           {
             category: 'category0',
-            price: '0',
+            price: 0,
           },
           {
             category: 'category1',
-            price: '1',
+            price: 1,
           },
         ],
       ],

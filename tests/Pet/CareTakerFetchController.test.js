@@ -118,7 +118,7 @@ describe('Test CareTakerFetch Controller', () => {
         [
           {
             category: 'category0',
-            price: '0',
+            price: 0,
           },
         ],
       ],

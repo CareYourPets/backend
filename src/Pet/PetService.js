@@ -103,6 +103,13 @@ const FetchPetOwner = async ({email}) => {
   return [petowner.rows, pets.rows];
 };
 
+const FetchCareTakerReviews = async ({careTakerEmail}) => {
+  const {rows} = await pool.query(SQLQueries.FETCH_CARE_TAKER_REVIEWS, [
+    careTakerEmail,
+  ]);
+  return rows;
+};
+
 export default {
   PetCategoryCreate,
   PetCategoryFetch,
@@ -115,4 +122,5 @@ export default {
   FetchAllCareTakers,
   FetchCareTaker,
   FetchPetOwner,
+  FetchCareTakerReviews,
 };

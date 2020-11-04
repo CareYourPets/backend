@@ -27,7 +27,7 @@ describe('Test UserCareTakerSkillCreateController', () => {
     const {email, accessToken} = users[0];
 
     const category = 'category0';
-    const price = '1.1';
+    const price = 1.1;
 
     await Chai.request(App)
       .post('/user/caretaker/skill/create')
@@ -45,7 +45,7 @@ describe('Test UserCareTakerSkillCreateController', () => {
 
   it('API should return 401 on missing access token', async () => {
     const category = 'category0';
-    const price = '1.1';
+    const price = 1.1;
 
     const res = await Chai.request(App)
       .post('/user/caretaker/skill/create')
@@ -60,7 +60,7 @@ describe('Test UserCareTakerSkillCreateController', () => {
     const users = await UserFixtures.SeedCareTakers(1);
     const {accessToken} = users[0];
 
-    const price = '1.1';
+    const price = 1.1;
 
     const res = await Chai.request(App)
       .post('/user/caretaker/skill/create')

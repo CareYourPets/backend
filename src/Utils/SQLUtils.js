@@ -118,33 +118,93 @@ const SQLQueries = {
     SELECT * FROM pets WHERE email=$1 AND is_deleted=false;
   `,
   FETCH_ALL_CARE_TAKERS: `
-    SELECT email, name, area, location, gender, contact, bio
-    FROM care_takers
-    WHERE 
-      is_deleted = false AND
-      name IS NOT NULL AND
-      area IS NOT NULL AND
-      location IS NOT NULL AND
-      gender IS NOT NULL AND
-      contact IS NOT NULL AND
-      bio IS NOT NULL 
+    SELECT 
+      subquery.email AS email,
+      type,
+      subquery.name AS name,
+      subquery.area AS area,
+      subquery.location AS location, 
+      subquery.gender AS gender,
+      subquery.contact AS contact, 
+      subquery.bio AS bio
+    FROM 
+    (
+      SELECT 
+        care_takers.email AS email, 
+        CASE
+        WHEN care_taker_full_timers.email IS NOT NULL THEN 'CARE_TAKER_FULL_TIMER'
+        WHEN care_taker_part_timers.email IS NOT NULL THEN 'CARE_TAKER_PART_TIMER'
+        ELSE NULL
+        END AS type,
+        name, 
+        area, 
+        location, 
+        gender, 
+        contact, 
+        bio
+      FROM care_takers
+      LEFT JOIN care_taker_full_timers
+        ON care_taker_full_timers.email=care_takers.email
+      LEFT JOIN care_taker_part_timers
+        ON care_taker_part_timers.email=care_takers.email
+      WHERE 
+        is_deleted = false AND
+        name IS NOT NULL AND
+        area IS NOT NULL AND
+        location IS NOT NULL AND
+        gender IS NOT NULL AND
+        contact IS NOT NULL AND
+        bio IS NOT NULL 
+    ) AS subquery
+    WHERE
+      type IS NOT NULL
     ORDER BY email ASC, name ASC;
   `,
   FETCH_ALL_CARE_TAKERS_BY_LOCATION: `
-    SELECT c1.email, c1.name, c1.area, c1.location, c1.gender, c1.contact, c1.bio
-    FROM care_takers c1
-    INNER JOIN pet_owners p1 ON p1.area = c1.area
+    SELECT 
+      subquery.email AS email,
+      type,
+      subquery.name AS name,
+      subquery.area AS area,
+      subquery.location AS location, 
+      subquery.gender AS gender,
+      subquery.contact AS contact, 
+      subquery.bio AS bio
+    FROM 
+    (
+      SELECT 
+        care_takers.email AS email, 
+        CASE
+        WHEN care_taker_full_timers.email IS NOT NULL THEN 'CARE_TAKER_FULL_TIMER'
+        WHEN care_taker_part_timers.email IS NOT NULL THEN 'CARE_TAKER_PART_TIMER'
+        ELSE NULL
+        END AS type,
+        name, 
+        area, 
+        location, 
+        gender, 
+        contact, 
+        bio
+      FROM care_takers
+      LEFT JOIN care_taker_full_timers
+        ON care_taker_full_timers.email=care_takers.email
+      LEFT JOIN care_taker_part_timers
+        ON care_taker_part_timers.email=care_takers.email
+      WHERE 
+        is_deleted = false AND
+        name IS NOT NULL AND
+        area IS NOT NULL AND
+        location IS NOT NULL AND
+        gender IS NOT NULL AND
+        contact IS NOT NULL AND
+        bio IS NOT NULL 
+    ) AS subquery
+    INNER JOIN pet_owners 
+      ON pet_owners.area=subquery.area
     WHERE 
-      c1.is_deleted = false AND 
-      p1.is_deleted = false AND 
-      p1.email=$1 AND
-      c1.name IS NOT NULL AND
-      c1.area IS NOT NULL AND
-      c1.location IS NOT NULL AND
-      c1.gender IS NOT NULL AND
-      c1.contact IS NOT NULL AND
-      c1.bio IS NOT NULL 
-      ORDER BY email;
+      type IS NOT NULL AND
+      pet_owners.email=$1
+    ORDER BY subquery.email ASC, subquery.name ASC;
   `,
   FETCH_CARE_TAKER: `
     SELECT CASE
@@ -185,12 +245,11 @@ const SQLQueries = {
     SET is_accepted=$1,
         transaction_date=$2,
         payment_mode=$3,
-        amount=$4,
-        review_date=$5,
-        transportation_mode=$6,
-        review=$7,
-        rating=$8
-    WHERE pet_name=$9 AND pet_owner_email=$10 AND care_taker_email=$11 AND start_date=$12;
+        review_date=$4,
+        transportation_mode=$5,
+        review=$6,
+        rating=$7
+    WHERE pet_name=$8 AND pet_owner_email=$9 AND care_taker_email=$10 AND start_date=$11;
   `,
   DELETE_BID: `
     UPDATE bids SET is_deleted=true WHERE pet_name=$1 AND pet_owner_email=$2 AND care_taker_email=$3 AND start_date=$4;
@@ -199,10 +258,60 @@ const SQLQueries = {
     SELECT * FROM bids WHERE is_deleted=false;
   `,
   SELECT_CARE_TAKER_BIDS: `
-    SELECT * FROM bids WHERE care_taker_email=$1 AND is_deleted=false;
+    SELECT
+      pet_name,
+      pet_owner_email,
+      care_taker_email,
+      is_accepted,
+      start_date,
+      end_date, 
+      transaction_date,
+      payment_mode, 
+      amount, 
+      review_date,
+      transportation_mode,
+      review,
+      rating, 
+      name,
+      gender,
+      contact, 
+      area, 
+      location, 
+      bio
+    FROM bids 
+    INNER JOIN pet_owners 
+      ON bids.pet_owner_email=pet_owners.email 
+    WHERE 
+      care_taker_email=$1 AND 
+      bids.is_deleted=false;
   `,
   SELECT_PET_OWNER_BIDS: `
-    SELECT * FROM bids WHERE pet_owner_email=$1 AND is_deleted=false;
+    SELECT
+      pet_name,
+      pet_owner_email,
+      care_taker_email,
+      is_accepted,
+      start_date,
+      end_date, 
+      transaction_date,
+      payment_mode, 
+      amount, 
+      review_date,
+      transportation_mode,
+      review,
+      rating, 
+      name,
+      gender,
+      contact, 
+      area, 
+      location, 
+      bio
+    FROM bids 
+    INNER JOIN care_takers 
+      ON bids.care_taker_email=care_takers.email 
+    WHERE 
+      pet_owner_email=$1 AND 
+      bids.is_deleted=false;
   `,
   CREATE_CARE_TAKER_UNAVAILABLE_DATE: `
     INSERT INTO care_taker_full_timers_unavailable_dates (
@@ -229,6 +338,17 @@ const SQLQueries = {
   `,
   DELETE_CARE_TAKER_PT_AVAILABLE_DATE: `
     DELETE FROM care_taker_part_timers_available_dates WHERE email=$1 AND date=$2
+  `,
+  FETCH_CARE_TAKER_REVIEWS: `
+    SELECT email, name, review, rating 
+    FROM bids
+    INNER JOIN pet_owners
+      ON pet_owners.email=bids.pet_owner_email
+    WHERE
+      care_taker_email=$1 AND
+      is_accepted=true AND
+      review IS NOT NULL AND
+      rating IS NOT NULL;
   `,
 };
 

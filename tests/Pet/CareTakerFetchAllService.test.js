@@ -6,6 +6,7 @@ import UserFixtures from '../Fixtures/UserFixtures';
 import GenderUtils from '../../src/Utils/GenderUtils';
 import AreaUtils from '../../src/Utils/AreaUtils';
 import UserService from '../../src/User/UserService';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('Test CareTakerFetchAllService', () => {
   beforeEach('CareTakerFetchAllService beforeEach', async () => {
@@ -50,12 +51,18 @@ describe('Test CareTakerFetchAllService', () => {
       bio,
     });
 
+    await UserService.UserCareTakerTypeCreate({
+      email: 'test0@example.com',
+      type: RoleUtils.CARE_TAKER_FULL_TIMER,
+    });
+
     const results = await PetService.FetchAllCareTakers({email, isByLocation});
 
     Assert.deepStrictEqual(
       [
         {
           email: 'test0@example.com',
+          type: RoleUtils.CARE_TAKER_FULL_TIMER,
           name,
           area,
           location,

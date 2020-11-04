@@ -25,7 +25,7 @@ describe('Test UserCareTakerSkillDeleteController', () => {
     const {email, accessToken} = users[0];
     await UserFixtures.SeedCareTakerSkills(2, email);
     const category = 'category0';
-    const price = '1';
+    const price = 1;
 
     await Chai.request(App)
       .post('/user/caretaker/skill/delete')
