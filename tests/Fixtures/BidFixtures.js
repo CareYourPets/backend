@@ -87,9 +87,88 @@ const SeedMultipleBids = async () => {
   };
 };
 
+const SeedBidsWithTransactionDate = async ({
+  petName,
+  petOwnerEmail,
+  careTakerEmail,
+  startDate,
+  endDate,
+}) => {
+  await pool.query(SQLQueries.CREATE_BID, [
+    petName,
+    petOwnerEmail,
+    careTakerEmail,
+    startDate,
+    endDate,
+  ]);
+  await pool.query(SQLQueries.UPDATE_BID, [
+    true,
+    startDate,
+    null,
+    null,
+    null,
+    null,
+    5,
+    petName,
+    petOwnerEmail,
+    careTakerEmail,
+    startDate,
+  ]);
+  return {
+    pet_name: petName,
+    pet_owner_email: petOwnerEmail,
+    care_taker_email: careTakerEmail,
+    start_date: moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+  };
+};
+
+const SeedMultipleBidsWithTransactionDate = async () => {
+  const careTakers = await UserFixtures.SeedCareTakerFullTimers(1);
+  const petOwners = await UserFixtures.SeedPetOwners(1);
+  const petCategories = await PetFixtures.SeedPetCategories(1);
+  // pet owner A's pets
+  const pets = await PetFixtures.SeedPets(
+    2,
+    petOwners[0].email,
+    petCategories[0].category,
+  );
+  const {startDate, endDate} = CreateBidDates();
+  const bids = [];
+  /* eslint-disable no-await-in-loop */
+  for (let i = 0; i < 2; i++) {
+    // pet owner
+    const bid = await SeedBidsWithTransactionDate({
+      petName: pets[i].name,
+      petOwnerEmail: petOwners[0].email,
+      careTakerEmail: careTakers[0].email,
+      startDate,
+      endDate,
+    });
+    const bidInfo = {
+      ...bid,
+      end_date: moment(endDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+      is_deleted: false,
+      is_accepted: true,
+      transaction_date: startDate,
+      payment_mode: null,
+      amount: null,
+      review_date: null,
+      transportation_mode: null,
+      review: 5,
+    };
+    bids.push(bidInfo);
+  }
+  /* eslint-enable no-await-in-loop */
+  return {
+    bidData: bids,
+    users: [petOwners[0], careTakers[0]],
+  };
+};
+
 export default {
   SeedBids,
   CreateBidDates,
   SeedMultipleBids,
   CreateInvalidBidDates,
+  SeedMultipleBidsWithTransactionDate,
 };

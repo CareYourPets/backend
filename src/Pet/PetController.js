@@ -180,6 +180,20 @@ app.post(
 );
 
 app.post(
+  '/admin/month/fetchpet',
+  [body('month').isInt(), body('year').isInt()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.FetchMonthlyTotalPet({...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.post(
   '/caretaker/reviews/fetch',
   [body('careTakerEmail').isEmail()],
   AuthRequired,
@@ -192,6 +206,55 @@ app.post(
     }
   },
 );
+
+app.post(
+  '/caretaker/fetchpetdays',
+  [body('month').isInt(), body('year').isInt()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.FetchMonthlyTotalPetDays({
+        ...req.user,
+        ...req.body,
+      });
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.get('/admin/month/fetchjobs', AuthRequired, async (req, res) => {
+  try {
+    const response = await service.FetchMonthWithHighestJobs();
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
+});
+
+app.post(
+  '/caretaker/salary/fetchtotal',
+  [body('month').isInt(), body('year').isInt()],
+  AuthRequired,
+  async (req, res) => {
+    try {
+      const response = await service.FetchTotalCareTakerSalary({...req.body});
+      return res.json(response);
+    } catch (error) {
+      return res.status(403).json({error});
+    }
+  },
+);
+
+app.get('/caretaker/salary/fetchexpected', AuthRequired, async (req, res) => {
+  try {
+    const response = await service.FetchExpectedSalary({...req.user});
+    return res.json(response);
+  } catch (error) {
+    return res.status(403).json({error});
+  }
+});
 
 export default {
   app,
