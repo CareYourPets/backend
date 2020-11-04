@@ -257,15 +257,20 @@ CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMPTZ, end_date 
   RETURNS INT AS 
 $$
 DECLARE
+  start_trunc timestamp = DATE_TRUNC('day', start_date);
+  end_trunc timestamp = DATE_TRUNC('day', end_date);
   duration_interval INTERVAL;
   duration INT = 0;
 BEGIN
-  duration_interval = end_date - start_date;
+  duration_interval = end_trunc - start_trunc;
   duration = DATE_PART('day', duration_interval);
-  RETURN duration; 
+  -- offset of +1 since date part calculates num of full days
+  -- between start and end
+  return duration + 1;
 END;
 $$ 
 LANGUAGE 'plpgsql';
+
 
 CREATE OR REPLACE FUNCTION get_full_timer_number_of_pets(
                            new_pet_name VARCHAR,
@@ -407,7 +412,7 @@ $$
         SELECT count(*)
         FROM care_taker_part_timers_available_dates
         WHERE date BETWEEN start_date::date AND end_date::date -- dates inclusive of start_date and end_date
-      ) = (calculate_duration(start_date, end_date) + 1) -- offset of +1 to include start_date
+      ) = (calculate_duration(start_date, end_date)) -- offset of +1 to include start_date
       THEN
         RETURN true;
       ELSE
@@ -437,7 +442,7 @@ CREATE TABLE bids (
   is_deleted BOOLEAN NOT NULL DEFAULT false,
   FOREIGN KEY (pet_name, pet_owner_email) REFERENCES pets (name, email) ON DELETE CASCADE,
   CHECK(rating BETWEEN 0 AND 5),
-  CHECK(calculate_duration(start_date, end_date) >= 0),
+  CHECK(calculate_duration(start_date, end_date) >= 1),
   CHECK(get_full_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 5),
   CHECK(
       (get_part_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 5

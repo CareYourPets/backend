@@ -551,7 +551,7 @@ describe('Test BidCreate Service', () => {
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
-    const actualAmount = 70;
+    const actualAmount = 80;
     const {startDate, endDate} = BidFixtures.CreateBidDates();
     await BidService.BidCreate({
       petName,
@@ -595,8 +595,8 @@ describe('Test BidCreate Service', () => {
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
     const petName1 = 'pet1';
-    const actualAmountCatZero = 70;
-    const actualAmountCatOne = 140;
+    const actualAmountCatZero = 80;
+    const actualAmountCatOne = 160;
     const {startDate, endDate} = BidFixtures.CreateBidDates();
     await BidService.BidCreate({
       petName,
