@@ -287,7 +287,7 @@ BEGIN
   if pet_days > 60
     then current_days := pet_days;
   end if;
-  care_period := calculate_duration(temp_row.start_date, temp_row.end_date);
+  care_period := calculate_duration(temp_row.start_date, temp_row.end_date) + 1;
   pet_days := pet_days + care_period;
   if pet_days > 60
     then salary := salary + 0.8 * (temp_row.amount / care_period) * (pet_days - current_days);
