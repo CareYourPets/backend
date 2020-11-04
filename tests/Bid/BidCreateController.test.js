@@ -24,7 +24,6 @@ describe('Test BidCreate Controller', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
-    await UserFixtures.SeedCareTakers(1);
     await PetFixtures.SeedPetCategories(1);
     const email = 'test0@example.com';
     const category = 'category0';
@@ -45,7 +44,7 @@ describe('Test BidCreate Controller', () => {
   });
 
   it('API should create bid', async () => {
-    const users = await UserFixtures.SeedAdministrators(1);
+    const users = await UserFixtures.SeedCareTakerFullTimers(1);
     const {accessToken} = users[0];
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
@@ -83,7 +82,7 @@ describe('Test BidCreate Controller', () => {
   });
 
   it('API should reject bid when start_date after end_date', async () => {
-    const users = await UserFixtures.SeedAdministrators(1);
+    const users = await UserFixtures.SeedCareTakerFullTimers(1);
     const {accessToken} = users[0];
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
@@ -104,7 +103,7 @@ describe('Test BidCreate Controller', () => {
   });
 
   it('API should reject duplicate bids', async () => {
-    const users = await UserFixtures.SeedAdministrators(1);
+    const users = await UserFixtures.SeedCareTakerFullTimers(1);
     const {accessToken} = users[0];
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
@@ -136,7 +135,7 @@ describe('Test BidCreate Controller', () => {
   });
 
   it('API should return 422 for missing pet name', async () => {
-    const users = await UserFixtures.SeedAdministrators(1);
+    const users = await UserFixtures.SeedCareTakerFullTimers(1);
     const {accessToken} = users[0];
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
@@ -154,7 +153,7 @@ describe('Test BidCreate Controller', () => {
   });
 
   it('API should return 422 for missing pet owner email', async () => {
-    const users = await UserFixtures.SeedAdministrators(1);
+    const users = await UserFixtures.SeedCareTakerFullTimers(1);
     const {accessToken} = users[0];
     const careTakerEmail = 'test0@example.com';
     const petName = 'pet0';
@@ -172,7 +171,7 @@ describe('Test BidCreate Controller', () => {
   });
 
   it('API should return 422 for missing care taker email', async () => {
-    const users = await UserFixtures.SeedAdministrators(1);
+    const users = await UserFixtures.SeedCareTakerFullTimers(1);
     const {accessToken} = users[0];
     const petName = 'pet0';
     const petOwnerEmail = 'test0@example.com';
@@ -190,7 +189,7 @@ describe('Test BidCreate Controller', () => {
   });
 
   it('API should return 422 for missing dates', async () => {
-    const users = await UserFixtures.SeedAdministrators(1);
+    const users = await UserFixtures.SeedCareTakerFullTimers(1);
     const {accessToken} = users[0];
     const petName = 'pet0';
     const petOwnerEmail = 'test0@example.com';

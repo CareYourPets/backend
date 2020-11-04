@@ -372,6 +372,55 @@ $$
 $$
 LANGUAGE 'plpgsql';
 
+CREATE OR REPLACE FUNCTION check_care_taker_availability_for_bid(
+                              new_care_taker_email VARCHAR,
+                              start_date TIMESTAMPTZ,
+                              end_date TIMESTAMPTZ
+                            )
+  RETURNS BOOLEAN AS
+$$
+  BEGIN
+    IF EXISTS (
+      SELECT 1
+      FROM care_taker_full_timers
+      WHERE email = new_care_taker_email
+    )
+    THEN
+      -- full time care taker must not have a leave day in the bid dates range
+      IF EXISTS (
+        SELECT 1
+        FROM care_taker_full_timers_unavailable_dates
+        WHERE date BETWEEN start_date::date AND end_date::date
+      )
+      THEN
+        RETURN false;
+      ELSE
+        RETURN true;
+      END IF;
+    ELSIF EXISTS (
+      SELECT 1
+      FROM care_taker_part_timers
+      WHERE email = new_care_taker_email
+    )
+    THEN
+      -- part time care taker must have be available for all days in the bid dates range
+      IF NOT EXISTS (
+        SELECT 1
+        FROM care_taker_part_timers_available_dates
+        WHERE date BETWEEN start_date::date AND end_date::date
+      )
+      THEN
+        RETURN false;
+      ELSE
+        RETURN true;
+      END IF;
+    ELSE
+      RETURN false;
+    END IF;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
 CREATE TABLE bids (
   pet_name VARCHAR NOT NULL,
   pet_owner_email VARCHAR NOT NULL,
@@ -400,6 +449,7 @@ CREATE TABLE bids (
       AND
       get_average_rating(care_taker_email) < 4)
     ),
+  CHECK(check_care_taker_availability_for_bid(care_taker_email, start_date, end_date)),
   PRIMARY KEY (pet_name, pet_owner_email, care_taker_email, start_date)
 );
 

@@ -13,6 +13,8 @@ Chai.use(ChaiHttp);
 
 describe('Test BidInfo Controller', () => {
   beforeEach('BidInfoController beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM bids');
@@ -22,6 +24,8 @@ describe('Test BidInfo Controller', () => {
   });
 
   afterEach('BidInfoController afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');

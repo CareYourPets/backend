@@ -7,16 +7,27 @@ import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
 import {BID_PAYMENT_MODE, PET_DELIVERY_MODE} from '../../src/Utils/BidUtils';
 import PetService from '../../src/Pet/PetService';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('FetchCareTakerReviewsService', () => {
   beforeEach('FetchCareTakerReviewsService beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
-    await UserFixtures.SeedCareTakers(1);
+    await UserFixtures.SeedCareTakers(2);
+    await UserFixtures.SeedCareTakerRole({
+      email: 'test0@example.com',
+      role: RoleUtils.CARE_TAKER_FULL_TIMER,
+    });
+    await UserFixtures.SeedCareTakerRole({
+      email: 'test1@example.com',
+      role: RoleUtils.CARE_TAKER_PART_TIMER,
+    });
     await PetFixtures.SeedPetCategories(1);
     const email = 'test0@example.com';
     const category = 'category0';
@@ -24,6 +35,8 @@ describe('FetchCareTakerReviewsService', () => {
   });
 
   afterEach('FetchCareTakerReviewsService afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');

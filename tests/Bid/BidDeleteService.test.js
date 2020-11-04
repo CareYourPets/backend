@@ -6,16 +6,27 @@ import UserFixtures from '../Fixtures/UserFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
 import BidService from '../../src/Bid/BidService';
 import DateTimeUtils from '../../src/Utils/DateTimeUtils';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('Test BidDeleteService', () => {
   beforeEach('BidDeleteService beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
-    await UserFixtures.SeedCareTakers(1);
+    await UserFixtures.SeedCareTakers(2);
+    await UserFixtures.SeedCareTakerRole({
+      email: 'test0@example.com',
+      role: RoleUtils.CARE_TAKER_FULL_TIMER,
+    });
+    await UserFixtures.SeedCareTakerRole({
+      email: 'test1@example.com',
+      role: RoleUtils.CARE_TAKER_PART_TIMER,
+    });
     await PetFixtures.SeedPetCategories(1);
     const email = 'test0@example.com';
     const category = 'category0';
@@ -23,6 +34,8 @@ describe('Test BidDeleteService', () => {
   });
 
   afterEach('BidDeleteService afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
+    await pool.query('DELETE FROM care_taker_part_timers');
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');

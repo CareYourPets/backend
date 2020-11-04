@@ -40,7 +40,7 @@ const CreateInvalidBidDates = () => {
 };
 
 const SeedMultipleBids = async () => {
-  const careTakers = await UserFixtures.SeedCareTakers(1);
+  const careTakers = await UserFixtures.SeedCareTakerFullTimers(1);
   const petOwners = await UserFixtures.SeedPetOwners(1);
   const petCategories = await PetFixtures.SeedPetCategories(1);
   // pet owner A's pets
