@@ -125,6 +125,8 @@ describe('Test BidInfo Controller', () => {
       bids[i].end_date = formattedEndDate;
     }
 
+    data.bidData.sort((a, b) => a.pet_name > b.pet_name);
+
     Assert.deepStrictEqual(data.bidData, bids);
   });
 

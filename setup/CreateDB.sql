@@ -262,7 +262,6 @@ DECLARE
 BEGIN
   duration_interval = end_date - start_date;
   duration = DATE_PART('day', duration_interval);
-
   RETURN duration; 
 END;
 $$ 
@@ -404,15 +403,15 @@ $$
     )
     THEN
       -- part time care taker must have be available for all days in the bid dates range
-      IF NOT EXISTS (
-        SELECT 1
+      IF (
+        SELECT count(*)
         FROM care_taker_part_timers_available_dates
-        WHERE date BETWEEN start_date::date AND end_date::date
-      )
+        WHERE date BETWEEN start_date::date AND end_date::date -- dates inclusive of start_date and end_date
+      ) = (calculate_duration(start_date, end_date) + 1) -- offset of +1 to include start_date
       THEN
-        RETURN false;
-      ELSE
         RETURN true;
+      ELSE
+        RETURN false;
       END IF;
     ELSE
       RETURN false;

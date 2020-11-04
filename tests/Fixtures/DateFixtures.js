@@ -16,6 +16,17 @@ const SeedAvailableDate = async ({email, date}) => {
   return {email, date};
 };
 
+/** Seeds available dates for a part time care taker that match those created in @see BidFixtures.CreateBidDates */
+const SeedAvaliableDates = async (i) => {
+  const email = 'test1@example.com';
+  await Promise.all(
+    _.times(i, (idx) => {
+      const date = moment().add(idx, 'days').toISOString(true);
+      return SeedAvailableDate({email, date});
+    }),
+  );
+};
+
 /* Note: Need an offset of +1 to moment#add because of a weird bug with moment#startOf('year') */
 const SeedAllLeaveDays = async () => {
   const email = 'test0@example.com';
@@ -64,4 +75,5 @@ export default {
   SeedAllLeaveDays,
   SeedEdgeCaseDates,
   SeedAvailableDate,
+  SeedAvaliableDates,
 };

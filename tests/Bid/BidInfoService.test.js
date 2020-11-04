@@ -61,6 +61,8 @@ describe('Test BidInfo Service', () => {
       _.omit({...data, ...petOwnerInfo}, ['is_deleted']),
     );
 
+    data.bidData.sort((a, b) => a.pet_name > b.pet_name);
+
     Assert.deepStrictEqual(expected, bids);
   });
 

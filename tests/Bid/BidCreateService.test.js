@@ -11,6 +11,7 @@ import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('Test BidCreate Service', () => {
   beforeEach('BidCreateService beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
     await pool.query('DELETE FROM care_taker_full_timers');
     await pool.query('DELETE FROM care_taker_part_timers');
@@ -37,6 +38,7 @@ describe('Test BidCreate Service', () => {
   });
 
   afterEach('BidCreateService afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_part_timers_available_dates');
     await pool.query('DELETE FROM care_taker_full_timers_unavailable_dates');
     await pool.query('DELETE FROM care_taker_full_timers');
     await pool.query('DELETE FROM care_taker_part_timers');
@@ -53,6 +55,38 @@ describe('Test BidCreate Service', () => {
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
     const {startDate, endDate} = BidFixtures.CreateBidDates();
+    await BidService.BidCreate({
+      petName,
+      petOwnerEmail,
+      careTakerEmail,
+      startDate,
+      endDate,
+    });
+
+    const {rows: bids} = await pool.query(
+      `SELECT * 
+			FROM bids 
+			WHERE pet_name='${petName}' 
+			AND pet_owner_email='${petOwnerEmail}'
+			AND care_taker_email='${careTakerEmail}'
+			AND start_date='${startDate}'
+			`,
+    );
+    Assert.deepStrictEqual(bids[0].pet_name, petName);
+    Assert.deepStrictEqual(bids[0].pet_owner_email, petOwnerEmail);
+    Assert.deepStrictEqual(bids[0].care_taker_email, careTakerEmail);
+    Assert.deepStrictEqual(
+      moment(bids[0].start_date).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+      moment(startDate).format(DateTimeUtils.MOMENT_TIME_FORMAT),
+    );
+  });
+
+  it('Service should create bid for avail part timer', async () => {
+    const careTakerEmail = 'test1@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+    await DateFixtures.SeedAvaliableDates(8);
     await BidService.BidCreate({
       petName,
       petOwnerEmail,
@@ -124,8 +158,6 @@ describe('Test BidCreate Service', () => {
 
   it('Service should accept bid if full timer has up to 5 pets', async () => {
     await pool.query('DELETE FROM pets');
-    // await pool.query('DELETE FROM care_takers');
-    // await UserFixtures.SeedCareTakerFullTimers(1);
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1', 'pet2', 'pet3', 'pet4'];
@@ -165,8 +197,6 @@ describe('Test BidCreate Service', () => {
 
   it('Service should not accept bid if full timer has more than 5 pets', async () => {
     await pool.query('DELETE FROM pets');
-    // await pool.query('DELETE FROM care_takers');
-    // await UserFixtures.SeedCareTakerFullTimers(1);
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1', 'pet2', 'pet3', 'pet4'];
@@ -216,8 +246,6 @@ describe('Test BidCreate Service', () => {
 
   it('Service should accept bid if full timer has 5 overlapping pets and 1 other pet', async () => {
     await pool.query('DELETE FROM pets');
-    // await pool.query('DELETE FROM care_takers');
-    // await UserFixtures.SeedCareTakerFullTimers(1);
     const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1', 'pet2', 'pet3', 'pet4'];
@@ -264,8 +292,6 @@ describe('Test BidCreate Service', () => {
   });
 
   it('Service should automatically accept bid for full timers', async () => {
-    // await pool.query('DELETE FROM care_takers');
-    // await UserFixtures.SeedCareTakerFullTimers(1);
     await pool.query(`
         INSERT INTO care_taker_skills(email, category, price)
         VALUES('test0@example.com', 'category0', 10);
@@ -295,8 +321,6 @@ describe('Test BidCreate Service', () => {
   });
 
   it('Service should not automatically accept bid for full timers outside their skills', async () => {
-    // await pool.query('DELETE FROM care_takers');
-    // await UserFixtures.SeedCareTakerFullTimers(1);
     await pool.query(`
         INSERT INTO care_taker_skills(email, category, price)
         VALUES('test0@example.com', 'category1', 10);
@@ -326,13 +350,12 @@ describe('Test BidCreate Service', () => {
   });
 
   it('Service should not automatically accept bid for part timers', async () => {
-    await pool.query('DELETE FROM care_takers');
-    await UserFixtures.SeedCareTakerPartTimers(1);
+    const careTakerEmail = 'test1@example.com';
+    await DateFixtures.SeedAvaliableDates(8);
     await pool.query(`
         INSERT INTO care_taker_skills(email, category, price)
         VALUES('test0@example.com', 'category0', 10);
     `);
-    const careTakerEmail = 'test0@example.com';
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
     const {startDate, endDate} = BidFixtures.CreateBidDates();
@@ -358,9 +381,8 @@ describe('Test BidCreate Service', () => {
 
   it('Service should not accept bid if part timer has more than 5 pets and is above 4 stars', async () => {
     await pool.query('DELETE FROM pets');
-    await pool.query('DELETE FROM care_takers');
-    await UserFixtures.SeedCareTakerPartTimers(1);
-    const careTakerEmail = 'test0@example.com';
+    const careTakerEmail = 'test1@example.com';
+    await DateFixtures.SeedAvaliableDates(8);
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1', 'pet2', 'pet3', 'pet4'];
     const category = 'category0';
@@ -406,9 +428,8 @@ describe('Test BidCreate Service', () => {
 
   it('Service should accept bid if part timer has 5 pets or less, more than 2 pets and is above 4 stars', async () => {
     await pool.query('DELETE FROM pets');
-    await pool.query('DELETE FROM care_takers');
-    await UserFixtures.SeedCareTakerPartTimers(1);
-    const careTakerEmail = 'test0@example.com';
+    const careTakerEmail = 'test1@example.com';
+    await DateFixtures.SeedAvaliableDates(8);
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1', 'pet2'];
     const category = 'category0';
@@ -473,9 +494,8 @@ describe('Test BidCreate Service', () => {
 
   it('Service should not accept bid if part timer has 5 pets or less, more than 2 pets and is below 4 stars', async () => {
     await pool.query('DELETE FROM pets');
-    // await pool.query('DELETE FROM care_takers');
-    // await UserFixtures.SeedCareTakerPartTimers(1);
-    const careTakerEmail = 'test0@example.com';
+    const careTakerEmail = 'test1@example.com';
+    await DateFixtures.SeedAvaliableDates(8);
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1'];
     const category = 'category0';
@@ -524,8 +544,6 @@ describe('Test BidCreate Service', () => {
   });
 
   it('Service should automatically calculate an amount for the bid', async () => {
-    // await pool.query('DELETE FROM care_takers');
-    // await UserFixtures.SeedCareTakerFullTimers(1);
     await pool.query(`
         INSERT INTO care_taker_skills(email, category, price)
         VALUES('test0@example.com', 'category0', 10);
@@ -556,9 +574,7 @@ describe('Test BidCreate Service', () => {
   });
 
   it('Service should automatically calculate the correct amount for the correct bid', async () => {
-    // await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pets');
-    // await UserFixtures.SeedCareTakerFullTimers(1);
     await pool.query(`
         INSERT INTO care_taker_skills(email, category, price)
         VALUES('test0@example.com', 'category0', 10);
@@ -615,8 +631,6 @@ describe('Test BidCreate Service', () => {
   });
 
   it('Service should automatically calculate an amount for a bid of 0 days', async () => {
-    // await pool.query('DELETE FROM care_takers');
-    // await UserFixtures.SeedCareTakerFullTimers(1);
     await pool.query(`
         INSERT INTO care_taker_skills(email, category, price)
         VALUES('test0@example.com', 'category0', 10);
@@ -649,11 +663,6 @@ describe('Test BidCreate Service', () => {
 
   it('Service should reject a bid if full time care taker is not available for the bid dates range', async () => {
     const careTakerEmail = 'test0@example.com';
-    // const {email: careTakerEmail} = await UserFixtures.SeedCareTakerFullTimers(1);
-    // await pool.query(`
-    //     INSERT INTO care_taker_full_timers(email)
-    //     VALUES('test0@example.com');
-    // `);
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
     // start date is today and end date is 7 days from now
@@ -671,6 +680,27 @@ describe('Test BidCreate Service', () => {
           petName,
           petOwnerEmail,
           careTakerEmail,
+          startDate,
+          endDate,
+        }),
+      Error,
+    );
+  });
+
+  it('Service should reject a bid if part time care taker is not available for the bid dates range', async () => {
+    const parTimeCareTakerEmail = 'test1@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    // start date is today and end date is 7 days from now
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+    await DateFixtures.SeedAvaliableDates(7); // one day missing
+
+    await Assert.rejects(
+      () =>
+        BidService.BidCreate({
+          petName,
+          petOwnerEmail,
+          careTakerEmail: parTimeCareTakerEmail,
           startDate,
           endDate,
         }),
