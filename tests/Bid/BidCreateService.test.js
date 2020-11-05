@@ -22,13 +22,17 @@ describe('Test BidCreate Service', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
-    await UserFixtures.SeedCareTakers(2);
+    await UserFixtures.SeedCareTakers(3);
     await UserFixtures.SeedCareTakerRole({
       email: 'test0@example.com',
       role: RoleUtils.CARE_TAKER_FULL_TIMER,
     });
     await UserFixtures.SeedCareTakerRole({
       email: 'test1@example.com',
+      role: RoleUtils.CARE_TAKER_PART_TIMER,
+    });
+    await UserFixtures.SeedCareTakerRole({
+      email: 'test2@example.com',
       role: RoleUtils.CARE_TAKER_PART_TIMER,
     });
     await PetFixtures.SeedPetCategories(2);
@@ -86,7 +90,7 @@ describe('Test BidCreate Service', () => {
     const petOwnerEmail = 'test0@example.com';
     const petName = 'pet0';
     const {startDate, endDate} = BidFixtures.CreateBidDates();
-    await DateFixtures.SeedAvaliableDates(8);
+    await DateFixtures.SeedAvaliableDates(8, careTakerEmail);
     await BidService.BidCreate({
       petName,
       petOwnerEmail,
@@ -351,7 +355,7 @@ describe('Test BidCreate Service', () => {
 
   it('Service should not automatically accept bid for part timers', async () => {
     const careTakerEmail = 'test1@example.com';
-    await DateFixtures.SeedAvaliableDates(8);
+    await DateFixtures.SeedAvaliableDates(8, careTakerEmail);
     await pool.query(`
         INSERT INTO care_taker_skills(email, category, price)
         VALUES('test0@example.com', 'category0', 10);
@@ -382,7 +386,7 @@ describe('Test BidCreate Service', () => {
   it('Service should not accept bid if part timer has more than 5 pets and is above 4 stars', async () => {
     await pool.query('DELETE FROM pets');
     const careTakerEmail = 'test1@example.com';
-    await DateFixtures.SeedAvaliableDates(8);
+    await DateFixtures.SeedAvaliableDates(8, careTakerEmail);
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1', 'pet2', 'pet3', 'pet4'];
     const category = 'category0';
@@ -429,7 +433,7 @@ describe('Test BidCreate Service', () => {
   it('Service should accept bid if part timer has 5 pets or less, more than 2 pets and is above 4 stars', async () => {
     await pool.query('DELETE FROM pets');
     const careTakerEmail = 'test1@example.com';
-    await DateFixtures.SeedAvaliableDates(8);
+    await DateFixtures.SeedAvaliableDates(8, careTakerEmail);
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1', 'pet2'];
     const category = 'category0';
@@ -495,7 +499,7 @@ describe('Test BidCreate Service', () => {
   it('Service should not accept bid if part timer has 5 pets or less, more than 2 pets and is below 4 stars', async () => {
     await pool.query('DELETE FROM pets');
     const careTakerEmail = 'test1@example.com';
-    await DateFixtures.SeedAvaliableDates(8);
+    await DateFixtures.SeedAvaliableDates(8, careTakerEmail);
     const petOwnerEmail = 'test0@example.com';
     const petNames = ['pet0', 'pet1'];
     const category = 'category0';
@@ -693,7 +697,29 @@ describe('Test BidCreate Service', () => {
     const petName = 'pet0';
     // start date is today and end date is 7 days from now
     const {startDate, endDate} = BidFixtures.CreateBidDates();
-    await DateFixtures.SeedAvaliableDates(7); // one day missing
+    await DateFixtures.SeedAvaliableDates(7, parTimeCareTakerEmail); // one day missing
+
+    await Assert.rejects(
+      () =>
+        BidService.BidCreate({
+          petName,
+          petOwnerEmail,
+          careTakerEmail: parTimeCareTakerEmail,
+          startDate,
+          endDate,
+        }),
+      Error,
+    );
+  });
+
+  it('Service should reject a bid if target part time care taker is not available for the bid dates, but another one is', async () => {
+    const parTimeCareTakerEmail = 'test1@example.com';
+    const petOwnerEmail = 'test0@example.com';
+    const petName = 'pet0';
+    // start date is today and end date is 7 days from now
+    const {startDate, endDate} = BidFixtures.CreateBidDates();
+    await DateFixtures.SeedAvaliableDates(7, parTimeCareTakerEmail); // target is unavail
+    await DateFixtures.SeedAvaliableDates(8, 'test2@example.com'); // another pt is
 
     await Assert.rejects(
       () =>

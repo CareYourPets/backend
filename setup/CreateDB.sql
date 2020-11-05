@@ -424,6 +424,7 @@ $$
         SELECT 1
         FROM care_taker_full_timers_unavailable_dates
         WHERE date BETWEEN start_date::date AND end_date::date
+        AND email = new_care_taker_email
       )
       THEN
         RETURN false;
@@ -441,6 +442,7 @@ $$
         SELECT count(*)
         FROM care_taker_part_timers_available_dates
         WHERE date BETWEEN start_date::date AND end_date::date -- dates inclusive of start_date and end_date
+        AND email = new_care_taker_email
       ) = (calculate_duration(start_date, end_date)) -- offset of +1 to include start_date
       THEN
         RETURN true;

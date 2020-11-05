@@ -17,8 +17,7 @@ const SeedAvailableDate = async ({email, date}) => {
 };
 
 /** Seeds available dates for a part time care taker that match those created in @see BidFixtures.CreateBidDates */
-const SeedAvaliableDates = async (i) => {
-  const email = 'test1@example.com';
+const SeedAvaliableDates = async (i, email) => {
   await Promise.all(
     _.times(i, (idx) => {
       const date = moment().add(idx, 'days').toISOString(true);
