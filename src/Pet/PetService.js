@@ -137,7 +137,7 @@ const FetchExpectedSalary = async ({email}) => {
     0,
   ).getDate();
 
-  const paddedMonth = `000${now.getMonth().toString()}`;
+  const paddedMonth = `000${(now.getMonth() + 1).toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
   const dateFormat = `${now.getFullYear().toString()}-${newMonth}-%`;
   const caretakerType = await pool.query(SQLQueries.FETCH_CARE_TAKER_ROLE, [
