@@ -505,7 +505,8 @@ $$
     )
     THEN
       UPDATE bids
-      SET is_accepted = TRUE
+      SET is_accepted = TRUE,
+          transaction_date = NEW.start_date
       WHERE care_taker_email = NEW.care_taker_email
       AND pet_owner_email = NEW.pet_owner_email
       AND pet_name = NEW.pet_name
