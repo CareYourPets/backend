@@ -498,14 +498,19 @@ $$
       WHERE NEW.care_taker_email = care_taker_full_timers.email
     ) AND EXISTS(
       SELECT 1
-      FROM (care_taker_skills NATURAL JOIN pet_categories NATURAL JOIN pets) new_table
-      WHERE NEW.care_taker_email = new_table.email
-      AND NEW.pet_name = new_table.name
+      FROM care_taker_skills JOIN pets
+      ON care_taker_skills.category = pets.category
+      WHERE NEW.care_taker_email = care_taker_skills.email
+      AND NEW.pet_name = pets.name
     )
     THEN
       UPDATE bids
       SET is_accepted = TRUE
-      WHERE care_taker_email = NEW.care_taker_email;
+      WHERE care_taker_email = NEW.care_taker_email
+      AND pet_owner_email = NEW.pet_owner_email
+      AND pet_name = NEW.pet_name
+      AND start_date = NEW.start_date
+      AND end_date = NEW.end_date;
     END IF;
     RETURN NEW;
   END;
