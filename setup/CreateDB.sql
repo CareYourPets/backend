@@ -285,6 +285,7 @@ BEGIN
     SELECT * FROM bids 
     WHERE care_taker_id = bids.care_taker_email
     AND TO_CHAR(bids.transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE dateFormat
+    AND bids.is_deleted=false AND bids.is_accepted=true
     ORDER BY bids.end_date, bids.start_date
   LOOP
   if pet_days > 60

@@ -351,15 +351,27 @@ const SQLQueries = {
       rating IS NOT NULL;
   `,
   FETCH_CARE_TAKER_PET_DAYS: `
-    SELECT SUM(calculate_duration(start_date, end_date))
+    SELECT SUM(CASE
+                WHEN TO_CHAR(start_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2 AND TO_CHAR(end_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2
+                  THEN calculate_duration(start_date, end_date)
+                
+                WHEN TO_CHAR(start_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2
+                  THEN calculate_duration(start_date, date_trunc('MONTH', now()) + INTERVAL '1 MONTH - 1 day')
+                
+                WHEN TO_CHAR(end_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2
+                  THEN calculate_duration(date_trunc('month', current_date), end_date)
+                
+                WHEN $3 BETWEEN start_date AND end_date
+                  THEN DATE_PART('days', DATE_TRUNC('month', NOW()) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL)
+                ELSE 0
+               END)
     FROM bids
-    WHERE care_taker_email=$1 AND is_accepted=true AND
-          TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;
+    WHERE care_taker_email=$1 AND is_accepted=true AND is_deleted=false;
   `,
   FETCH_CARE_TAKER_PART_TIMER_MONTHLY_PAYMENT: `
     SELECT COALESCE(0.75 * SUM(COALESCE(amount,0)), 0) AS sum
     FROM bids
-    WHERE care_taker_email=$1 AND is_accepted=true AND
+    WHERE care_taker_email=$1 AND is_accepted=true AND AND is_deleted=false AND
           TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;
   `,
   FETCH_CARE_TAKER_FULL_TIMER_MONTHLY_PAYMENT: `
@@ -368,14 +380,14 @@ const SQLQueries = {
   FETCH_CARE_TAKER_MONTHLY_RAW_PAYMENT: `
     SELECT SUM(amount)
     FROM bids
-    WHERE care_taker_email=$1 AND is_accepted=true AND
+    WHERE care_taker_email=$1 AND is_accepted=true AND is_deleted=false AND
           TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;
   `,
   FETCH_TOTAL_CARE_TAKERS_SALARY: `
     WITH ptt AS (
       SELECT 0.75 * SUM(amount) AS total
       FROM bids INNER JOIN care_taker_part_timers ctp ON bids.care_taker_email = ctp.email
-      WHERE is_accepted=true AND TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1
+      WHERE is_accepted=true AND is_deleted=false AND TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1
     ), ctt AS (
       SELECT SUM(calculate_ft_salary(ct.email, $1)) AS total
       FROM care_takers ct
@@ -398,13 +410,15 @@ const SQLQueries = {
   FETCH_MONTHLY_TOTAL_NUMBER_OF_UNIQUE_PET: `
     SELECT COUNT(DISTINCT(pet_name, pet_owner_email))
     FROM bids
-    WHERE is_accepted=true AND
+    WHERE is_accepted=true AND is_deleted=false AND
     (TO_CHAR(start_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1 OR 
-     TO_CHAR(end_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1);
+     TO_CHAR(end_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1) OR 
+     $2 BETWEEN start_date AND end_date;
   `,
   FETCH_MONTH_WITH_HIGHEST_JOBS: `
     SELECT substring(TO_CHAR(bids.transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ'), 1, 7) AS time, COUNT(*) AS total 
     FROM bids 
+    WHERE is_accepted = true AND is_deleted=false
     GROUP BY substring(TO_CHAR(bids.transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ'), 1, 7)
     ORDER BY total DESC, time DESC
     LIMIT 1;

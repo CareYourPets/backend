@@ -48,7 +48,7 @@ describe('Test AdminFetchTotalPetDaysMonthly Controller', () => {
     Assert.deepStrictEqual(
       [
         {
-          sum: '16',
+          sum: 16,
         },
       ],
       res.body,
