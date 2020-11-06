@@ -21,6 +21,7 @@ DROP FUNCTION auto_calculate_amount_trigger_funct CASCADE;
 DROP TRIGGER update_care_taker_skill_price_trigger ON bids CASCADE;
 DROP FUNCTION update_care_taker_skill_price_trigger_funct CASCADE;
 DROP FUNCTION check_care_taker_pt_availability CASCADE;
+DROP FUNCTION check_care_taker_availability_for_bid CASCADE;
 
 DROP TABLE pet_owners CASCADE;
 DROP TABLE psc_administrators CASCADE;

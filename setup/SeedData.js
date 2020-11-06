@@ -266,8 +266,8 @@ const main = async () => {
       }),
     );
     await Promise.all(
-      _.map(careTakers, async ({email}) => {
-        await careTakerEmploymentTypePayload(client, email);
+      _.map(careTakers, async ({email}, i) => {
+        await careTakerEmploymentTypePayload(client, email, i);
       }),
     );
     await client3.query('COMMIT');

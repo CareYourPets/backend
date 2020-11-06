@@ -257,13 +257,16 @@ CREATE OR REPLACE FUNCTION calculate_duration (start_date TIMESTAMPTZ, end_date 
   RETURNS INT AS 
 $$
 DECLARE
+  start_trunc timestamp = DATE_TRUNC('day', start_date);
+  end_trunc timestamp = DATE_TRUNC('day', end_date);
   duration_interval INTERVAL;
   duration INT = 0;
 BEGIN
-  duration_interval = end_date - start_date;
+  duration_interval = end_trunc - start_trunc;
   duration = DATE_PART('day', duration_interval);
-
-  RETURN duration; 
+  -- offset of +1 since date part calculates num of full days
+  -- between start and end
+  return duration + 1;
 END;
 $$ 
 LANGUAGE 'plpgsql';
@@ -282,12 +285,13 @@ BEGIN
     SELECT * FROM bids 
     WHERE care_taker_id = bids.care_taker_email
     AND TO_CHAR(bids.transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE dateFormat
+    AND bids.is_deleted=false AND bids.is_accepted=true
     ORDER BY bids.end_date, bids.start_date
   LOOP
   if pet_days > 60
     then current_days := pet_days;
   end if;
-  care_period := calculate_duration(temp_row.start_date, temp_row.end_date) + 1;
+  care_period := calculate_duration(temp_row.start_date, temp_row.end_date);
   pet_days := pet_days + care_period;
   if pet_days > 60
     then salary := salary + 0.8 * (temp_row.amount / care_period) * (pet_days - current_days);
@@ -402,6 +406,57 @@ $$
 $$
 LANGUAGE 'plpgsql';
 
+CREATE OR REPLACE FUNCTION check_care_taker_availability_for_bid(
+                              new_care_taker_email VARCHAR,
+                              start_date TIMESTAMPTZ,
+                              end_date TIMESTAMPTZ
+                            )
+  RETURNS BOOLEAN AS
+$$
+  BEGIN
+    IF EXISTS (
+      SELECT 1
+      FROM care_taker_full_timers
+      WHERE email = new_care_taker_email
+    )
+    THEN
+      -- full time care taker must not have a leave day in the bid dates range
+      IF EXISTS (
+        SELECT 1
+        FROM care_taker_full_timers_unavailable_dates
+        WHERE date BETWEEN start_date::date AND end_date::date
+        AND email = new_care_taker_email
+      )
+      THEN
+        RETURN false;
+      ELSE
+        RETURN true;
+      END IF;
+    ELSIF EXISTS (
+      SELECT 1
+      FROM care_taker_part_timers
+      WHERE email = new_care_taker_email
+    )
+    THEN
+      -- part time care taker must have be available for all days in the bid dates range
+      IF (
+        SELECT count(*)
+        FROM care_taker_part_timers_available_dates
+        WHERE date BETWEEN start_date::date AND end_date::date -- dates inclusive of start_date and end_date
+        AND email = new_care_taker_email
+      ) = (calculate_duration(start_date, end_date)) -- offset of +1 to include start_date
+      THEN
+        RETURN true;
+      ELSE
+        RETURN false;
+      END IF;
+    ELSE
+      RETURN false;
+    END IF;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
 CREATE TABLE bids (
   pet_name VARCHAR NOT NULL,
   pet_owner_email VARCHAR NOT NULL,
@@ -419,7 +474,7 @@ CREATE TABLE bids (
   is_deleted BOOLEAN NOT NULL DEFAULT false,
   FOREIGN KEY (pet_name, pet_owner_email) REFERENCES pets (name, email) ON DELETE CASCADE,
   CHECK(rating BETWEEN 0 AND 5),
-  CHECK(calculate_duration(start_date, end_date) >= 0),
+  CHECK(calculate_duration(start_date, end_date) >= 1),
   CHECK(get_full_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 5),
   CHECK(
       (get_part_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 5
@@ -430,6 +485,7 @@ CREATE TABLE bids (
       AND
       get_average_rating(care_taker_email) < 4)
     ),
+  CHECK(check_care_taker_availability_for_bid(care_taker_email, start_date, end_date)),
   PRIMARY KEY (pet_name, pet_owner_email, care_taker_email, start_date)
 );
 

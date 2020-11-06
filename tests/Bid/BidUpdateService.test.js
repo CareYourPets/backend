@@ -7,6 +7,7 @@ import PetFixtures from '../Fixtures/PetFixtures';
 import BidFixtures from '../Fixtures/BidFixtures';
 import DateTimeUtils from '../../src/Utils/DateTimeUtils';
 import {BID_PAYMENT_MODE, PET_DELIVERY_MODE} from '../../src/Utils/BidUtils';
+import RoleUtils from '../../src/Utils/RoleUtils';
 
 describe('Test BidUpdate Service', () => {
   beforeEach('BidCreateService beforeEach', async () => {
@@ -19,7 +20,15 @@ describe('Test BidUpdate Service', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
-    await UserFixtures.SeedCareTakers(1);
+    await UserFixtures.SeedCareTakers(2);
+    await UserFixtures.SeedCareTakerRole({
+      email: 'test0@example.com',
+      role: RoleUtils.CARE_TAKER_FULL_TIMER,
+    });
+    await UserFixtures.SeedCareTakerRole({
+      email: 'test1@example.com',
+      role: RoleUtils.CARE_TAKER_PART_TIMER,
+    });
     await PetFixtures.SeedPetCategories(2);
     const email = 'test0@example.com';
     const category = 'category0';
@@ -220,8 +229,8 @@ describe('Test BidUpdate Service', () => {
   });
 
   it('Service should automatically update the care_taker_skill.price after an update to the rating', async () => {
-    await pool.query('DELETE FROM care_takers');
-    await UserFixtures.SeedCareTakerFullTimers(1);
+    // await pool.query('DELETE FROM care_takers');
+    // await UserFixtures.SeedCareTakerFullTimers(1);
     await pool.query(`
         INSERT INTO care_taker_skills(email, category, price)
         VALUES('test0@example.com', 'category0', 10);

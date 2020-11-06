@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import moment from 'moment';
 import pool from '../Utils/DBUtils';
 import SQLQueries from '../Utils/SQLUtils';
 
@@ -137,7 +138,7 @@ const FetchExpectedSalary = async ({email}) => {
     0,
   ).getDate();
 
-  const paddedMonth = `000${now.getMonth().toString()}`;
+  const paddedMonth = `000${(now.getMonth() + 1).toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
   const dateFormat = `${now.getFullYear().toString()}-${newMonth}-%`;
   const caretakerType = await pool.query(SQLQueries.FETCH_CARE_TAKER_ROLE, [
@@ -151,9 +152,11 @@ const FetchExpectedSalary = async ({email}) => {
       SQLQueries.FETCH_CARE_TAKER_MONTHLY_RAW_PAYMENT,
       [email, dateFormat],
     );
+    const format = moment().toISOString();
     const currPetDays = await pool.query(SQLQueries.FETCH_CARE_TAKER_PET_DAYS, [
       email,
       dateFormat,
+      format,
     ]);
     const expRawAmount =
       (currAmount.rows[0].sum / now.getDate()) * numOfDaysInMonth;
@@ -172,7 +175,7 @@ const FetchExpectedSalary = async ({email}) => {
     );
     expAmount = (currAmount.rows[0].sum / now.getDate()) * numOfDaysInMonth;
   }
-  return expAmount;
+  return expAmount.toFixed(2);
 };
 
 const FetchTotalCareTakerSalary = async ({month, year}) => {
@@ -201,9 +204,12 @@ const FetchMonthlyTotalPetDays = async ({email, month, year}) => {
   const paddedMonth = `000${month.toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
   const dateFormat = `${year.toString()}-${newMonth}-%`;
+  const currFormat = `${year.toString()}-${newMonth}-01`;
+  const format = moment(currFormat).startOf('month').toISOString();
   const totalPetDays = await pool.query(SQLQueries.FETCH_CARE_TAKER_PET_DAYS, [
     email,
     dateFormat,
+    format,
   ]);
   return totalPetDays.rows;
 };

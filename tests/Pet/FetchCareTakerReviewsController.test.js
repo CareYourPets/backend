@@ -13,6 +13,7 @@ Chai.use(ChaiHttp);
 
 describe('FetchCareTakerReviewsController', () => {
   beforeEach('FetchCareTakerReviewsController beforeEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
     await pool.query('DELETE FROM bids');
@@ -20,7 +21,7 @@ describe('FetchCareTakerReviewsController', () => {
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
     await UserFixtures.SeedPetOwners(1);
-    await UserFixtures.SeedCareTakers(1);
+    await UserFixtures.SeedCareTakerFullTimers(1);
     await PetFixtures.SeedPetCategories(1);
     const email = 'test0@example.com';
     const category = 'category0';
@@ -28,6 +29,7 @@ describe('FetchCareTakerReviewsController', () => {
   });
 
   afterEach('FetchCareTakerReviewsController afterEach', async () => {
+    await pool.query('DELETE FROM care_taker_full_timers');
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM care_takers');
     await pool.query('DELETE FROM pet_owners');
