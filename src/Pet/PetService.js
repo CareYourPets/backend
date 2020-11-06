@@ -193,9 +193,13 @@ const FetchMonthlyTotalPet = async ({month, year}) => {
   const paddedMonth = `000${month.toString()}`;
   const newMonth = paddedMonth.substr(paddedMonth.length - 2);
   const dateFormat = `${year.toString()}-${newMonth}-%`;
+  const format = moment(
+    `${year.toString()}-${newMonth}-02 00:00:00.211+08`,
+    'YYYY-MM-DDTHH:mm:ss.sssZ',
+  ).toISOString();
   const totalPets = await pool.query(
     SQLQueries.FETCH_MONTHLY_TOTAL_NUMBER_OF_UNIQUE_PET,
-    [dateFormat],
+    [dateFormat, format],
   );
   return totalPets.rows;
 };

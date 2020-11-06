@@ -350,12 +350,6 @@ const SQLQueries = {
       review IS NOT NULL AND
       rating IS NOT NULL;
   `,
-  // FETCH_CARE_TAKER_PET_DAYS: `
-  //   SELECT SUM(calculate_duration(start_date, end_date))
-  //   FROM bids
-  //   WHERE care_taker_email=$1 AND is_accepted=true AND
-  //         TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;
-  // `,
   FETCH_CARE_TAKER_PET_DAYS: `
     SELECT SUM(CASE
                 WHEN TO_CHAR(start_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2 AND TO_CHAR(end_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2
@@ -418,7 +412,8 @@ const SQLQueries = {
     FROM bids
     WHERE is_accepted=true AND is_deleted=false AND
     (TO_CHAR(start_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1 OR 
-     TO_CHAR(end_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1);
+     TO_CHAR(end_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $1) OR 
+     $2 BETWEEN start_date AND end_date;
   `,
   FETCH_MONTH_WITH_HIGHEST_JOBS: `
     SELECT substring(TO_CHAR(bids.transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ'), 1, 7) AS time, COUNT(*) AS total 
