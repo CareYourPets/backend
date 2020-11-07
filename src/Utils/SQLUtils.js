@@ -371,7 +371,7 @@ const SQLQueries = {
   FETCH_CARE_TAKER_PART_TIMER_MONTHLY_PAYMENT: `
     SELECT COALESCE(0.75 * SUM(COALESCE(amount,0)), 0) AS sum
     FROM bids
-    WHERE care_taker_email=$1 AND is_accepted=true AND AND is_deleted=false AND
+    WHERE care_taker_email=$1 AND is_accepted=true AND is_deleted=false AND
           TO_CHAR(transaction_date, 'YYYY-MM-DDTHH:mm:ss.sssZ') LIKE $2;
   `,
   FETCH_CARE_TAKER_FULL_TIMER_MONTHLY_PAYMENT: `
