@@ -59,7 +59,7 @@ const SeedEdgeCaseDates = async () => {
   // start 1 June
   return Promise.all(
     _.times(32, (idx) => {
-      const next = moment().startOf('year').add(181, 'days').add(idx, 'days');
+      const next = moment().startOf('year').add(183, 'days').add(idx, 'days');
       return pool.query(
         `INSERT INTO care_taker_full_timers_unavailable_dates ( email, date ) VALUES ( '${email}', '${next.toISOString(
           true,
