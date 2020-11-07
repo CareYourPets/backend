@@ -36,6 +36,6 @@ describe('Test CareTakerFetchExpSalary Controller', () => {
       .get('/pet/caretaker/salary/fetchexpected')
       .set('accessToken', accessToken);
 
-    Assert.deepStrictEqual(3000, res.body);
+    Assert.deepStrictEqual('3000.00', res.body);
   });
 });

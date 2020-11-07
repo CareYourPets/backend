@@ -21,7 +21,7 @@ describe('Test BidCreate Service', () => {
     await pool.query('DELETE FROM bids');
     await pool.query('DELETE FROM pets');
     await pool.query('DELETE FROM pet_categories');
-    await UserFixtures.SeedPetOwners(1);
+    await UserFixtures.SeedPetOwners(3);
     await UserFixtures.SeedCareTakers(3);
     await UserFixtures.SeedCareTakerRole({
       email: 'test0@example.com',
@@ -37,8 +37,10 @@ describe('Test BidCreate Service', () => {
     });
     await PetFixtures.SeedPetCategories(2);
     const email = 'test0@example.com';
+    const email1 = 'test1@example.com';
     const category = 'category0';
     await PetFixtures.SeedPets(1, email, category);
+    await PetFixtures.SeedPets(1, email1, category);
   });
 
   afterEach('BidCreateService afterEach', async () => {
@@ -301,7 +303,7 @@ describe('Test BidCreate Service', () => {
         VALUES('test0@example.com', 'category0', 10);
     `);
     const careTakerEmail = 'test0@example.com';
-    const petOwnerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test1@example.com';
     const petName = 'pet0';
     const {startDate, endDate} = BidFixtures.CreateBidDates();
     await BidService.BidCreate({
@@ -330,7 +332,7 @@ describe('Test BidCreate Service', () => {
         VALUES('test0@example.com', 'category1', 10);
     `);
     const careTakerEmail = 'test0@example.com';
-    const petOwnerEmail = 'test0@example.com';
+    const petOwnerEmail = 'test1@example.com';
     const petName = 'pet0';
     const {startDate, endDate} = BidFixtures.CreateBidDates();
     await BidService.BidCreate({
