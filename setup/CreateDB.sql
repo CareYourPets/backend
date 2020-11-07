@@ -204,17 +204,16 @@ BEGIN
     RAISE EXCEPTION 'No leave days left %', NEW.date;
   END IF;
   /* Splits data into two cases, parition with at least 150 (and below 300) and another with atleast 300 */
-  /* Date_part calculates FULL days between, so offset of -2 is need to include max and min */
   SELECT COUNT(one_fifty) , COUNT(three_hundred) INTO num_onefifty, num_threehundred
   FROM (
     SELECT
     CASE
-      WHEN calculate_duration(min::timestamp, max::timestamp) >= 298 THEN 1
+      WHEN calculate_duration(min::timestamp, max::timestamp) >= 300 THEN 1
       ELSE NULL
     END AS three_hundred,
     CASE
-      WHEN calculate_duration(min::timestamp, max::timestamp) >= 298 THEN NULL
-      WHEN calculate_duration(min::timestamp, max::timestamp) >= 148 THEN 1
+      WHEN calculate_duration(min::timestamp, max::timestamp) >= 300 THEN NULL
+      WHEN calculate_duration(min::timestamp, max::timestamp) >= 150 THEN 1
       ELSE NULL
     END AS one_fifty
     FROM (
