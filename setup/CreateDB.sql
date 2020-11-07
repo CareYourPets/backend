@@ -345,6 +345,39 @@ DECLARE
 $$
 LANGUAGE 'plpgsql';
 
+CREATE OR REPLACE FUNCTION check_care_taker_pet_days_trigger_funct()
+  RETURNS TRIGGER AS
+$$
+  BEGIN
+    IF NOT EXISTS(
+      SELECT 1
+      FROM care_taker_full_timers
+      WHERE email = NEW.care_taker_email
+    ) 
+      -- THEN RETURN NEW;
+    AND OLD.is_accepted = false AND NEW.is_accepted = true
+      THEN 
+        -- SELECT get_part_timer_number_of_pets(NEW.pet_name, NEW.pet_owner_email, NEW.care_taker_email, NEW.start_date, NEW.end_of_year) INTO num_of_pets;
+        -- SELECT get_average_rating(NEW.care_taker_email) INTO avg_rating;
+        IF (get_part_timer_number_of_pets(NEW.pet_name, NEW.pet_owner_email, NEW.care_taker_email, NEW.start_date, NEW.end_date) < 5
+                AND
+                get_average_rating(NEW.care_taker_email) >= 4)
+                OR
+                (get_part_timer_number_of_pets(NEW.pet_name, NEW.pet_owner_email, NEW.care_taker_email, NEW.start_date, NEW.end_date) < 2
+                AND
+                get_average_rating(NEW.care_taker_email) < 4)
+          THEN
+            RETURN NEW;
+        ELSE
+          RAISE EXCEPTION 'invalid';
+        END IF;
+    ELSE
+      RETURN NEW;
+    END IF;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
 CREATE OR REPLACE FUNCTION get_part_timer_number_of_pets(
                            new_pet_name VARCHAR,
                            new_pet_owner_email VARCHAR,
@@ -356,35 +389,17 @@ $$
 DECLARE
   num_of_pets INT = 0;
   BEGIN
-    IF EXISTS(
-      SELECT 1
-      FROM care_taker_full_timers
-      WHERE email = new_care_taker_email
-    ) THEN
-        RETURN num_of_pets;
-    ELSIF EXISTS(
-      SELECT 1
-      FROM bids
-      WHERE pet_name = new_pet_name
-      AND pet_owner_email = new_pet_owner_email
-      AND care_taker_email = new_care_taker_email
-      AND start_date = new_start_date
-    ) THEN
-      SELECT -1 INTO num_of_pets;
-    ELSE
-      SELECT 0 INTO num_of_pets;
-    END IF;
-      SELECT COUNT(*) + num_of_pets
-      INTO num_of_pets
-      FROM bids AS b
-      WHERE b.care_taker_email = new_care_taker_email
-      AND (
-        (new_start_date::date BETWEEN b.start_date::date AND b.end_date::date)
-        OR
-        (new_end_date::date BETWEEN b.start_date::date AND b.end_date::date)
-      )
-      AND is_accepted = TRUE;
-      RETURN num_of_pets;
+    SELECT COUNT(*)
+    INTO num_of_pets
+    FROM bids AS b
+    WHERE b.care_taker_email = new_care_taker_email
+    AND (
+      (new_start_date::date BETWEEN b.start_date::date AND b.end_date::date)
+      OR
+      (new_end_date::date BETWEEN b.start_date::date AND b.end_date::date)
+    )
+    AND is_accepted = TRUE;
+    RETURN num_of_pets;
   END;
 $$
 LANGUAGE 'plpgsql';
@@ -395,11 +410,15 @@ $$
   DECLARE
   avg_rating FLOAT = 0.0;
   BEGIN
-    SELECT AVG(rating)
+    SELECT 
+    CASE 
+		  WHEN AVG(rating) IS NULL THEN 0.00
+		  ELSE AVG(rating)
+		END AS avg  
     INTO avg_rating
     FROM bids
     WHERE bids.care_taker_email = new_care_taker_email
-    AND review IS NOT NULL;
+    AND is_accepted = true;
     RETURN avg_rating;
   END;
 $$
@@ -475,15 +494,6 @@ CREATE TABLE bids (
   CHECK(rating BETWEEN 0 AND 5),
   CHECK(calculate_duration(start_date, end_date) >= 1),
   CHECK(get_full_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 5),
-  CHECK(
-      (get_part_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 5
-      AND
-      get_average_rating(care_taker_email) >= 4)
-      OR
-      (get_part_timer_number_of_pets(pet_name, pet_owner_email, care_taker_email, start_date, end_date) < 2
-      AND
-      get_average_rating(care_taker_email) < 4)
-    ),
   CHECK(check_care_taker_availability_for_bid(care_taker_email, start_date, end_date)),
   PRIMARY KEY (pet_name, pet_owner_email, care_taker_email, start_date)
 );
@@ -612,3 +622,9 @@ AFTER INSERT
 ON bids
 FOR EACH ROW
 EXECUTE PROCEDURE auto_calculate_amount_trigger_funct();
+
+CREATE TRIGGER check_care_taker_pet_days
+BEFORE UPDATE
+ON bids
+FOR EACH ROW
+EXECUTE PROCEDURE check_care_taker_pet_days_trigger_funct();

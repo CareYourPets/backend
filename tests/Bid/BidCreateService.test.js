@@ -536,9 +536,24 @@ describe('Test BidCreate Service', () => {
       endDate: newEndDate,
     } = BidFixtures.CreateBidDates();
 
+    await BidService.BidCreate({
+      petName: 'pet2',
+      petOwnerEmail,
+      careTakerEmail,
+      startDate: newStartDate,
+      endDate: newEndDate,
+    });
+
     await Assert.rejects(
       () =>
-        BidService.BidCreate({
+        BidService.BidUpdate({
+          isAccepted: true,
+          transactionDate: null,
+          paymentMode: null,
+          reviewDate: null,
+          transportationMode: null,
+          review: 'asdf',
+          rating: 1,
           petName: 'pet2',
           petOwnerEmail,
           careTakerEmail,
