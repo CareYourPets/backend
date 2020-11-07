@@ -89,7 +89,7 @@ describe('Test UserCareTakerAvailabilityDateCreateService', () => {
     const {email} = data[0];
     const type = RoleUtils.CARE_TAKER_FULL_TIMER;
     await DateFixtures.SeedEdgeCaseDates();
-    const date = moment().startOf('year').add(214, 'days').toISOString(true);
+    const date = moment().startOf('year').add(215, 'days').toISOString(true);
     await UserService.UserCareTakerAvailabilityDateCreate({
       email,
       date,
